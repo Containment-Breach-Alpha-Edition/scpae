@@ -7298,7 +7298,6 @@ Function UpdateEvents%()
 						
 						If Not x
 							If e\EventState = 0.0
-								CreateMsg(EntityDistance(e\room\Objects[0], me\Collider), 0.3)
 								If EntityDistance(e\room\Objects[0], me\Collider) < 0.7 And e\EventState3 = 0.0
 									e\EventState = 1.0
 

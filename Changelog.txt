@@ -1,6 +1,6 @@
 ===================================== SCP Containment Breach Alpha Edition (SCP UE Extension) ====================================================
 
-Beta v1.1
+v1.0-beta.2
 
 General:
 - Upgrate UE version.
@@ -10,7 +10,7 @@ Bug Fixes:
 - Fixed incinerator will kill the player when player exit the incinerator.
 - Fixed SCP-006 containment chamber's elevator panel has a wrong position.
 
-Beta v1
+v1.0-beta.1
 
 General:
 - SCP-006 now has an own using status that can be save. So the incinerator will not kill the player if they have GodMode.
