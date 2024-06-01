@@ -86,6 +86,8 @@ Function SaveGame%(File$)
 	WriteFloat(f, me\LightFlash)
 	
 	WriteByte(f, I_005\ChanceToSpawn)
+
+	WriteByte(f, I_006\Used)
 	
 	WriteByte(f, I_500\Taken)
 	
@@ -601,6 +603,8 @@ Function LoadGame%(File$)
 	me\LightFlash = ReadFloat(f)
 	
 	I_005\ChanceToSpawn = ReadByte(f)
+
+	I_006\Used = ReadByte(f)
 	
 	I_500\Taken = ReadByte(f)
 	
@@ -1459,6 +1463,8 @@ Function LoadGameQuick%(File$)
 	me\LightFlash = ReadFloat(f)
 	
 	I_005\ChanceToSpawn = ReadByte(f)
+
+	I_006\Used = ReadByte(f)
 	
 	I_500\Taken = ReadByte(f)
 	

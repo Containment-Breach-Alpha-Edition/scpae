@@ -1737,7 +1737,7 @@ Function RenderMainMenu%()
 	Color(255, 255, 255)
 	SetFontEx(fo\FontID[Font_Console])
 	TextEx(opt\GraphicWidth - 500 * MenuScale, 60 * MenuScale, "SCP - Containment Breach Alpha Edition (UE Extension)")
-	TextEx(opt\GraphicWidth - 70 * MenuScale, 80 * MenuScale, "Beta v1")
+	TextEx(opt\GraphicWidth - 70 * MenuScale, 80 * MenuScale, "Beta v1.1)
 
 	If opt\HUDEnabled
 		Color(255, 255, 255)

@@ -952,6 +952,7 @@ Function LoadItems%()
 	; ~ [PAPER]
 	
 	CreateItemTemplate(GetLocalString("items", "doc005"), "Document SCP-005", it_paper, "paper.b3d", "INV_paper.png", "doc_005.png", 0.003, 0, "doc_005.png")
+	CreateItemTemplate("Document SCP-006", "Document SCP-006", "paper", "paper.b3d", "INV_paper.png", "doc_006.png", 0.003, 0, "doc_006.png")
 	CreateItemTemplate(GetLocalString("items", "doc008"), "Document SCP-008", it_paper, "paper.b3d", "INV_paper.png", "doc_008.png", 0.003, 0, "doc_008.png")
 	CreateItemTemplate(GetLocalString("items", "doc012"), "Document SCP-012", it_paper, "paper.b3d", "INV_paper.png", "doc_012.png", 0.003, 0, "doc_012.png")
 	CreateItemTemplate(GetLocalString("items", "doc035"), "Document SCP-035", it_paper, "paper.b3d", "INV_paper.png", "doc_035_smile.png", 0.003, 0, "doc_035_smile.png")
@@ -1811,6 +1812,8 @@ Function LoadEvents%()
 	
 	CreateEvent(e_cont1_035, r_cont1_035, 0)
 	
+	CreateEvent(e_cont2_006, r_cont2_006, 0)
+
 	CreateEvent(e_cont2_008, r_cont2_008, 0)
 	
 	CreateEvent(e_cont1_106, r_cont1_106, 0)
@@ -2112,6 +2115,7 @@ Function LoadData%()
 	wi.WearableItems = New WearableItems
 	
 	I_005.SCP005 = New SCP005
+	I_006.SCP006 = New SCP006
 	I_008.SCP008 = New SCP008
 	I_035.SCP035 = New SCP035
 	I_268.SCP268 = New SCP268
@@ -2388,8 +2392,18 @@ Function LoadEntities%()
 	EntityOrder(t\OverlayID[10], -1002)
 	MoveEntity(t\OverlayID[10], 0.0, 0.0, 1.0)
 	DeleteSingleTextureEntryFromCache(Tex)
+
+	Tex = LoadTexture_Strict("GFX\Overlays\fire_overlay.png", 1, DeleteAllTextures)
+	t\OverlayID[11] = CreateSprite(ArkBlurCam)
+	ScaleSprite(t\OverlayID[11], 1.0, OverlayScale)
+	EntityTexture(t\OverlayID[11], Tex)
+	EntityBlend (t\OverlayID[11], 2)
+	EntityFX(t\OverlayID[11], 1)
+	EntityOrder(t\OverlayID[11], -1003) 
+	MoveEntity(t\OverlayID[11], 0, 0, 1.0)
+	DeleteSingleTextureEntryFromCache(Tex)
 	
-	For i = 1 To 10
+	For i = 1 To 11
 		HideEntity(t\OverlayID[i])
 	Next
 	t\OverlayTextureID[3] = LoadTexture_Strict("GFX\Overlays\tesla_overlay.png", 1 + 2, DeleteAllTextures, False)
