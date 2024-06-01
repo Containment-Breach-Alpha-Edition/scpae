@@ -2181,13 +2181,13 @@ End Function
 ; ~ Room Objects Constants
 ;[Block]
 Const MaxRoomObjects% = 30
-Const MaxRoomLevers% = 10
+Const MaxRoomLevers% = 6
 Const MaxRoomDoors% = 8
 Const MaxRoomNPCs% = 12
 Const MaxRoomSecurityCams% = 8
 Const MaxRoomEmitters% = 8
 Const MaxRoomAdjacents% = 4
-Const MaxRoomTextures% = 8
+Const MaxRoomTextures% = 4
 ;Const MaxRoomTriggerBoxes% = 8
 ;[End Block]
 
@@ -3073,7 +3073,7 @@ Function UpdateDoors%()
 				If d\KeyCard = KEY_MISC
 					If ChannelPlaying(d\ButtonCHN)
 						If d_I\AnimButton <> 0
-							If PlayerInsideElevator
+							If me\InsideElevator
 								If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
 									Animate2(d_I\AnimButton, AnimTime(d_I\AnimButton), 1.0, 20.0, 2.0, False)
 								Else
@@ -3092,7 +3092,7 @@ Function UpdateDoors%()
 	Next
 End Function
 
-Global ToElevatorFloor%, PlayerInsideElevator%
+Global ToElevatorFloor%
 
 ; ~ Elevator Floor Constants
 ;[Block]
@@ -3106,7 +3106,7 @@ Const Floor1499% = 3
 Function UpdateElevatorPanel%(d.Doors)
 	Local TextureID%, i%
 	
-	If PlayerInsideElevator
+	If me\InsideElevator
 		If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
 			TextureID = ELEVATOR_PANEL_UP
 		Else
@@ -3162,14 +3162,14 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 	door2\Locked = 1
 	If door1\Open
 		door1\IsElevatorDoor = 3
-		If PlayerInsideElevator
+		If me\InsideElevator
 			If State < 70.0 * 7.4 Then door1\Locked = 0
 			door1\IsElevatorDoor = 1
 		EndIf
 	EndIf
 	If door2\Open
 		door2\IsElevatorDoor = 3
-		If PlayerInsideElevator
+		If me\InsideElevator
 			door2\Locked = 0
 			door2\IsElevatorDoor = 1
 		EndIf
@@ -3178,11 +3178,11 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 	Local IsSceneTriggered% = False
 	
 	If n_I\Curr096 <> Null
-		If n_I\Curr096\State > 1.0 And n_I\Curr096\Target = Null And (InFacility = NullFloor) And PlayerInsideElevator And (Not chs\NoTarget) Then IsSceneTriggered = True
+		If n_I\Curr096\State > 1.0 And n_I\Curr096\Target = Null And (InFacility = NullFloor) And me\InsideElevator And (Not chs\NoTarget) Then IsSceneTriggered = True
 	EndIf
 	If (Not IsSceneTriggered)
 		If (Not door1\Open) And (Not door2\Open)
-			If PlayerInsideElevator Then CanSave = 0
+			If me\InsideElevator Then CanSave = 0
 			door1\Locked = 1
 			door2\Locked = 1
 			If door1\OpenState = 0.0 And door2\OpenState = 0.0
@@ -3327,7 +3327,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 								UpdateDecals()
 							EndIf
 						Next
-						OpenCloseDoor(door2, (Not PlayerInsideElevator))
+						OpenCloseDoor(door2, (Not me\InsideElevator))
 						door1\Open = False
 						
 						; ~ Return to default panel texture
@@ -3429,7 +3429,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 								UpdateDecals()
 							EndIf
 						Next
-						OpenCloseDoor(door1, (Not PlayerInsideElevator))
+						OpenCloseDoor(door1, (Not me\InsideElevator))
 						door2\Open = False
 						
 						; ~ Return to default panel texture
@@ -3453,7 +3453,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 		EndIf
 		
 		If door1\OpenState = 0.0 And (Not door1\Open)
-			If PlayerInsideElevator
+			If me\InsideElevator
 				If State = 0.0
 					TeleportEntity(n_I\Curr096\Collider, EntityX(door1\FrameOBJ), EntityY(door1\FrameOBJ) + 1.0, EntityZ(door1\FrameOBJ), n_I\Curr096\CollRadius)
 					PointEntity(n_I\Curr096\Collider, FirstPivot)
@@ -3672,7 +3672,7 @@ Function UseDoor%(PlaySFX% = True)
 					If (Not d_I\ClosestDoor\IsElevatorDoor > 0)
 						CreateMsg(GetLocalString("msg", "elev.broken"))
 						d_I\ClosestDoor\ButtonCHN = PlaySound2(ButtonSFX[1], Camera, d_I\ClosestButton)
-						If PlayerInsideElevator
+						If me\InsideElevator
 							If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
 								SetAnimTime(d_I\ClosestButton, 1.0)
 							Else
@@ -3725,7 +3725,7 @@ Function UseDoor%(PlaySFX% = True)
 				EndIf
 			Else
 				d_I\ClosestDoor\ButtonCHN = PlaySound2(ButtonSFX[0], Camera, d_I\ClosestButton)
-				If PlayerInsideElevator
+				If me\InsideElevator
 					If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
 						SetAnimTime(d_I\ClosestButton, 1.0)
 					Else
@@ -4583,7 +4583,7 @@ Function TeleportToRoom%(r.Rooms)
 	
 	PlayerRoom = r
 	ResetRender()
-	PlayerInsideElevator = False
+	me\InsideElevator = False
 End Function
 
 Function HideRoomsNoColl%(room.Rooms)
@@ -4879,14 +4879,10 @@ Function UpdateRooms%()
 		z = Abs(r\z - PlayerZ)
 		r\Dist = Max(x, z)
 		
-		If x < 16 And z < 16
+		If x < 4.0 And z < 4.0
 			If (Not FoundNewPlayerRoom) And PlayerRoom <> r
-				If x < 4.0
-					If z < 4.0
-						If Abs(PlayerY - EntityY(r\OBJ)) < 1.5 Then PlayerRoom = r
-						FoundNewPlayerRoom = True
-					EndIf
-				EndIf
+				If Abs(PlayerY - EntityY(r\OBJ)) < 1.5 Then PlayerRoom = r
+				FoundNewPlayerRoom = True
 			EndIf
 		EndIf
 		
