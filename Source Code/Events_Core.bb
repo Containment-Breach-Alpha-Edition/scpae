@@ -7284,7 +7284,7 @@ Function UpdateEvents%()
 					
 					ToElevatorFloor = LowerFloor
 					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					PlayerInsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]))
+					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]))
 					e\EventState4 = UpdateElevators(e\EventState4, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[1], e\room\Objects[2], e)
 					
 				    If EntityY(me\Collider) < -2848.0 * RoomScale
