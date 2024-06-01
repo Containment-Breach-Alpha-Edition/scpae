@@ -1729,6 +1729,16 @@ Function RenderMainMenu%()
 	RenderMenuSlideBars()
 	RenderMenuSliders()
 	
+	Color(255, 255, 0)
+	SetFontEx(fo\FontID[Font_Console])
+	TextEx(opt\GraphicWidth - 150 * MenuScale, 10 * MenuScale, "Made by EasyT_T")
+	TextEx(opt\GraphicWidth - 350 * MenuScale, 30 * MenuScale, "https://space.bilibili.com/626767336")
+	
+	Color(255, 255, 255)
+	SetFontEx(fo\FontID[Font_Console])
+	TextEx(opt\GraphicWidth - 500 * MenuScale, 60 * MenuScale, "SCP - Containment Breach Alpha Edition (UE Extension)")
+	TextEx(opt\GraphicWidth - 70 * MenuScale, 80 * MenuScale, "Beta v1")
+
 	If opt\HUDEnabled
 		Color(255, 255, 255)
 		SetFontEx(fo\FontID[Font_Console])
