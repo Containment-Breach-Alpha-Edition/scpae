@@ -31,9 +31,10 @@ Function SaveGame%(File$)
 		WriteString(f, SelectedCustomMap\Name)
 	EndIf
 	
-	WriteString(f, Str(CODE_DR_MAYNARD))
-	WriteString(f, Str(CODE_O5_COUNCIL))
-	WriteString(f, Str(CODE_MAINTENANCE_TUNNELS))
+	WriteInt(f, CODE_DR_MAYNARD)
+	WriteInt(f, CODE_O5_COUNCIL)
+	WriteInt(f, CODE_MAINTENANCE_TUNNELS)
+	WriteInt(f, CODE_DR_GEARS)
 	
 	WriteFloat(f, EntityX(me\Collider))
 	WriteFloat(f, EntityY(me\Collider))
@@ -51,7 +52,6 @@ Function SaveGame%(File$)
 	WriteFloat(f, me\BlinkEffect)
 	WriteFloat(f, me\BlinkEffectTimer)
 	
-	WriteFloat(f, me\DeathTimer)
 	WriteFloat(f, me\BlurTimer)
 	WriteFloat(f, me\HealTimer)
 	
@@ -148,9 +148,6 @@ Function SaveGame%(File$)
 	WriteByte(f, I_714\Using)
 	WriteByte(f, I_294\Using)
 	
-	WriteByte(f, chs\SuperMan)
-	WriteFloat(f, chs\SuperManTimer)
-	
 	WriteString(f, RandomSeed)
 	
 	WriteFloat(f, SecondaryLightOn)
@@ -235,8 +232,9 @@ Function SaveGame%(File$)
 		WriteString(f, n\Texture)
 		
 		WriteByte(f, n\HasAsset)
+		WriteByte(f, n\HasAnim)
 		
-		WriteFloat(f, AnimTime(n\OBJ))
+		If n\HasAnim Then WriteFloat(f, AnimTime(n\OBJ))
 		
 		WriteByte(f, n\Contained)
 		WriteByte(f, n\IsDead)
@@ -468,7 +466,7 @@ Function SaveGame%(File$)
 			WriteByte(f, 66)
 		EndIf
 		
-		If it\ItemTemplate\IsAnim <> 0 Then WriteFloat(f, AnimTime(it\Model))
+		If it\ItemTemplate\IsAnim Then WriteFloat(f, AnimTime(it\Model))
 		WriteByte(f, it\InvSlots)
 		WriteInt(f, it\ID)
 		If it\ItemTemplate\InvImg = it\InvImg
@@ -541,9 +539,10 @@ Function LoadGame%(File$)
 	ReadByte(f)
 	ReadString(f)
 	
-	CODE_DR_MAYNARD = Int(ReadString(f))
-	CODE_O5_COUNCIL = Int(ReadString(f))
-	CODE_MAINTENANCE_TUNNELS = Int(ReadString(f))
+	CODE_DR_MAYNARD = ReadInt(f)
+	CODE_O5_COUNCIL = ReadInt(f)
+	CODE_MAINTENANCE_TUNNELS = ReadInt(f)
+	CODE_DR_GEARS = ReadInt(f)
 	
 	x = ReadFloat(f)
 	y = ReadFloat(f)
@@ -568,7 +567,6 @@ Function LoadGame%(File$)
 	me\BlinkEffect = ReadFloat(f)
 	me\BlinkEffectTimer = ReadFloat(f)
 	
-	me\DeathTimer = ReadFloat(f)
 	me\BlurTimer = ReadFloat(f)
 	me\HealTimer = ReadFloat(f)
 	
@@ -660,9 +658,6 @@ Function LoadGame%(File$)
 	I_427\Timer = ReadFloat(f)
 	I_714\Using = ReadByte(f)
 	I_294\Using = ReadByte(f)
-	
-	chs\SuperMan = ReadByte(f)
-	chs\SuperManTimer = ReadFloat(f)
 	
 	RandomSeed = ReadString(f)
 	
@@ -774,17 +769,12 @@ Function LoadGame%(File$)
 		
 		n\HasAsset = ReadByte(f)
 		If n\HasAsset Then CreateNPCAsset(n)
+		n\HasAnim = ReadByte(f)
+		If n\HasAnim
+			n\Frame = ReadFloat(f)
+			SetAnimTime(n\OBJ, n\Frame)
+		EndIf
 		
-		Local Frame# = ReadFloat(f)
-		
-		Select NPCType
-			Case NPCType106, NPCTypeD, NPCType096, NPCTypeMTF, NPCTypeGuard, NPCType049, NPCType049_2, NPCTypeClerk, NPCType008_1, NPCType035_Tentacle, NPCType1499_1, NPCType860_2, NPCType966, NPCType1048, NPCType1048_A
-				;[Block]
-				SetAnimTime(n\OBJ, Frame)
-				;[End Block]
-		End Select
-		
-		n\Frame = Frame
 		n\Contained = ReadByte(f)
 		n\IsDead = ReadByte(f)
 		n\HP = ReadInt(f)
@@ -796,13 +786,10 @@ Function LoadGame%(File$)
 			FreeEntity(n\OBJ) : n\OBJ = 0
 			n\OBJ = LoadAnimMesh_Strict(n\Model)
 			ScaleEntity(n\OBJ, n\ModelScaleX, n\ModelScaleY, n\ModelScaleZ)
-			SetAnimTime(n\OBJ, Frame)
+			If n\HasAnim Then SetAnimTime(n\OBJ, n\Frame)
 		EndIf
 		n\TextureID = ReadByte(f)
-		If n\TextureID > 0
-			ChangeNPCTextureID(n, n\TextureID - 1)
-			SetAnimTime(n\OBJ, Frame)
-		EndIf
+		If n\TextureID > 0 Then ChangeNPCTextureID(n, n\TextureID - 1)
 		n\HideFromNVG = ReadByte(f)
 	Next
 	
@@ -851,6 +838,7 @@ Function LoadGame%(File$)
 		For rt.RoomTemplates = Each RoomTemplates
 			If rt\ID = RoomTemplateID
 				r.Rooms = CreateRoom(Level, rt\Shape, x, y, z, rt\RoomID, Angle)
+				CalculateRoomExtents(r)
 				;SetupTriggerBoxes(r)
 				r\Found = Found
 				Exit
@@ -923,7 +911,6 @@ Function LoadGame%(File$)
 			DestroyForest(r\fr)
 			Delete(r\fr)
 		EndIf
-		
 		If r\x = r1499_x And r\z = r1499_z Then I_1499\PrevRoom = r
 	Next
 	
@@ -968,10 +955,7 @@ Function LoadGame%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If x + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[0] = d
-								EndIf
+								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						
@@ -999,10 +983,7 @@ Function LoadGame%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If y + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[3] = d
-								EndIf
+								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						Exit
@@ -1201,9 +1182,9 @@ Function LoadGame%(File$)
 		Green = ReadByte(f)
 		Blue = ReadByte(f)
 		
-		Local A% = ReadFloat(f)
+		Alpha = ReadFloat(f)
 		
-		it.Items = CreateItem(IttName, ID, x, y, z, Red, Green, Blue, A)
+		it.Items = CreateItem(IttName, ID, x, y, z, Red, Green, Blue, Alpha)
 		it\Name = Name
 		it\DisplayName = DisplayName
 		
@@ -1233,7 +1214,7 @@ Function LoadGame%(File$)
 		
 		For itt.ItemTemplates = Each ItemTemplates
 			If itt\ID = ID And itt\Name = IttName; And itt\DisplayName = DisplayName ; ~ Not sure about that
-				If itt\IsAnim <> 0
+				If itt\IsAnim
 					SetAnimTime(it\Model, ReadFloat(f))
 					Exit
 				EndIf
@@ -1329,7 +1310,7 @@ Function LoadGame%(File$)
 		Next
 		
 		For d.Doors = Each Doors
-			If d\KeyCard = 0 And d\Code = ""
+			If d\KeyCard = 0 And d\Code = 0
 				If EntityZ(d\FrameOBJ, True) = r\z
 					If EntityX(d\FrameOBJ, True) = r\x + 4.0
 						r\AdjDoor[0] = d
@@ -1393,6 +1374,7 @@ Function LoadGameQuick%(File$)
 	me\StopHidingTimer = 0.0
 	
 	me\Terminated = False
+	me\DeathTimer = 0.0
 	me\FallTimer = 0.0
 	MenuOpen = False
 	
@@ -1401,9 +1383,10 @@ Function LoadGameQuick%(File$)
 	WireFrameState = 0
 	WireFrame(0)
 	
-	CODE_DR_MAYNARD = Int(ReadString(f))
-	CODE_O5_COUNCIL = Int(ReadString(f))
-	CODE_MAINTENANCE_TUNNELS = Int(ReadString(f))
+	ReadInt(f)
+	ReadInt(f)
+	ReadInt(f)
+	ReadInt(f)
 	
 	x = ReadFloat(f)
 	y = ReadFloat(f)
@@ -1428,7 +1411,6 @@ Function LoadGameQuick%(File$)
 	me\BlinkEffect = ReadFloat(f)
 	me\BlinkEffectTimer = ReadFloat(f)
 	
-	me\DeathTimer = ReadFloat(f)
 	me\BlurTimer = ReadFloat(f)
 	me\HealTimer = ReadFloat(f)
 	
@@ -1520,9 +1502,6 @@ Function LoadGameQuick%(File$)
 	I_427\Timer = ReadFloat(f)
 	I_714\Using = ReadByte(f)
 	I_294\Using = ReadByte(f)
-	
-	chs\SuperMan = ReadByte(f)
-	chs\SuperManTimer = ReadFloat(f)
 	
 	RandomSeed = ReadString(f)
 	
@@ -1629,17 +1608,12 @@ Function LoadGameQuick%(File$)
 		
 		n\HasAsset = ReadByte(f)
 		If n\HasAsset Then CreateNPCAsset(n)
+		n\HasAnim = ReadByte(f)
+		If n\HasAnim
+			n\Frame = ReadFloat(f)
+			SetAnimTime(n\OBJ, n\Frame)
+		EndIf
 		
-		Local Frame# = ReadFloat(f)
-		
-		Select NPCType
-			Case NPCType106, NPCTypeD, NPCType096, NPCTypeMTF, NPCTypeGuard, NPCType049, NPCType049_2, NPCTypeClerk, NPCType008_1, NPCType035_Tentacle, NPCType1499_1, NPCType860_2, NPCType966, NPCType1048, NPCType1048_A
-				;[Block]
-				SetAnimTime(n\OBJ, Frame)
-				;[End Block]
-		End Select
-		
-		n\Frame = Frame
 		n\Contained = ReadByte(f)
 		n\IsDead = ReadByte(f)
 		n\HP = ReadInt(f)
@@ -1651,13 +1625,10 @@ Function LoadGameQuick%(File$)
 			FreeEntity(n\OBJ) : n\OBJ = 0
 			n\OBJ = LoadAnimMesh_Strict(n\Model)
 			ScaleEntity(n\OBJ, n\ModelScaleX, n\ModelScaleY, n\ModelScaleZ)
-			SetAnimTime(n\OBJ, Frame)
+			If n\HasAnim Then SetAnimTime(n\OBJ, n\Frame)
 		EndIf
 		n\TextureID = ReadByte(f)
-		If n\TextureID > 0
-			ChangeNPCTextureID(n, n\TextureID - 1)
-			SetAnimTime(n\OBJ, Frame)
-		EndIf
+		If n\TextureID > 0 Then ChangeNPCTextureID(n, n\TextureID - 1)
 		n\HideFromNVG = ReadByte(f)
 	Next
 	
@@ -1698,16 +1669,15 @@ Function LoadGameQuick%(File$)
 		
 		Local Found% = ReadByte(f)
 		Local Level% = ReadInt(f)
-		
 		Local Temp2% = ReadByte(f)
 		
-		If Angle >= 360.0
-			Angle = Angle - 360.0
-		EndIf
+		If Angle >= 360.0 Then Angle = Angle - 360.0
 		
 		For r.Rooms = Each Rooms
 			If r\x = x And r\z = z Then Exit
 		Next
+		
+		If Temp2 = 1 Then PlayerRoom = r
 		
 		For x = 0 To MaxRoomNPCs - 1
 			ID = ReadInt(f)
@@ -1755,9 +1725,6 @@ Function LoadGameQuick%(File$)
 			DestroyForest(r\fr)
 			Delete(r\fr)
 		EndIf
-		
-		If Temp2 = 1 Then PlayerRoom = r
-		
 		If r\x = r1499_x And r\z = r1499_z Then I_1499\PrevRoom = r
 	Next
 	
@@ -1968,9 +1935,9 @@ Function LoadGameQuick%(File$)
 		Green = ReadByte(f)
 		Blue = ReadByte(f)
 		
-		Local A% = ReadFloat(f)
+		Alpha = ReadFloat(f)
 		
-		it.Items = CreateItem(IttName, ID, x, y, z, Red, Green, Blue, A)
+		it.Items = CreateItem(IttName, ID, x, y, z, Red, Green, Blue, Alpha)
 		it\Name = Name
 		it\DisplayName = DisplayName
 		
@@ -2000,7 +1967,7 @@ Function LoadGameQuick%(File$)
 		
 		For itt.ItemTemplates = Each ItemTemplates
 			If itt\ID = ID And itt\Name = Name; And itt\DisplayName = DisplayName ; ~ Not sure about that
-				If itt\IsAnim <> 0
+				If itt\IsAnim
 					SetAnimTime(it\Model, ReadFloat(f))
 					Exit
 				EndIf
@@ -2166,7 +2133,7 @@ Global as.AutoSave
 
 Function UpdateAutoSave%()
 	If (Not opt\AutoSaveEnabled) Lor SelectedDifficulty\SaveType <> SAVE_ANYWHERE Lor me\Terminated Lor CanSave < 3 Lor (Not me\Playable) Lor me\Zombie
-		CancelAutoSave()
+		If as\Timer <= 70.0 * 5.0 Then CancelAutoSave()
 		Return
 	EndIf
 	
@@ -2181,7 +2148,7 @@ Function UpdateAutoSave%()
 End Function
 
 Function CancelAutoSave%()
-	If as\Timer <= 70.0 * 5.0 Then CreateHintMsg(GetLocalString("save", "autosave.canceled"))
+	CreateHintMsg(GetLocalString("save", "autosave.canceled"))
 	as\Timer = 70.0 * 120.0
 End Function
 
@@ -2393,9 +2360,8 @@ Function LoadMap%(File$)
 					If Angle <> 90.0 And Angle <> 270.0 Then Angle = Angle + 180.0
 					Angle = WrapAngle(Angle)
 					r.Rooms = CreateRoom(0, rt\Shape, (MapGridSize - x) * RoomSpacing, 0.0, y * RoomSpacing, ID, Angle)
-					
+					CalculateRoomExtents(r)
 					;SetupTriggerBoxes(r)
-					
 					CurrMapGrid\Grid[(MapGridSize - x) + (y * MapGridSize)] = MapGrid_Tile
 					Exit
 				EndIf
@@ -2565,6 +2531,7 @@ Function LoadMap%(File$)
 					Angle = WrapAngle(Angle)
 					
 					r.Rooms = CreateRoom(0, rt\Shape, (MapGridSize - x) * RoomSpacing, 0.0, y * RoomSpacing, ID, Angle)
+					CalculateRoomExtents(r)
 					;SetupTriggerBoxes(r)
 					
 					CurrMapGrid\Grid[(MapGridSize - x) + (y * MapGridSize)] = MapGrid_Tile
@@ -2637,10 +2604,7 @@ Function LoadMap%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If x + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[0] = d
-								EndIf
+								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						
@@ -2668,10 +2632,7 @@ Function LoadMap%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If y + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[3] = d
-								EndIf
+								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						Exit
@@ -2683,20 +2644,25 @@ Function LoadMap%(File$)
 	
 	; ~ Spawn some rooms outside the map
 	r.Rooms = CreateRoom(0, ROOM1, 0.0, 500.0, -(RoomSpacing) * 10, r_gate_b)
+	CalculateRoomExtents(r)
 	CreateEvent(e_gate_b, r_gate_b, 0)
 	
 	r.Rooms = CreateRoom(0, ROOM1, 0.0, 500.0, -(RoomSpacing) * 2, r_gate_a)
+	CalculateRoomExtents(r)
 	CreateEvent(e_gate_a, r_gate_a, 0)
 	
 	r.Rooms = CreateRoom(0, ROOM1, (MapGridSize + 2) * RoomSpacing, 0.0, (MapGridSize + 2) * RoomSpacing, r_dimension_106)
+	CalculateRoomExtents(r)
 	CreateEvent(e_dimension_106, r_dimension_106, 0) 
 	
 	If opt\IntroEnabled
 		r.Rooms = CreateRoom(0, ROOM1, RoomSpacing, 250.0, (MapGridSize + 2) * RoomSpacing, r_cont1_173_intro)
+		CalculateRoomExtents(r)
 		CreateEvent(e_cont1_173_intro, r_cont1_173_intro, 0)
 	EndIf
 	
 	r.Rooms = CreateRoom(0, ROOM1, -(RoomSpacing * 2), 800.0, 0.0, r_dimension_1499)
+	CalculateRoomExtents(r)
 	CreateEvent(e_dimension_1499, r_dimension_1499, 0)
 	
 	For r.Rooms = Each Rooms

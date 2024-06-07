@@ -641,7 +641,7 @@ Function UpdateEvents%()
 	Local Dist#, i%, Temp%, Pvt%, StrTemp$, j%, k%
 	Local fDir#, Scale#, Tex%, t1%, Name$ ;CurrTrigger$ = "",
 	Local x#, y#, z#, xTemp#, yTemp#, b%, BT%, SF%, TexName$
-	Local Angle#, RoomExists%, RID%
+	Local Angle#, RoomExists%
 	Local SinValue#, CosValue#, SqrValue#
 	Local PlayerPosX#, PlayerPosY#, PlayerPosZ#
 	Local FPSFactorEx#
@@ -1181,8 +1181,7 @@ Function UpdateEvents%()
 										de\Timer = 90000.0 : de\AlphaChange = 0.005 : de\SizeChange = 0.002
 										RotateEntity(de\OBJ, EntityPitch(e\room\RoomSecurityCams[0]\CameraOBJ, True) + Rnd(10.0, 20.0), EntityYaw(e\room\RoomSecurityCams[0]\CameraOBJ, True) + 30.0, EntityRoll(de\OBJ))
 										MoveEntity(de\OBJ, 0.0, 0.05, 0.2) 
-										RotateEntity(de\OBJ, EntityPitch(e\room\RoomSecurityCams[0]\CameraOBJ, True), EntityYaw(e\room\RoomSecurityCams[0]\CameraOBJ, True), EntityRoll(de\OBJ))
-										EntityParent(de\OBJ, e\room\RoomSecurityCams[0]\CameraOBJ)
+										EntityParent(de\OBJ, e\room\OBJ)
 									ElseIf e\EventState3 > 3200.0
 										If e\EventState2 = 1.0
 											n_I\Curr106\Contained = True
@@ -1209,7 +1208,7 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 					Else
-						TFormPoint(1088.0, -6208.0, 1824.0, e\room\OBJ, 0)
+						TFormPoint(1088.0, -6234.0, 1824.0, e\room\OBJ, 0)
 						e\room\NPC[0] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
 						e\room\NPC[0]\State3 = -1.0 : e\room\NPC[0]\IsDead = True : e\room\NPC[0]\HideFromNVG = True
 						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle + 180.0, 0.0, True)
@@ -3285,7 +3284,7 @@ Function UpdateEvents%()
 			Case e_room1_dead_end_guard
 				;[Block]
 				If e\EventState = 0.0
-					If e\room\Dist < 6.0
+					If PlayerRoom = e\room
 						TFormPoint(-944.0, 448.0, 20.0, e\room\OBJ, 0)
 						e\room\NPC[0] = CreateNPC(NPCTypeGuard, TFormedX(), TFormedY(), TFormedZ())
 						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle, 0.0, True)
@@ -4082,7 +4081,7 @@ Function UpdateEvents%()
 										e\room\RoomDoors[0]\Locked = 0
 										n\State3 = 1.0
 									EndIf
-									If Abs(EntityX(n\Collider, True) - EntityX(e\room\OBJ, True)) < 0.64 And Abs(EntityZ(n\Collider, True) - EntityZ(e\room\OBJ, True)) < 0.64 And Abs(EntityY(n\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+									If Abs(EntityX(n\Collider, True) - EntityX(e\room\OBJ, True)) < 0.6 And Abs(EntityZ(n\Collider, True) - EntityZ(e\room\OBJ, True)) < 0.6 And Abs(EntityY(n\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
 										n\CurrSpeed = 0.0 : n\TeslaHit = True
 										Select n\NPCType
 											Case NPCType106
@@ -4857,6 +4856,8 @@ Function UpdateEvents%()
 								Next 
 								If spawnPoint <> Null Then e\room\NPC[i] = CreateNPC(NPCType966, EntityX(spawnPoint\OBJ, True), EntityY(spawnPoint\OBJ, True), EntityZ(spawnPoint\OBJ, True))
 							Next
+							e\EventState = 1.0
+						ElseIf n_I\Curr106\State > 0.0
 							e\EventState = 2.0
 						EndIf
 					Else
@@ -4874,8 +4875,8 @@ Function UpdateEvents%()
 					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
 					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[4]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[5]))
 					ToElevatorFloor = UpperFloor
-					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[2], e\room\Objects[3], e, False)
-					e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[4], e\room\Objects[5], e, False)
+					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[2], e\room\Objects[3], e, False, e\EventState = 1.0)
+					e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[4], e\room\Objects[5], e, False, e\EventState = 1.0)
 				Else
 					If e\room\mt <> Null
 						If e\room\mt\Meshes[0] <> 0
@@ -7098,7 +7099,8 @@ Function UpdateEvents%()
 					EndIf
 					
 					If e\EventState = 0.0
-						RID = e\room\RoomTemplate\RoomID
+						Local RID% = e\room\RoomTemplate\RoomID
+						
 						Select RID
 							Case r_room3_hcz, r_room3_2_hcz, r_room3_3_hcz, r_room4_hcz, r_room4_2_hcz
 								;[Block]
@@ -7455,18 +7457,8 @@ Function UpdateDimension106%()
 					EndIf
 				EndIf
 				
-				Temp = False
-				For i = 0 To MaxItemAmount - 1
-					If Inventory(i) <> Null
-						If Inventory(i)\ItemTemplate\ID = it_scp005
-							Temp = True
-							Exit
-						EndIf
-					EndIf
-				Next
-				
 				Local RoomExist%
-				Local Teleport% = False, Random% = Rand(32 + (Temp * 8))
+				Local Teleport% = False, Random% = Rand(30)
 				
 				Select e\EventState2
 					Case PD_StartRoom
@@ -7499,7 +7491,17 @@ Function UpdateDimension106%()
 								e\EventState = 601.0
 							EndIf
 						EndIf
-						If EntityDistanceSquared(me\Collider, e\room\OBJ) > PowTwo(-1200.0 * RoomScale) Then Teleport = True
+						If EntityDistanceSquared(me\Collider, e\room\OBJ) > PowTwo(-1200.0 * RoomScale)
+							For i = 0 To MaxItemAmount - 1
+								If Inventory(i) <> Null
+									If Inventory(i)\ItemTemplate\ID = it_scp005
+										Random = 31
+										Exit
+									EndIf
+								EndIf
+							Next
+							Teleport = True
+						EndIf
 						;[End Block]
 					Case PD_FourWayRoom
 						;[Block]
@@ -7548,7 +7550,7 @@ Function UpdateDimension106%()
 						
 						If EntityY(me\Collider) < (-1600.0) * RoomScale
 							If EntityDistanceSquared(me\Collider, e\room\Objects[8]) > PowTwo(4750.0 * RoomScale) And (Not me\Terminated)
-								Random = Rand(11, 32+ (Temp * 8))
+								Random = Rand(11, 30)
 								Teleport = True
 							Else ; ~ The player is not at the exit, must've fallen down
 								If (Not chs\GodMode) And (Not me\Terminated)
@@ -7672,7 +7674,7 @@ Function UpdateDimension106%()
 						Dist = EntityDistanceSquared(me\Collider, e\room\Objects[19])
 						SqrValue = Sqr(Dist)
 						
-						e\SoundCHN2 = LoopSound2(e\Sound2, e\SoundCHN2, Camera, Camera, 10.0, 0.4 + (Not Safe) * 0.7)
+						e\SoundCHN2 = LoopSound2(e\Sound2, e\SoundCHN2, Camera, Camera, 10.0, 0.3 + (Not Safe) * 0.7)
 						
 						If Safe Lor chs\NoTarget Lor I_268\InvisibilityOn
 							EntityTexture(e\room\Objects[19], e\room\Textures[0])
@@ -7860,7 +7862,7 @@ Function UpdateDimension106%()
 							; ~ Player is at the exit
 							If DistanceSquared(EntityX(e\room\Objects[16], True), EntityX(me\Collider), EntityZ(e\room\Objects[16], True), EntityZ(me\Collider)) < PowTwo(144.0 * RoomScale)
 								Teleport = True
-								Random = Rand(11, 32 + (Temp * 8))
+								Random = Rand(11, 30)
 							Else ; ~ Somewhere else, must've fallen down
 								If (Not chs\GodMode) And (Not me\Terminated)
 									PlaySound_Strict(snd_I\HorrorSFX[8])
@@ -7876,8 +7878,10 @@ Function UpdateDimension106%()
 						UpdateDoors()
 						n_I\Curr106\State = -10.0 : n_I\Curr106\Idle = 0
 						
+						InjurePlayer(fps\Factor[0] * 0.0001)
+						
 						If EntityDistanceSquared(me\Collider, e\room\Objects[22]) < 4.0 Lor EntityDistanceSquared(me\Collider, e\room\Objects[21]) < 4.0
-							n_I\Curr106\Speed = n_I\Curr106\Speed * 3.5
+							n_I\Curr106\Speed = n_I\Curr106\Speed * 3.0
 							For d.Doors = Each Doors
 								If d\room = e\room
 									d\Open = False
@@ -7891,7 +7895,7 @@ Function UpdateDimension106%()
 							Else
 								opt\CameraFogFar = 6.0
 							EndIf
-							Random = Rand(13, 22)
+							Random = 13
 							Teleport = True
 						EndIf
 						;[End Block]
@@ -7899,6 +7903,7 @@ Function UpdateDimension106%()
 				
 				If Teleport
 					me\BlinkTimer = -10.0 : me\BlurTimer = 1150.0
+					n_I\Curr106\State = 250.0 : n_I\Curr106\Idle = 1
 					
 					Select Random
 						Case 1, 2, 3, 4 ; ~ Rotate the player and close by the wall
@@ -8045,7 +8050,7 @@ Function UpdateDimension106%()
 							e\EventState3 = 0.0
 							e\EventState2 = PD_FakeTunnelRoom
 							;[End Block]
-						Case 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+						Case 31
 							;[Block]
 							PlaySound_Strict(snd_I\SCP106SFX[3], True)
 							
@@ -8053,7 +8058,7 @@ Function UpdateDimension106%()
 							PositionEntity(me\Collider, EntityX(e\room\Objects[Temp], True), EntityY(e\room\Objects[Temp], True), EntityZ(e\room\Objects[Temp], True))
 							ResetEntity(me\Collider)
 							
-							n_I\Curr106\Speed = n_I\Curr106\Speed / 3.5
+							n_I\Curr106\Speed = n_I\Curr106\Speed / 3.0
 							PositionEntity(n_I\Curr106\Collider, EntityX(e\room\Objects[23], True), EntityY(e\room\Objects[23], True), EntityZ(e\room\Objects[23], True))
 							ResetEntity(n_I\Curr106\Collider)
 							

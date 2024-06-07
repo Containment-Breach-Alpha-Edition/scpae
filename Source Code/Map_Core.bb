@@ -206,7 +206,7 @@ Function UpdateLightVolume%()
 		If UpdateLightsTimer >= 8.0 Then UpdateLightsTimer = 0.0
 		For l.Lights = Each Lights
 			If l\room <> Null
-				If l\room\Dist < 6.0 Lor l\room = PlayerRoom
+				If l\room\Dist < 8.0 Lor l\room = PlayerRoom
 					If UpdateLightsTimer = 0.0
 						Local Dist# = EntityDistanceSquared(Camera, l\OBJ)
 						
@@ -991,9 +991,13 @@ Function GenForestGrid%(fr.Forest)
 	If opt\DebugMode
 		Local x%, y%
 		
-		ShowPointer()
 		Repeat
+			ShowPointer()
 			Cls()
+			
+			MousePosX = ScaledMouseX()
+			MousePosY = ScaledMouseY()
+			
 			i = ForestGridSize - 1
 			For x = 0 To ForestGridSize - 1
 				For y = 0 To ForestGridSize - 1
@@ -1601,7 +1605,6 @@ Const r_room1_dead_end_ez% = 74
 Const r_room1_lifts% = 75
 Const r_room1_o5% = 76
 Const r_room2_ez% = 77, r_room2_2_ez% = 78, r_room2_3_ez% = 79, r_room2_4_ez% = 80, r_room2_5_ez% = 81, r_room2_6_ez% = 82
-Const r_room2_bio% = 83
 Const r_room2_cafeteria% = 84
 Const r_room2_ic% = 85
 Const r_room2_medibay% = 86
@@ -1962,10 +1965,6 @@ Function FindRoomID%(RoomName$)
 			;[Block]
 			Return(r_room2_6_ez)
 			;[End Block]
-		Case "room2_bio"
-			;[Block]
-			Return(r_room2_bio)
-			;[End Block]
 		Case "room2_cafeteria"
 			;[Block]
 			Return(r_room2_cafeteria)
@@ -2129,7 +2128,6 @@ Function LoadRoomTemplates%(File$)
 				Next
 				
 				rt\Commonness = Max(Min(IniGetInt(File, Loc, "Commonness"), 100), 0)
-				rt\Large = IniGetInt(File, Loc, "Large")
 				rt\DisableDecals = IniGetInt(File, Loc, "DisableDecals")
 				rt\DisableOverlapCheck = IniGetInt(File, Loc, "DisableOverlapCheck")
 			EndIf
@@ -2181,13 +2179,13 @@ End Function
 ; ~ Room Objects Constants
 ;[Block]
 Const MaxRoomObjects% = 30
-Const MaxRoomLevers% = 6
+Const MaxRoomLevers% = 4
 Const MaxRoomDoors% = 8
 Const MaxRoomNPCs% = 12
 Const MaxRoomSecurityCams% = 8
 Const MaxRoomEmitters% = 8
 Const MaxRoomAdjacents% = 4
-Const MaxRoomTextures% = 4
+Const MaxRoomTextures% = 3
 ;Const MaxRoomTriggerBoxes% = 8
 ;[End Block]
 
@@ -2669,7 +2667,7 @@ Type Doors
 	Field DisableWaypoint%
 	Field SoundCHN%, SoundCHN2%
 	Field ButtonCHN%
-	Field Code$
+	Field Code%
 	Field AutoClose%
 	Field LinkedDoor.Doors
 	Field IsElevatorDoor% = False
@@ -2691,7 +2689,7 @@ Const ONE_SIDED_DOOR% = 6
 Const SCP_914_DOOR% = 7
 ;[End Block]
 
-Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorType% = DEFAULT_DOOR, Keycard% = KEY_MISC, Code$ = "", CustomParent% = 0)
+Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorType% = DEFAULT_DOOR, Keycard% = KEY_MISC, Code% = 0, CustomParent% = 0)
 	Local d.Doors
 	Local Parent%, i%
 	Local FrameScaleX#, FrameScaleY#, FrameScaleZ#
@@ -2724,7 +2722,7 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 	If DoorType = SCP_914_DOOR Then DoorType = ONE_SIDED_DOOR
 	
 	d\MTFClose = True
-	d\AutoClose = (Open And ((DoorType = DEFAULT_DOOR) Lor (DoorType = HEAVY_DOOR)) And (Keycard = 0) And (Code = "") And Rand(10) = 1)
+	d\AutoClose = (Open And ((DoorType = DEFAULT_DOOR) Lor (DoorType = HEAVY_DOOR)) And (Keycard = 0) And (Code = 0) And Rand(10) = 1)
 	
 	d\room = room
 	
@@ -2835,7 +2833,7 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 				PositionEntity(d\ElevatorPanel[i], x, y + 1.27, z + 0.13 + (i * (-0.26)))
 				EntityParent(d\ElevatorPanel[i], d\FrameOBJ)
 			Else
-				If Code <> ""
+				If Code <> 0
 					ButtonID = BUTTON_KEYPAD
 				ElseIf Keycard > KEY_MISC
 					ButtonID = BUTTON_KEYCARD
@@ -3202,6 +3200,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 				Local FPSFactor01# = fps\Factor[0] * 0.1
 				Local OBJPosX#, OBJPosY#, OBJPosZ#
 				Local IsInside% = False
+				Local PowerUp%
 				
 				If State < 0.0
 					State = State - fps\Factor[0]
@@ -3215,7 +3214,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 									UpdateElevatorPanel(door1)
 								EndIf
 								
-								Local PowerUp% = 1.0 + (State =< -500.0)
+								PowerUp = 1.0 + (State =< -500.0)
 								
 								me\CameraShake = Sin(Abs(State) / (3.0 * PowerUp)) * (0.3 * PowerUp)
 								If State >= -235.0 And State - fps\Factor[0] < -235.0 Then PlaySound_Strict(LoadTempSound("SFX\Room\Blackout.ogg"))
@@ -3339,15 +3338,40 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 					State = State + fps\Factor[0]
 					IsInside = IsInsideElevator(PlayerX, PlayerY, PlayerZ, SecondPivot)
 					If IsInside
-						If (Not ChannelPlaying(door2\SoundCHN2))
-							door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
-							UpdateElevatorPanel(door2)
+						; ~ Not sure if using local ``Blackout`` is a good idea. Better to rewrite this part cause I don't like it. This code was a hot idea, so the code is kinda dumb
+						If Blackout
+							If State < 250.0 Lor State => 500.0
+								If (Not ChannelPlaying(door2\SoundCHN2))
+									door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+									UpdateElevatorPanel(door2)
+								EndIf
+								
+								PowerUp = 1.0 + (State => 500.0)
+								
+								me\CameraShake = Sin(Abs(State) / (3.0 * PowerUp)) * (0.3 * PowerUp)
+								If State <= 235.0 And State + fps\Factor[0] > 235.0 Then PlaySound_Strict(LoadTempSound("SFX\Room\Blackout.ogg"))
+							ElseIf State < 500.0
+								If ChannelPlaying(door2\SoundCHN2)
+									PlaySound_Strict(LoadTempSound("SFX\Room\Intro\Bang2.ogg"))
+									me\LightBlink = 6.5
+									StopChannel(door2\SoundCHN2) : door2\SoundCHN2 = 0
+									ClearElevatorPanelTexture(door1)
+									ClearElevatorPanelTexture(door2)
+									me\BigCameraShake = 5.3
+								EndIf
+								If State <= 490.0 And State + fps\Factor[0] > 490.0 Then PlaySound_Strict(snd_I\TeslaPowerUpSFX)
+							EndIf
+						Else
+							If (Not ChannelPlaying(door2\SoundCHN2))
+								door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+								UpdateElevatorPanel(door2)
+							EndIf
+							
+							me\CameraShake = Sin(Abs(State) / 3.0) * 0.3
 						EndIf
-						
-						me\CameraShake = Sin(Abs(State) / 3.0) * 0.3
 					EndIf
 					
-					If State > 500.0
+					If ((Not Blackout) And State > 500.0) Lor State > 1000.0
 						door1\Locked = 0
 						door2\Locked = 1
 						State = 0.0
@@ -3501,7 +3525,7 @@ Global CODE_DR_MAYNARD%, CODE_DR_GEARS, CODE_O5_COUNCIL%, CODE_MAINTENANCE_TUNNE
 Const CODE_DR_HARP% = 7816
 Const CODE_DR_L% = 2411
 Const CODE_CONT1_035% = 5731
-Const CODE_LOCKED$ = "ABCD"
+Const CODE_LOCKED% = -1
 ;[End Block]
 
 Function UseDoor%(PlaySFX% = True)
@@ -3571,7 +3595,7 @@ Function UseDoor%(PlaySFX% = True)
 						If Temp = KEY_005
 							CreateMsg(GetLocalString("msg", "key.nothappend.005"))
 						Else
-							CreateMsg(GetLocalString("msg", "key.nothappend"))
+							CreateMsg(GetLocalString("msg", "dna.nothappend"))
 						EndIf
 					Else
 						If Temp = KEY_005
@@ -3590,9 +3614,9 @@ Function UseDoor%(PlaySFX% = True)
 				Return
 			EndIf
 		EndIf
-	ElseIf d_I\ClosestDoor\Code <> ""
+	ElseIf d_I\ClosestDoor\Code <> 0
 		If SelectedItem = Null
-			If (d_I\ClosestDoor\Locked = 0) And (d_I\ClosestDoor\Code <> CODE_LOCKED) And (d_I\ClosestDoor\Code = msg\KeyPadInput)
+			If (d_I\ClosestDoor\Locked = 0) And (d_I\ClosestDoor\Code <> CODE_LOCKED) And (d_I\ClosestDoor\Code = Int(msg\KeyPadInput))
 				d_I\ClosestDoor\ButtonCHN = PlaySound2(snd_I\ScannerSFX[0], Camera, d_I\ClosestButton)
 			Else
 				d_I\ClosestDoor\ButtonCHN = PlaySound2(snd_I\ScannerSFX[1], Camera, d_I\ClosestButton)
@@ -3616,13 +3640,13 @@ Function UseDoor%(PlaySFX% = True)
 			EndIf
 		EndIf
 		
-		If d_I\ClosestDoor\Code = Str(CODE_DR_MAYNARD)
+		If d_I\ClosestDoor\Code = CODE_DR_MAYNARD
 			GiveAchievement(AchvMaynard)
-		ElseIf d_I\ClosestDoor\Code = Str(CODE_DR_GEARS)
+		ElseIf d_I\ClosestDoor\Code = CODE_DR_GEARS
 			GiveAchievement(AchvGears)
-		ElseIf d_I\ClosestDoor\Code = Str(CODE_DR_HARP)
+		ElseIf d_I\ClosestDoor\Code = CODE_DR_HARP
 			GiveAchievement(AchvHarp)
-		ElseIf d_I\ClosestDoor\Code = Str(CODE_O5_COUNCIL)
+		ElseIf d_I\ClosestDoor\Code = CODE_O5_COUNCIL
 			GiveAchievement(AchvO5)
 		EndIf
 	Else
@@ -5389,7 +5413,7 @@ Function CreateMap%()
 			Next
 		EndIf
 		
-		If Room2CAmount[i] < 1 ; ~ We want at least one ROOM2C
+		If Room2CAmount[i] < 2 ; ~ We want at least two ROOM2C
 			Temp = 0
 			For y = y_max To y_min Step -1
 				For x = x_min To x_max
@@ -5562,7 +5586,6 @@ Function CreateMap%()
 	SetRoom("room2_cafeteria", ROOM2, MinPos + Floor(0.2 * Float(Room2Amount[2])), MinPos, MaxPos)
 	SetRoom("room2_6_ez", ROOM2, MinPos + Floor(0.25 * Float(Room2Amount[2])), MinPos, MaxPos)
 	SetRoom("room2_office_3", ROOM2, MinPos + Floor(0.3 * Float(Room2Amount[2])), MinPos, MaxPos)
-	SetRoom("room2_bio", ROOM2, MinPos + Floor(0.35 * Float(Room2Amount[2])), MinPos, MaxPos)
 	SetRoom("room2_servers_ez", ROOM2, MinPos + Floor(0.4 * Float(Room2Amount[2])), MinPos, MaxPos)
 	SetRoom("room2_office", ROOM2, MinPos + Floor(0.5 * Float(Room2Amount[2])), MinPos, MaxPos)
 	SetRoom("room2_office_2", ROOM2, MinPos + Floor(0.55 * Float(Room2Amount[2])), MinPos, MaxPos)
@@ -5726,9 +5749,13 @@ Function CreateMap%()
 	Next
 	
 	If opt\DebugMode
-		ShowPointer()
 		Repeat
+			ShowPointer()
 			Cls()
+			
+			MousePosX = ScaledMouseX()
+			MousePosY = ScaledMouseY()
+			
 			i = MapGridSize - 1
 			For x = 0 To MapGridSize - 1
 				For y = 0 To MapGridSize - 1
@@ -5749,21 +5776,9 @@ Function CreateMap%()
 							Color(255, 255, 255)
 						EndIf
 						Rect((i * 32) * MenuScale, (y * 32) * MenuScale, 30 * MenuScale, 30 * MenuScale)
-					EndIf
-				Next
-				i = i - 1
-			Next
-			
-			i = MapGridSize - 1
-			For x = 0 To MapGridSize - 1
-				For y = 0 To MapGridSize - 1
-					If MouseOn((i * 32) * MenuScale, (y * 32) * MenuScale, 32 * MenuScale, 32 * MenuScale)
-						Color(255, 0, 0)
-						TextEx(((i * 32) + 2) * MenuScale, ((y * 32) + 2) * MenuScale, CurrMapGrid\Grid[x + (y * MapGridSize)] + " " + CurrMapGrid\RoomName[x + (y * MapGridSize)])
-					Else
-						If CurrMapGrid\RoomName[x + (y * MapGridSize)] <> ""
-							Color(0, 0, 0)
-							TextEx(((i * 32) + 2) * MenuScale, ((y * 32) + 2) * MenuScale, CurrMapGrid\Grid[x + (y * MapGridSize)])
+						If MouseOn((i * 32) * MenuScale, (y * 32) * MenuScale, 32 * MenuScale, 32 * MenuScale)
+							Color(255, 0, 0)
+							TextEx(((i * 32) + 2) * MenuScale, ((y * 32) + 2) * MenuScale, CurrMapGrid\Grid[x + (y * MapGridSize)] + " " + CurrMapGrid\RoomName[x + (y * MapGridSize)])
 						EndIf
 					EndIf
 				Next
@@ -5819,10 +5834,7 @@ Function CreateMap%()
 						
 						If ShouldSpawnDoor
 							If x + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[0] = d
-								EndIf
+								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						
@@ -5850,10 +5862,7 @@ Function CreateMap%()
 						End Select
 						If ShouldSpawnDoor
 							If y + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile
-									d.Doors = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
-									r\AdjDoor[3] = d
-								EndIf
+								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						Exit

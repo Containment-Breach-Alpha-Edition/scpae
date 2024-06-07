@@ -135,12 +135,11 @@ Function CreateItemTemplate.ItemTemplates(DisplayName$, Name$, ID%, OBJPath$, In
 	If it\OBJ = 0
 		If HasAnim
 			it\OBJ = LoadAnimMesh_Strict(OBJPath)
-			it\IsAnim = True
 		Else
 			it\OBJ = LoadMesh_Strict(OBJPath)
-			it\IsAnim = False
 		EndIf
 	EndIf
+	it\IsAnim = HasAnim
 	it\OBJPath = OBJPath
 	
 	Local Texture%
@@ -1556,14 +1555,12 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 								If achv\Achievement[i] = True Then CurrAchvAmount = CurrAchvAmount + 1
 							Next
 							
-							If Rand(0, ((MaxAchievements - 1) * (2 + SelectedDifficulty\OtherFactors)) - ((CurrAchvAmount - 1) * (2 + SelectedDifficulty\OtherFactors))) = 0
+							If Rand(0, ((MaxAchievements - 1) - (CurrAchvAmount - 1)) * (2 + SelectedDifficulty\OtherFactors)) = 0
 								it2.Items = CreateItem("Key Card Omni", it_keyomni, x, y, z)
+							ElseIf Rand(12 + (6 * SelectedDifficulty\OtherFactors)) = 1
+								it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
 							Else
-								If Rand(12 + (6 * SelectedDifficulty\OtherFactors)) = 1
-									it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
-								Else
-									it2.Items = CreateItem("Mastercard", it_mastercard, x, y, z)
-								EndIf
+								it2.Items = CreateItem("Mastercard", it_mastercard, x, y, z)
 							EndIf
 							;[End Block]
 						Case it_key6
@@ -1583,14 +1580,12 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 						If achv\Achievement[i] = True Then CurrAchvAmount = CurrAchvAmount + 1
 					Next
 					
-					If Rand(0, ((MaxAchievements - 1) * (4 + SelectedDifficulty\OtherFactors)) - ((CurrAchvAmount - 1) * (4 + SelectedDifficulty\OtherFactors))) = 0
+					If Rand(0, ((MaxAchievements - 1) - (CurrAchvAmount - 1)) * (4 + SelectedDifficulty\OtherFactors)) = 0
 						it2.Items = CreateItem("Key Card Omni", it_keyomni, x, y, z)
+					ElseIf Rand(24 + (6 * SelectedDifficulty\OtherFactors)) = 1
+						it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
 					Else
-						If Rand(24 + (6 * SelectedDifficulty\OtherFactors)) = 1
-							it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
-						Else
-							it2.Items = CreateItem("Mastercard", it_mastercard, x, y, z)
-						EndIf
+						it2.Items = CreateItem("Mastercard", it_mastercard, x, y, z)
 					EndIf
 					;[End Block]
 			End Select
@@ -2406,7 +2401,7 @@ End Function
 
 Function CreateRandomBattery.Items(x#, y#, z#)
 	Local BatteryName$, BatteryID%
-	Local BatteryChance%, RandomChance%
+	Local BatteryChance%
 	
 	Select SelectedDifficulty\OtherFactors
 		Case SAFE
@@ -2427,11 +2422,12 @@ Function CreateRandomBattery.Items(x#, y#, z#)
 			;[End Block]
 	End Select
 	
-	RandomChance = Rand(BatteryChance)
-	If RandomChance >= 1 And RandomChance <= 7
+	Local RandomChance% = Rand(BatteryChance)
+	
+	If RandomChance > 0 And RandomChance <= 6
 		BatteryName = "9V Battery"
 		BatteryID = it_bat
-	ElseIf RandomChance >= 8 And RandomChance < BatteryChance
+	ElseIf RandomChance > 6 And RandomChance < BatteryChance - 1
 		BatteryName = "4.5V Battery"
 		BatteryID = it_coarsebat
 	Else

@@ -586,7 +586,13 @@ Function UpdateGame%()
 		
 		If KeyHit(key\SAVE)
 			If SelectedDifficulty\SaveType < SAVE_ON_QUIT
-				If CanSave = 0 ; ~ Scripted location
+				If SelectedDifficulty\SaveType = SAVE_ON_SCREENS
+					If SelectedScreen = Null And sc_I\SelectedMonitor = Null
+						CreateHintMsg(GetLocalString("save", "failed.screen"))
+					Else
+						SaveGame(CurrSave\Name) ; ~ Can save at screen
+					EndIf
+				ElseIf CanSave = 0 ; ~ Scripted location
 					CreateHintMsg(GetLocalString("save", "failed.now"))
 				ElseIf CanSave = 1 ; ~ Endings / Intro location
 					CreateHintMsg(GetLocalString("save", "failed.location"))
@@ -595,12 +601,6 @@ Function UpdateGame%()
 					CreateHintMsg(GetLocalString("save", "failed.096"))
 				ElseIf as\Timer <= 70.0 * 5.0
 					CancelAutoSave()
-				ElseIf SelectedDifficulty\SaveType = SAVE_ON_SCREENS
-					If SelectedScreen = Null And sc_I\SelectedMonitor = Null
-						CreateHintMsg(GetLocalString("save", "failed.screen"))
-					Else
-						SaveGame(CurrSave\Name) ; ~ Can save at screen
-					EndIf
 				Else
 					SaveGame(CurrSave\Name) ; ~ Can save
 				EndIf
@@ -2575,9 +2575,8 @@ Function UpdateMoving%()
 	EndIf
 	
 	Local Temp#, Temp3%
-	Local RID% = PlayerRoom\RoomTemplate\RoomID
 	
-	If (Not me\Terminated) And (Not chs\NoClip) And (RID <> r_dimension_106) And (KeyDown(key\SPRINT) And (Not InvOpen) And OtherOpen = Null)
+	If (Not me\Terminated) And (Not chs\NoClip) And (PlayerRoom\RoomTemplate\RoomID <> r_dimension_106) And (KeyDown(key\SPRINT) And (Not InvOpen) And OtherOpen = Null)
 		If me\Stamina < 5.0
 			If (Not ChannelPlaying(BreathCHN))
 				Temp3 = 0
@@ -2615,7 +2614,7 @@ Function UpdateMoving%()
 						Sprint = 2.5
 					EndIf
 					
-					If RID = r_dimension_106
+					If PlayerRoom\RoomTemplate\RoomID = r_dimension_106
 						Local PlayerPosY# = EntityY(me\Collider)
 						
 						If PlayerPosY < 2000.0 * RoomScale Lor PlayerPosY > 2608.0 * RoomScale
@@ -3047,7 +3046,6 @@ End Function
 Function UpdateZoneColor%()
 	Local e.Events
 	Local i%
-	Local RID% = PlayerRoom\RoomTemplate\RoomID
 	Local PlayerPosY# = EntityY(me\Collider, True)
 	
 	CurrFogColor$ = ""
@@ -3061,24 +3059,24 @@ Function UpdateZoneColor%()
 		CameraRange(Camera, 0.01, opt\CameraFogFar * LightVolume * 1.2)
 	EndIf
 	; ~ Handle room-specific settings
-	If RID = r_room3_storage And PlayerPosY < (-4100.0) * RoomScale
+	If PlayerRoom\RoomTemplate\RoomID = r_room3_storage And PlayerPosY < (-4100.0) * RoomScale
 		SetZoneColor(FogColorStorageTunnels)
 	ElseIf IsPlayerOutsideFacility()
 		SetZoneColor(FogColorOutside)
 		opt\CameraFogFar = 60.0
 		CameraFogRange(Camera, 5.0, 60.0)
 		CameraRange(Camera, 0.01, 72.0)
-	ElseIf RID = r_cont1_173_intro
+	ElseIf PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro
 		opt\CameraFogFar = 45.0
 		CameraFogRange(Camera, 5.0, 45.0)
 		CameraRange(Camera, 0.01, 54.0)
-	ElseIf RID = r_dimension_1499
+	ElseIf PlayerRoom\RoomTemplate\RoomID = r_dimension_1499
 		SetZoneColor(FogColorDimension_1499)
 		opt\CameraFogFar = 80.0
 		LightVolume = 1.0
 		CameraFogRange(Camera, 40.0, 80.0)
 		CameraRange(Camera, 0.01, 96.0)
-	ElseIf RID = r_dimension_106
+	ElseIf PlayerRoom\RoomTemplate\RoomID = r_dimension_106
 		For e.Events = Each Events
 			If e\EventID = e_dimension_106
 				LightVolume = 1.0
@@ -3148,7 +3146,7 @@ Function UpdateZoneColor%()
 	Else
 		AmbientLightRooms(CurrAmbientColorR / 5.0, CurrAmbientColorG / 5.0, CurrAmbientColorB / 5.0)
 		CurrR = CurrAmbientColorR : CurrG = CurrAmbientColorG : CurrB = CurrAmbientColorB
-		If RID = r_cont1_173_intro
+		If PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro
 			CurrR = CurrAmbientColorR * 1.5 : CurrG = CurrAmbientColorG * 1.5 : CurrB = CurrAmbientColorB * 1.5
 		ElseIf forest_event <> Null
 			If PlayerRoom = forest_event\room
@@ -3192,9 +3190,8 @@ Function UpdateGUI%()
 	Local Temp%, x%, y%, z%, i%
 	Local x2#, ProjY#, Scale#, Pvt%
 	Local n%, xTemp%, yTemp%, StrTemp$
-	Local RID% = PlayerRoom\RoomTemplate\RoomID
 	
-	If RID = r_dimension_106
+	If PlayerRoom\RoomTemplate\RoomID = r_dimension_106
 		For e.Events = Each Events
 			If e\room = PlayerRoom
 				If (wi\NightVision > 0 Lor wi\SCRAMBLE > 0) And e\EventState2 <> PD_FakeTunnelRoom
@@ -3275,7 +3272,7 @@ Function UpdateGUI%()
 			If mo\MouseUp1
 				mo\MouseUp1 = False
 				If d_I\ClosestDoor <> Null
-					If d_I\ClosestDoor\Code <> ""
+					If d_I\ClosestDoor\Code <> 0
 						d_I\SelectedDoor = d_I\ClosestDoor
 					ElseIf me\Playable
 						UseDoor()
@@ -3370,7 +3367,7 @@ Function UpdateGUI%()
 									Case 8
 										;[Block]
 										UseDoor()
-										If msg\KeyPadInput = d_I\SelectedDoor\Code
+										If Int(msg\KeyPadInput) = d_I\SelectedDoor\Code
 											d_I\SelectedDoor = Null
 											StopMouseMovement()
 										Else
@@ -4642,7 +4639,7 @@ Function UpdateGUI%()
 								;[Block]
 								me\BlinkTimer = -10.0
 								
-								If RID = r_dimension_1499 Lor IsPlayerOutsideFacility()
+								If PlayerRoom\RoomTemplate\RoomID = r_dimension_1499 Lor IsPlayerOutsideFacility()
 									me\Injuries = 2.5
 									CreateMsg(GetLocalString("msg", "bleed"))
 								Else
@@ -5039,7 +5036,7 @@ Function UpdateGUI%()
 							RadioState[0] = -1.0
 						EndIf
 						
-						If RID = r_dimension_106 Lor RID = r_dimension_1499
+						If PlayerRoom\RoomTemplate\RoomID = r_dimension_106 Lor PlayerRoom\RoomTemplate\RoomID = r_dimension_1499
 							For i = 0 To 5
 								If ChannelPlaying(RadioCHN[i]) Then PauseChannel(RadioCHN[i])
 							Next
@@ -5305,7 +5302,7 @@ Function UpdateGUI%()
 								SelectedItem\State2 = -1
 								If (Not ChannelPlaying(RadioCHN[6])) Then RadioCHN[6] = PlaySound_Strict(snd_I\RadioStatic)
 								RadioState[6] = RadioState[6] + fps\Factor[0]
-								Temp = Mid(Str(CODE_DR_GEARS), RadioState[8] + 1.0, 1)
+								Temp = Mid(CODE_DR_GEARS, RadioState[8] + 1.0, 1)
 								If RadioState[6] - fps\Factor[0] <= RadioState[7] * 50.0 And RadioState[6] > RadioState[7] * 50.0
 									PlaySound_Strict(snd_I\RadioBuzz)
 									RadioState[7] = RadioState[7] + 1.0
@@ -5981,7 +5978,7 @@ Function RenderDebugHUD%()
 				If achv\Achievement[i] = True Then CurrAchvAmount = CurrAchvAmount + 1
 			Next
 			
-			Local Temp% = ((MaxAchievements - 1) * (4 + SelectedDifficulty\OtherFactors)) - ((CurrAchvAmount - 1) * (4 + SelectedDifficulty\OtherFactors))
+			Local Temp% = ((MaxAchievements - 1) - (CurrAchvAmount - 1)) * (4 + SelectedDifficulty\OtherFactors)
 			Local RoomAmount% = 0, RoomsFound% = 0
 			
 			For r.Rooms = Each Rooms
@@ -6008,7 +6005,7 @@ Function AdaptScreenGamma%()
 	opt\ScreenGamma = 1.0
 End Function
 
-Function Render3DHandIcon%(Icon%, OBJ%, ArrowID% = -1)
+Function Render3DHandIcon%(IconID%, OBJ%, ArrowID% = -1)
 	Local PitchValue#, YawValue#
 	Local CoordEx% = 32 * MenuScale
 	Local Pvt% = CreatePivot()
@@ -6049,7 +6046,7 @@ Function Render3DHandIcon%(Icon%, OBJ%, ArrowID% = -1)
 				;[End Block]
 		End Select
 	EndIf
-	DrawBlock(Icon, x, y)
+	DrawBlock(t\IconID[IconID], x, y)
 End Function
 
 Function RenderGUI%()
@@ -6061,7 +6058,6 @@ Function RenderGUI%()
 	Local n%, xTemp%, yTemp%, StrTemp$
 	Local Width%, Height%
 	Local SqrValue#
-	Local RID% = PlayerRoom\RoomTemplate\RoomID
 	
 	If MenuOpen Lor InvOpen Lor ConsoleOpen Lor OtherOpen <> Null Lor d_I\SelectedDoor <> Null Lor me\EndingTimer < 0.0
 		ShowPointer()
@@ -6069,7 +6065,7 @@ Function RenderGUI%()
 		HidePointer()
 	EndIf
 	
-	If RID = r_dimension_106
+	If PlayerRoom\RoomTemplate\RoomID = r_dimension_106
 		For e.Events = Each Events
 			If e\room = PlayerRoom
 				If (wi\NightVision > 0 Lor wi\SCRAMBLE > 0) And e\EventState2 <> PD_FakeTunnelRoom
@@ -6094,7 +6090,7 @@ Function RenderGUI%()
 				Exit
 			EndIf
 		Next
-	ElseIf RID = r_cont2_012
+	ElseIf PlayerRoom\RoomTemplate\RoomID = r_cont2_012
 		For e.Events = Each Events
 			If e\room = PlayerRoom
 				If DistanceSquared(EntityX(me\Collider), EntityX(e\room\Objects[0], True), EntityZ(me\Collider), EntityZ(e\room\Objects[0], True)) < 0.36
@@ -6117,17 +6113,16 @@ Function RenderGUI%()
 	If I_294\Using Then Render294()
 	If SelectedDifficulty\Name <> GetLocalString("menu", "new.apollyon") And opt\HUDEnabled
 		If (Not (MenuOpen Lor InvOpen Lor ConsoleOpen Lor I_294\Using Lor OtherOpen <> Null Lor d_I\SelectedDoor <> Null Lor SelectedScreen <> Null Lor me\Terminated))
-			If d_I\ClosestButton <> 0 Then Render3DHandIcon(t\IconID[5], d_I\ClosestButton, -1)
-			If ClosestItem <> Null Then Render3DHandIcon(t\IconID[6], ClosestItem\Collider, -1)
+			If d_I\ClosestButton <> 0 Then Render3DHandIcon(5, d_I\ClosestButton, -1)
+			If ClosestItem <> Null Then Render3DHandIcon(6, ClosestItem\Collider, -1)
 			
 			If HandEntity <> 0
-				Render3DHandIcon(t\IconID[5], HandEntity, -1)
+				Render3DHandIcon(5, HandEntity, -1)
 				For i = 0 To 3
-					If DrawArrowIcon[i] Then Render3DHandIcon(t\IconID[i + 10], HandEntity, i)
+					If DrawArrowIcon[i] Then Render3DHandIcon(i + 10, HandEntity, i)
 				Next
 			EndIf
 		EndIf
-		
 		RenderHUD()
 	EndIf
 	If chs\DebugHUD <> 0 Then RenderDebugHUD()
@@ -6674,7 +6669,7 @@ Function RenderGUI%()
 					DrawImage(SelectedItem\ItemTemplate\Img, x, y)
 					
 					If SelectedItem\State > 0.0 Lor (SelectedItem\ItemTemplate\ID = it_fineradio Lor SelectedItem\ItemTemplate\ID = it_veryfineradio)
-						If RID <> r_dimension_106 And CoffinDistance >= 8.0
+						If PlayerRoom\RoomTemplate\RoomID <> r_dimension_106 And CoffinDistance >= 8.0
 							Select Int(SelectedItem\State2)
 								Case 0
 									;[Block]
@@ -6768,7 +6763,7 @@ Function RenderGUI%()
 							TextEx(x, y + NAV_HEIGHT_HALF - (60 * MenuScale), GetLocalString("msg", "nav.locunknown"), True)
 						EndIf
 					Else
-						If (SelectedItem\State > 0.0 Lor SelectedItem\ItemTemplate\ID = it_nav300 Lor SelectedItem\ItemTemplate\ID = it_navulti) And (Rnd(CoffinDistance + 15.0) > 1.0 Lor RID <> r_cont1_895)
+						If (SelectedItem\State > 0.0 Lor SelectedItem\ItemTemplate\ID = it_nav300 Lor SelectedItem\ItemTemplate\ID = it_navulti) And (Rnd(CoffinDistance + 15.0) > 1.0 Lor PlayerRoom\RoomTemplate\RoomID <> r_cont1_895)
 							Local xx% = x - SelectedItem\ItemTemplate\ImgWidth
 							Local yy% = y - SelectedItem\ItemTemplate\ImgHeight + (85 * MenuScale)
 							
@@ -6853,7 +6848,7 @@ Function RenderGUI%()
 										EndIf
 									EndIf
 								Next
-								If RID = r_cont1_895
+								If PlayerRoom\RoomTemplate\RoomID = r_cont1_895
 									If CoffinDistance < 8.0
 										Dist = Rnd(4.0, 8.0)
 										Color(100, 0, 0)
@@ -8185,16 +8180,14 @@ Function RenderEnding%()
 				Else
 					RenderMenu()
 				EndIf
+				RenderMenuButtons()
+				RenderCursor()
 			; ~ Credits
 			ElseIf me\EndingTimer <= -2000.0
 				RenderCredits()
 			EndIf
 		EndIf
 	EndIf
-	
-	RenderMenuButtons()
-	
-	RenderCursor()
 	
 	SetFontEx(fo\FontID[Font_Default])
 End Function
@@ -8275,6 +8268,7 @@ Function RenderCredits%()
 	Local EndLinesAmount%
 	
 	Cls()
+	HidePointer()
 	
 	If Rand(300) > 1 Then DrawBlock(me\CreditsScreen, mo\Viewport_Center_X - (400 * MenuScale), mo\Viewport_Center_Y - (400 * MenuScale))
 	
@@ -8321,8 +8315,6 @@ Function RenderCredits%()
 	
 	RenderLoadingText(20 * MenuScale, opt\GraphicHeight - (35 * MenuScale), GetLocalString("menu", "anykey"))
 	
-	Flip(True)
-	
 	If me\CreditsTimer = -1.0
 		FreeFont(fo\FontID[Font_Credits]) : fo\FontID[Font_Credits] = 0
 		FreeFont(fo\FontID[Font_Credits_Big]) : fo\FontID[Font_Credits_Big] = 0
@@ -8337,15 +8329,13 @@ Global MTFCameraCheckTimer#
 Global MTFCameraCheckDetected%
 
 Function UpdateMTF%()
-	Local RID% = PlayerRoom\RoomTemplate\RoomID
-	
-	If RID = r_gate_a_entrance Then Return
+	If PlayerRoom\RoomTemplate\RoomID = r_gate_a_entrance Then Return
 	
 	Local r.Rooms, n.NPCs
 	Local Dist#, i%
 	
 	If MTFTimer = 0.0
-		If Rand(200) = 1 And RID <> r_dimension_1499
+		If Rand(200) = 1 And PlayerRoom\RoomTemplate\RoomID <> r_dimension_1499
 			Local entrance.Rooms = Null
 			
 			For r.Rooms = Each Rooms
@@ -8739,14 +8729,12 @@ Function Update008%()
 					TurnEntity(me\Head, 80.0 + SinValue * 30.0, SinValue * 40.0, 0.0)
 				EndIf
 			Else
-				Local RID% = PlayerRoom\RoomTemplate\RoomID
-				
 				me\BlinkTimer = Max(Min((-10.0) * (I_008\Timer - 96.0), me\BlinkTimer), -10.0)
-				If RID = r_dimension_1499
+				If PlayerRoom\RoomTemplate\RoomID = r_dimension_1499
 					msg\DeathMsg = GetLocalString("death", "14991")
 				ElseIf IsPlayerOutsideFacility()
 					msg\DeathMsg = Format(GetLocalString("death", "008gate"), SubjectName, "{0}")
-					If RID = r_gate_a
+					If PlayerRoom\RoomTemplate\RoomID = r_gate_a
 						msg\DeathMsg = Format(msg\DeathMsg, "A", "{1}")
 					Else
 						msg\DeathMsg = Format(msg\DeathMsg, "B", "{1}")
@@ -8871,11 +8859,11 @@ Function Update1048AEars()
 	If I_1048A\EarGrowTimer > 0.0
 		Local PrevI1048EarGrowTimer# = I_1048A\EarGrowTimer
 		
-		CanSave = 0
 		If I_427\Timer < 70.0 * 360.0
 			If I_1048A\Revert
 				I_1048A\EarGrowTimer = Max(I_1048A\EarGrowTimer - (fps\Factor[0] / 2.0), 0.0)
 			Else
+				CanSave = 0
 				If (Not I_427\Using)
 					I_1048A\EarGrowTimer = Min(I_1048A\EarGrowTimer + fps\Factor[0], 1100.0)
 					me\BlurTimer = I_1048A\EarGrowTimer * 2.0

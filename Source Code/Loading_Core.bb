@@ -1074,7 +1074,7 @@ Function LoadItems%()
 	
 	CreateItemTemplate("SCP-085", "SCP-085", it_paper, "note.b3d", "INV_note.png", "note_085.png", 0.0033, 0, "note_085.png")
 	
-	CreateItemTemplate("SCP-005", "SCP-005", it_scp005, "scp_005.b3d", "INV_scp_005.png", "", 0.0004, 1)
+	CreateItemTemplate("SCP-005", "SCP-005", it_scp005, "scp_005.b3d", "INV_scp_005.png", "", 0.0003, 1)
 	CreateItemTemplate(GetLocalString("items", "148"), "SCP-148 Ingot", it_scp148ingot, "scp_148.b3d", "INV_scp_148.png", "", RoomScale, 2)
 	CreateItemTemplate(GetLocalString("items", "metalpanel"), "Metal Panel", it_scp148, "metal_panel.b3d", "INV_metal_panel.png", "", RoomScale, 2)
 	
@@ -1187,18 +1187,18 @@ Function LoadItems%()
 	
 	; ~ [KEYCARDS, KEYS, CARDS, COINS]
 	
-	CreateItemTemplate(GetLocalString("items", "key0"), "Level 0 Key Card", it_key0, "key_card.b3d", "INV_key_card_lvl_0.png", "", 0.0004, 1)
-	CreateItemTemplate(GetLocalString("items", "key1"), "Level 1 key Card", it_key1, "key_card.b3d", "INV_key_card_lvl_1.png", "", 0.0004, 1, "key_card_lvl_1.png")
-	CreateItemTemplate(GetLocalString("items", "key2"), "Level 2 key Card", it_key2, "key_card.b3d", "INV_key_card_lvl_2.png", "", 0.0004, 1, "key_card_lvl_2.png")
-	CreateItemTemplate(GetLocalString("items", "key3"), "Level 3 key Card", it_key3, "key_card.b3d", "INV_key_card_lvl_3.png", "", 0.0004, 1, "key_card_lvl_3.png")
-	CreateItemTemplate(GetLocalString("items", "key4"), "Level 4 key Card", it_key4, "key_card.b3d", "INV_key_card_lvl_4.png", "", 0.0004, 1, "key_card_lvl_4.png")
-	CreateItemTemplate(GetLocalString("items", "key5"), "Level 5 key Card", it_key5, "key_card.b3d", "INV_key_card_lvl_5.png", "", 0.0004, 1, "key_card_lvl_5.png")
-	CreateItemTemplate(GetLocalString("items", "key6"), "Level 6 Key Card", it_key6, "key_card.b3d", "INV_key_card_lvl_6.png", "", 0.0004, 1, "key_card_lvl_6.png")
-	CreateItemTemplate(GetLocalString("items", "keyomni"), "Key Card Omni", it_keyomni, "key_card.b3d", "INV_key_card_lvl_omni.png", "", 0.0004, 1, "key_card_lvl_omni.png")
+	CreateItemTemplate(GetLocalString("items", "key0"), "Level 0 Key Card", it_key0, "key_card.b3d", "INV_key_card_lvl_0.png", "", 0.00037, 1)
+	CreateItemTemplate(GetLocalString("items", "key1"), "Level 1 key Card", it_key1, "key_card.b3d", "INV_key_card_lvl_1.png", "", 0.00037, 1, "key_card_lvl_1.png")
+	CreateItemTemplate(GetLocalString("items", "key2"), "Level 2 key Card", it_key2, "key_card.b3d", "INV_key_card_lvl_2.png", "", 0.00037, 1, "key_card_lvl_2.png")
+	CreateItemTemplate(GetLocalString("items", "key3"), "Level 3 key Card", it_key3, "key_card.b3d", "INV_key_card_lvl_3.png", "", 0.00037, 1, "key_card_lvl_3.png")
+	CreateItemTemplate(GetLocalString("items", "key4"), "Level 4 key Card", it_key4, "key_card.b3d", "INV_key_card_lvl_4.png", "", 0.00037, 1, "key_card_lvl_4.png")
+	CreateItemTemplate(GetLocalString("items", "key5"), "Level 5 key Card", it_key5, "key_card.b3d", "INV_key_card_lvl_5.png", "", 0.00037, 1, "key_card_lvl_5.png")
+	CreateItemTemplate(GetLocalString("items", "key6"), "Level 6 Key Card", it_key6, "key_card.b3d", "INV_key_card_lvl_6.png", "", 0.00037, 1, "key_card_lvl_6.png")
+	CreateItemTemplate(GetLocalString("items", "keyomni"), "Key Card Omni", it_keyomni, "key_card.b3d", "INV_key_card_lvl_omni.png", "", 0.00037, 1, "key_card_lvl_omni.png")
 	
-	CreateItemTemplate(GetLocalString("items", "mastercard"), "Mastercard", it_mastercard, "key_card.b3d", "INV_master_card.png", "", 0.0004, 1, "master_card.png")
+	CreateItemTemplate(GetLocalString("items", "mastercard"), "Mastercard", it_mastercard, "key_card.b3d", "INV_master_card.png", "", 0.00037, 1, "master_card.png")
 	
-	CreateItemTemplate(GetLocalString("items", "playcard"), "Playing Card", it_playcard, "key_card.b3d", "INV_playing_card.png", "", 0.0004, 1, "playing_card.png")
+	CreateItemTemplate(GetLocalString("items", "playcard"), "Playing Card", it_playcard, "key_card.b3d", "INV_playing_card.png", "", 0.00037, 1, "playing_card.png")
 	
 	CreateItemTemplate(GetLocalString("items", "key"), "Lost Key", it_key, "key.b3d", "INV_key.png", "", 0.003, 3)
 	
@@ -2107,8 +2107,6 @@ Function LoadData%()
 	
 	QuickLoadPercent = -1
 	
-	CanSave = 3
-	
 	EscapeSecondsTimer = 70.0
 	
 	chs.Cheats = New Cheats
@@ -2570,15 +2568,15 @@ Function InitNewGame%()
 	For i = 0 To 3
 		CODE_DR_MAYNARD = CODE_DR_MAYNARD + (Rand(9) * (10 ^ i))
 	Next
-	If CODE_DR_MAYNARD = CODE_DR_HARP Lor CODE_DR_MAYNARD = CODE_CONT1_035 Then CODE_DR_MAYNARD = CODE_DR_MAYNARD + 1
+	If CODE_DR_MAYNARD = CODE_DR_HARP Lor CODE_DR_MAYNARD = CODE_CONT1_035 Lor CODE_DR_MAYNARD = CODE_DR_L Then CODE_DR_MAYNARD = CODE_DR_MAYNARD + 1
 	
-	CODE_O5_COUNCIL = ((Int(CODE_DR_MAYNARD) * 2) Mod 10000)
+	CODE_O5_COUNCIL = ((CODE_DR_MAYNARD * 2) Mod 10000)
 	If CODE_O5_COUNCIL < 1000 Then CODE_O5_COUNCIL = CODE_O5_COUNCIL + 1000
 	
-	CODE_MAINTENANCE_TUNNELS = ((Int(CODE_DR_MAYNARD) * 3) Mod 10000)
+	CODE_MAINTENANCE_TUNNELS = ((CODE_DR_MAYNARD * 3) Mod 10000)
 	If CODE_MAINTENANCE_TUNNELS < 1000 Then CODE_MAINTENANCE_TUNNELS = CODE_MAINTENANCE_TUNNELS + 1000
 	
-	CODE_DR_GEARS = ((Int(CODE_DR_MAYNARD) * 4) Mod 10000)
+	CODE_DR_GEARS = ((CODE_DR_MAYNARD * 4) Mod 10000)
 	If CODE_DR_GEARS < 1000 Then CODE_DR_GEARS = CODE_DR_GEARS + 1000
 	
 	RenderLoading(55, GetLocalString("loading", "rooms"))
@@ -2910,6 +2908,7 @@ Function NullGame%(PlayButtonSFX% = True)
 	MTFCameraCheckDetected = False
 	
 	CODE_DR_MAYNARD = 0
+	CODE_DR_GEARS = 0
 	CODE_MAINTENANCE_TUNNELS = 0
 	CODE_O5_COUNCIL = 0
 	
