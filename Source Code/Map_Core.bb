@@ -3211,6 +3211,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 							If State > -250.0 Lor State =< -500.0
 								If (Not ChannelPlaying(door1\SoundCHN2))
 									door1\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+									PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 									UpdateElevatorPanel(door1)
 								EndIf
 								
@@ -3232,6 +3233,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 						Else
 							If (Not ChannelPlaying(door1\SoundCHN2))
 								door1\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+								PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 								UpdateElevatorPanel(door1)
 							EndIf
 							
@@ -3343,6 +3345,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 							If State < 250.0 Lor State => 500.0
 								If (Not ChannelPlaying(door2\SoundCHN2))
 									door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+									PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 									UpdateElevatorPanel(door2)
 								EndIf
 								
@@ -3364,6 +3367,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 						Else
 							If (Not ChannelPlaying(door2\SoundCHN2))
 								door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+								PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 								UpdateElevatorPanel(door2)
 							EndIf
 							
