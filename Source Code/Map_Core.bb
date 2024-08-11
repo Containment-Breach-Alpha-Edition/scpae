@@ -1623,6 +1623,10 @@ Const r_room3_ez% = 100, r_room3_2_ez% = 101, r_room3_3_ez% = 102, r_room3_4_ez%
 Const r_room4_ez% = 104
 ; ~ OTHERS
 Const r_dimension_106% = 105, r_dimension_1499% = 106
+
+; { Alpha Edition }
+; ~ HCZ
+Const r_cont2_006 = 107
 ;[End Block]
 
 Function FindRoomID%(RoomName$)
@@ -1854,6 +1858,10 @@ Function FindRoomID%(RoomName$)
 		Case "room2_test_hcz"
 			;[Block]
 			Return(r_room2_test_hcz)
+			;[End Block]
+		Case "cont2_006"
+			;[Block]
+			Return(r_cont2_006)
 			;[End Block]
 		Case "cont2_008"
 			;[Block]
@@ -3204,6 +3212,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 							If State > -250.0 Lor State =< -500.0
 								If (Not ChannelPlaying(door1\SoundCHN2))
 									door1\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+									PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 									UpdateElevatorPanel(door1)
 								EndIf
 								
@@ -3225,6 +3234,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 						Else
 							If (Not ChannelPlaying(door1\SoundCHN2))
 								door1\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+								PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 								UpdateElevatorPanel(door1)
 							EndIf
 							
@@ -3336,6 +3346,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 							If State < 250.0 Lor State => 500.0
 								If (Not ChannelPlaying(door2\SoundCHN2))
 									door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+									PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 									UpdateElevatorPanel(door2)
 								EndIf
 								
@@ -3357,6 +3368,7 @@ Function UpdateElevators#(State#, door1.Doors, door2.Doors, FirstPivot%, SecondP
 						Else
 							If (Not ChannelPlaying(door2\SoundCHN2))
 								door2\SoundCHN2 = PlaySound_Strict(snd_I\ElevatorMoveSFX)
+								PlaySound2(LoadTempSound("SFX\Music\Elevator.ogg"), Camera, door1\OBJ, 2)
 								UpdateElevatorPanel(door2)
 							EndIf
 							
@@ -5562,6 +5574,7 @@ Function CreateMap%()
 	SetRoom("room2_shaft", ROOM2, Room2Amount[0] + Floor(0.5 * Float(Room2Amount[1])), MinPos, MaxPos)
 	SetRoom("cont2_049", ROOM2, Room2Amount[0] + Floor(0.6 * Float(Room2Amount[1])), MinPos, MaxPos)
 	SetRoom("room2_test_hcz", ROOM2, Room2Amount[0] + Floor(0.7 * Float(Room2Amount[1])), MinPos, MaxPos)
+	SetRoom("cont2_006", ROOM2, Room2Amount[0] + Floor(0.8 * Float(Room2Amount[1])), MinPos, MaxPos)
 	SetRoom("room2_servers_hcz", ROOM2, Room2Amount[0] + Floor(0.9 * Float(Room2Amount[1])), MinPos, MaxPos)
 	
 	MapRoom(ROOM2C, Room2CAmount[0] + Floor(0.5 * Float(Room2CAmount[1]))) = "cont2c_096"

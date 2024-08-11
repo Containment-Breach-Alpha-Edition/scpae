@@ -314,6 +314,10 @@ Function GetRandDocument$()
 			;[Block]
 			Return("1499")
 			;[End Block]
+		Case 23
+			;[Block]
+			Return("006")
+			;[End Block]
 	End Select
 End Function
 

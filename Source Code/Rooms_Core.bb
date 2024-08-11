@@ -4080,6 +4080,72 @@ Function FillRoom%(r.Rooms)
 			EntityType(r\Objects[17], HIT_MAP)
 			EntityAlpha(r\Objects[17], 0.0)
 			;[End Block]
+		Case r_cont2_006 ;Project Resurrection room. Modified by Ultimate Edition Team. Upgrate by EasyT_T.
+			;[Block]
+			; ~ Control Room Doors
+			d.Doors = CreateDoor(r, r\x - 224.0 * RoomScale, r\y - 3935.0 * RoomScale, r\z - 192.0 * RoomScale, 90.0, False, DEFAULT_DOOR, KEY_CARD_5)			
+			d\AutoClose = False : d\DisableWaypoint = true
+			
+			d.Doors = CreateDoor(r, r\x - 640.0 * RoomScale, r\y - 3935.0 * RoomScale, r\z + 32.0 * RoomScale, 0.0)
+			d\AutoClose = False : d\DisableWaypoint = true
+			
+            ; ~ Incinerator Doors
+			d.Doors = CreateDoor(r, r\x, r\y - 3935.0 * RoomScale, r\z + 736.0 * RoomScale, 0, True)
+			For i = 0 To 1
+				FreeEntity(d\Buttons[i]) : d\Buttons[i] = 0
+			Next
+			d\AutoClose = False : d\DisableWaypoint = true
+			r\RoomDoors[0] = d
+			
+			d.Doors = CreateDoor(r, r\x, r\y - 3935.0 * RoomScale, r\z + 1376.0 * RoomScale, 180, True)
+			For i = 0 To 1
+				FreeEntity(d\Buttons[i]) : d\Buttons[i] = 0
+			Next
+			d\AutoClose = False : d\DisableWaypoint = true
+			r\RoomDoors[1] = d
+
+			; ~ Elevator Doors
+			d.Doors = CreateDoor(r, r\x - 320.0 * RoomScale, 0.0, r\z + 0.0 * RoomScale, 90, True, ELEVATOR_DOOR)
+			d\AutoClose = False
+			PositionEntity(d\Buttons[0], r\x - 284.0 * RoomScale, 0.7, r\z + 140.0 * RoomScale, True)
+			PositionEntity(d\Buttons[1], r\x - 356.0 * RoomScale, 0.7, r\z - 180.0 * RoomScale, True)
+			PositionEntity(d\ElevatorPanel[0], r\x - 360.0 * RoomScale, 1.3, EntityZ(d\ElevatorPanel[0], True), True)
+			PositionEntity(d\ElevatorPanel[1], r\x - 280.0 * RoomScale, 1.3, EntityZ(d\ElevatorPanel[1], True), True)
+			r\RoomDoors[2] = d
+			
+			d.Doors = CreateDoor(r, r\x - 264.0 * RoomScale, r\y - 3935.0 * RoomScale, r\z - 784.0 * RoomScale, 90, False, ELEVATOR_DOOR)
+			d\AutoClose = False
+			PositionEntity(d\Buttons[0], r\x - 228.0 * RoomScale, EntityY(d\Buttons[0], True), r\z - 608.0 * RoomScale, True)
+			PositionEntity(d\Buttons[1], r\x - 300.0 * RoomScale, EntityY(d\Buttons[1], True), r\z - 964.0 * RoomScale, True)
+			PositionEntity(d\ElevatorPanel[0], r\x - 305.0 * RoomScale, -14.0, EntityZ(d\ElevatorPanel[0], True), True)
+			PositionEntity(d\ElevatorPanel[1], r\x - 235.0 * RoomScale, -14.0, EntityZ(d\ElevatorPanel[1], True), True)
+			r\RoomDoors[3] = d : d\DisableWaypoint = true
+
+            ; ~ Pivot (Incinerator)
+			r\Objects[0] = CreatePivot()
+			PositionEntity(r\Objects[0], r\x + 0.0 * RoomScale, -3860.0 * RoomScale, r\z + 1060.0 * RoomScale)
+			EntityParent(r\Objects[0], r\OBJ)
+			
+            ; ~ Pivots (Waypoint for Elevator)
+			r\Objects[1] = CreatePivot()
+			PositionEntity(r\Objects[1], r\x - 632.0 * RoomScale, 240.0 * RoomScale, r\z + 0.0 * RoomScale)
+			EntityParent(r\Objects[1], r\OBJ)
+			
+			r\Objects[2] = CreatePivot()
+			PositionEntity(r\Objects[2], r\x - 576.0 * RoomScale, -3796.0 * RoomScale, r\z - 784.0 * RoomScale)
+			EntityParent(r\Objects[2], r\OBJ)
+			
+            ; ~ Levers
+			r\RoomLevers.Levers[0] = CreateLever(r, r\x - 568.0 * RoomScale, r\y - 3712.0 * RoomScale, r\z +970.0 * RoomScale)
+			CreateLever(r, r\x - 644.0 * RoomScale, r\y - 3712.0 * RoomScale, r\z + 970.0 * RoomScale)
+			
+            ; ~ Items
+			it.Items = CreateItem("Document SCP-006", "paper", r\x - 1006.0 * RoomScale, r\y - 3809.0 * RoomScale, r\z + 832.0 * RoomScale)		
+			EntityParent(it\Collider, r\OBJ)
+			
+			;it = CreateItem("Binoculars", "binocular", r\x - 1027.0 * RoomScale, r\y - 3795.0 * RoomScale, r\z + 525.0 * RoomScale)
+			;EntityParent(it\Collider, r\OBJ)
+			;[End Block]
 	End Select
 	
 	Local ts.TempScreens, twp.TempWayPoints, tl.TempLights, tp.TempProps, tse.TempSoundEmitters

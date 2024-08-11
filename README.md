@@ -1,4 +1,12 @@
-# SCP - Containment Breach Ultimate Edition
+# SCP - Containment Breach Alpha Edition
+
+This mod is based on [SCP - Containment Breach Ultimate Edition (Jabka)](https://github.com/Jabka666/scpcb-ue-my)
+
+We are going to add more content that in Old UE.
+
+If you want to support me, you can come to [my bilibili account](https://space.bilibili.com/626767336) and subscribe me.
+
+========================================================================
 
 The game is based on the works of the SCP Foundation community (http://www.scp-wiki.net/).
 

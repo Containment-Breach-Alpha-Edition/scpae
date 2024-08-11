@@ -524,6 +524,7 @@ Function UpdateGame%()
 				DarkAlpha = Max(DarkAlpha, Min(Abs(me\Terminated / 400.0), 1.0))
 			Else
 				If (Not EntityHidden(t\OverlayID[9])) Then HideEntity(t\OverlayID[9])
+				If (Not EntityHidden(t\OverlayID[11])) Then HideEntity(t\OverlayID[11])
 				me\KillAnimTimer = 0.0
 			EndIf
 			
@@ -2367,8 +2368,9 @@ Function RenderHintMessages%()
 	EndIf
 End Function
 
-Function Kill%(IsBloody% = False)
+Function Kill%(IsBloody% = False, IsKillByFire% = False)
 	If chs\GodMode Then Return
+	If I_006\Used And (Not IsKillByFire) Then Return
 	
 	StopBreathSound()
 	
@@ -2380,6 +2382,10 @@ Function Kill%(IsBloody% = False)
 			de.Decals = CreateDecal(DECAL_BLOOD_6, PickedX(), PickedY() + 0.005, PickedZ(), 90.0, Rnd(360.0), 0.0, 0.1)
 			de\SizeChange = 0.0025
 			EntityParent(de\OBJ, PlayerRoom\OBJ)
+		EndIf
+
+		If IsKillByFire
+			If EntityHidden(t\OverlayID[11]) Then ShowEntity(t\OverlayID[11])
 		EndIf
 		
 		me\KillAnim = Rand(0, 1) : me\ForceMove = 0.0
@@ -8535,6 +8541,12 @@ Type SCP005
 End Type
 
 Global I_005.SCP005
+
+Type SCP006
+	Field Used%
+End Type
+
+Global I_006.SCP006
 
 Type SCP035
 	Field Sad%

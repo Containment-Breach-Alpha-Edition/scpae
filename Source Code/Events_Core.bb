@@ -84,6 +84,10 @@ Const e_gateway% = 67
 Const e_tesla% = 68
 Const e_trick% = 69
 Const e_dimension_106% = 70, e_dimension_1499% = 71
+
+; { Alpha Edition}
+; ~ HCZ
+Const e_cont2_006 = 72
 ;[End Block]
 
 ; ~ For Map Creator
@@ -140,6 +144,10 @@ Function FindEventID%(EventName$)
 		Case "room2_test_lcz_173"
 			;[Block]
 			Return(e_room2_test_lcz_173)
+			;[End Block]
+		Case "cont2_006"
+			;[Block]
+			Return(e_cont2_006)
 			;[End Block]
 		Case "cont2_012"
 			;[Block]
@@ -7155,6 +7163,123 @@ Function UpdateEvents%()
 							Exit
 						EndIf
 					Next
+				EndIf
+				;[End Block]
+			Case e_cont2_006 ;Modified Airlock with several things
+				;[Block]
+				;e\EventState: Determines if the airlock is in operation or not (
+				;e\EventState2: The timer for the airlocks
+				;e\EventState3: Checks if the player had left the airlock or not
+				
+				If PlayerRoom <> e\room
+					If e\Sound = 0 Then e\Sound = LoadSound_Strict("SFX\Room\006Chamber\Incinerator.ogg") 
+					If e\Sound2 = 0 Then e\Sound2 = LoadSound_Strict("SFX\SCP\294\Burn.ogg")
+					
+					e\EventState3 = 0.0
+					Temp = 0
+				Else
+					x = UpdateLever(e\room\RoomLevers[0]\OBJ)
+					
+					ToElevatorFloor = LowerFloor
+					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]))
+					e\EventState4 = UpdateElevators(e\EventState4, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[1], e\room\Objects[2], e)
+					
+				    If EntityY(me\Collider) < -2848.0 * RoomScale
+				        ;GiveAchievement(Achv006)
+						
+						;Check and set SCP-006 status
+				        If ((EntityY(me\Collider) <= -15.8) And (Not wi\HazmatSuit))
+							I_006\Used = True
+							CreateMsg("You're feeling good.", 3.0)
+				        EndIf
+						
+						If Not x
+							If e\EventState = 0.0
+								If EntityDistance(e\room\Objects[0], me\Collider) < 0.7 And e\EventState3 = 0.0
+									e\EventState = 1.0
+
+									StopChannel(e\SoundCHN) : e\SoundCHN = 0
+									StopChannel(e\SoundCHN2) : e\SoundCHN2 = 0
+
+									OpenCloseDoor(e\room\RoomDoors[0])
+									OpenCloseDoor(e\room\RoomDoors[1])
+
+									PlaySound_Strict(snd_I\AlarmSFX[3])
+								ElseIf EntityDistance(e\room\Objects[0], me\Collider) > 2.4
+									e\EventState3 = 0.0
+								EndIf
+							Else
+								If e\EventState2 < 70 * 7
+									e\EventState2 = e\EventState2 + fps\Factor[0]
+
+									e\room\RoomDoors[0]\Open = False
+									e\room\RoomDoors[1]\Open = False
+
+									If e\EventState2 > 70 * 3 And e\EventState < 70 * 9 And I_006\Used
+										Pvt% = CreatePivot(e\room\OBJ)
+
+										For i = 0 To 11
+											If i = 0
+												PositionEntity(Pvt%, 92.0, -3980.0, 848.0, False)
+											ElseIf i = 1
+												PositionEntity(Pvt%, 0.0, -3980.0, 848.0, False)
+											ElseIf i = 2	
+												PositionEntity(Pvt%, -92.0, -3980.0, 848.0, False)
+											ElseIf i = 3	
+												PositionEntity(Pvt%, 92.0, -3980.0, 1008.0, False)
+											ElseIf i = 4	
+												PositionEntity(Pvt%, 0.0, -3980.0, 1008.0, False)
+											ElseIf i = 5	
+												PositionEntity(Pvt%, -92.0, -3980.0, 1008.0, False)
+											ElseIf i = 6	
+												PositionEntity(Pvt%, 92.0, -3980.0, 1104.0, False)
+											ElseIf i = 7	
+												PositionEntity(Pvt%, 0.0, -3980.0, 1104.0, False)
+											ElseIf i = 8	
+												PositionEntity(Pvt%, -92.0, -3980.0, 1104.0, False)
+											ElseIf i = 9	
+												PositionEntity(Pvt%, 92.0, -3980.0, 1264.0, False)
+											ElseIf i = 10	
+												PositionEntity(Pvt%, 0.0, -3980.0, 1264.0, False)
+											Else	
+												PositionEntity(Pvt%, -92.0, -3980.0, 1264.0, False)
+											EndIf							
+											
+											p.Particles = CreateParticle(PARTICLE_WHITE_SMOKE, EntityX(Pvt, True), EntityY(Pvt, True), EntityZ(Pvt, True), 0.8, 0, 50)
+											p\Speed = 0.030
+											RotateEntity(p\Pvt, -90, 0, 0)							
+											EntityColor(p\OBJ, 255, 54, 0)
+											p\AlphaChange = -0.02
+										Next
+										FreeEntity(Pvt)
+									EndIf
+
+									If e\SoundCHN = 0 And I_006\Used And e\EventState2 > 70 * 2.8 Then
+										e\SoundCHN = PlaySound_Strict(e\Sound)
+									EndIf
+
+									If EntityDistance(e\room\Objects[0], me\Collider) < 1.3 And e\SoundCHN2 = 0 And I_006\Used And e\EventState2 > 70 * 2.8 Then
+										e\SoundCHN2 = PlaySound_Strict(e\Sound2)
+									EndIf
+
+									If EntityDistance(e\room\Objects[0], me\Collider) < 1.3 And I_006\Used And e\EventState2 > 70 * 5 Then
+										Kill(False, True)
+										msg\DeathMsg = "A pile of ashes were found in the incinerator from SCP-006's Containment Chamber. "
+										msg\DeathMsg = msg\DeathMsg + "It was speculated that someone had come in contact with SCP-006 before he got incinerated to death."						
+									EndIf
+								Else
+									e\EventState = 0.0
+									e\EventState2 = 0.0
+									e\EventState3 = 1.0
+									If e\room\RoomDoors[0]\Open = False
+										OpenCloseDoor(e\room\RoomDoors[0])
+										OpenCloseDoor(e\room\RoomDoors[1])
+									EndIf
+								EndIf
+							EndIf
+						EndIf
+					EndIf
 				EndIf
 				;[End Block]
 		End Select
