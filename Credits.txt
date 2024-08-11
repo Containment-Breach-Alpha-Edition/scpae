@@ -158,6 +158,7 @@
 		RhythmicReverie
 		Xstallm
 		aciu
+		"MidnightFirefly" as a wiki redactor
 
 *Mod Testers
 

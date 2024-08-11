@@ -61,7 +61,6 @@ Function CreateNPC.NPCs(NPCType%, x#, y#, z#)
 	
 	Local n.NPCs, n2.NPCs
 	Local Temp#, i%, Tex%, TexFestive%
-	Local SF%, b%, t1%
 	
 	n.NPCs = New NPCs
 	n\NPCType = NPCType
@@ -106,7 +105,7 @@ Function CreateNPC.NPCs(NPCType%, x#, y#, z#)
 			If TexFestive <> 0
 				EntityTexture(n\OBJ, TexFestive)
 				EntityTexture(n\OBJ2, TexFestive)
-				DeleteSingleTextureEntryFromCache(TexFestive)
+				DeleteSingleTextureEntryFromCache(TexFestive) : TexFestive = 0
 			EndIf
 			Temp = IniGetFloat(NPCsFile, "SCP-173", "Scale") / MeshDepth(n\OBJ)
 			ScaleEntity(n\OBJ, Temp, Temp, Temp)
@@ -135,7 +134,7 @@ Function CreateNPC.NPCs(NPCType%, x#, y#, z#)
 			ScaleSprite(n\OBJ2, 0.03, 0.03)
 			Tex = LoadTexture_Strict("GFX\NPCs\scp_106_eyes.png", 1, DeleteAllTextures, False)
 			EntityTexture(n\OBJ2, Tex)
-			DeleteSingleTextureEntryFromCache(Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 			EntityBlend(n\OBJ2, 3)
 			EntityFX(n\OBJ2, 1 + 8)
 			SpriteViewMode(n\OBJ2, 2)
@@ -352,7 +351,7 @@ Function CreateNPC.NPCs(NPCType%, x#, y#, z#)
 			ScaleSprite(n\OBJ2, 0.1, 0.1)
 			Tex = LoadTexture_Strict("GFX\NPCs\scp_860_2_eyes.png", 1 + 2, DeleteAllTextures, False)
 			EntityTexture(n\OBJ2, Tex)
-			DeleteSingleTextureEntryFromCache(Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 			EntityFX(n\OBJ2, 1 + 8)
 			EntityBlend(n\OBJ2, 3)
 			SpriteViewMode(n\OBJ2, 2)
@@ -506,7 +505,7 @@ Function CreateNPC.NPCs(NPCType%, x#, y#, z#)
 End Function
 
 Function CreateNPCAsset%(n.NPCs)
-	Local Temp#, Tex%
+	Local Temp#
 	
 	Select n\NPCType
 		Case NPCTypeGuard
@@ -595,7 +594,7 @@ Global RemoveHazmatTimer#, Remove714Timer#
 Function UpdateNPCs%()
 	CatchErrors("UpdateNPCs()")
 	
-	Local n.NPCs, n2.NPCs, d.Doors, de.Decals, r.Rooms, e.Events, w.WayPoints, p.Particles, wp.WayPoints, wayPointCloseToPlayer.WayPoints
+	Local n.NPCs, n2.NPCs, d.Doors, de.Decals, r.Rooms, e.Events, w.WayPoints, p.Particles, wp.WayPoints, wayPointCloseToPlayer.WayPoints, emit.Emitter
 	Local i%, j%, Dist#, Dist2#, Angle#, x#, x2#, y#, z#, z2#, PrevFrame#, PlayerSeeAble%, Visible%
 	Local Target%, Pvt%, Pick%, PrevDist#, NewDist#, Attack%
 	Local SinValue#, SqrValue#
@@ -721,23 +720,7 @@ Function UpdateNPCs%()
 								n\State = Max(0.0, n\State - fps\Factor[0] / 20.0)
 							Else
 								; ~ Teleport to a room closer to the player
-								If Dist > 2500.0
-									If Rand(70) = 1
-										If (Not IsPlayerOutsideFacility()) And PlayerRoom\RoomTemplate\RoomID <> r_dimension_106
-											For w.WayPoints = Each WayPoints
-												If w\door = Null And Rand(5) = 1
-													If DistanceSquared(EntityX(w\OBJ, True), EntityX(me\Collider), EntityZ(w\OBJ, True), EntityZ(me\Collider)) < 625.0
-														If DistanceSquared(EntityX(w\OBJ, True), EntityX(me\Collider), EntityZ(w\OBJ, True), EntityZ(me\Collider)) > 225.0
-															PositionEntity(n\Collider, EntityX(w\OBJ, True), EntityY(w\OBJ, True) + 200.0 * RoomScale, EntityZ(w\OBJ, True))
-															ResetEntity(n\Collider)
-															Exit
-														EndIf
-													EndIf
-												EndIf
-											Next
-										EndIf
-									EndIf
-								ElseIf Dist > PowTwo(HideDistance * 0.8) ; ~ Move randomly from waypoint to another
+								If Dist > PowTwo(HideDistance * 0.8) ; ~ Move randomly from waypoint to another
 									If Rand(70) = 1 Then TeleportCloser(n)
 								Else ; ~ Actively move towards the player
 									n\State = CurveValue(SoundVol, n\State, 3.0)
@@ -833,10 +816,10 @@ Function UpdateNPCs%()
 										Else
 											If Rand(400) = 1 Then RotateEntity(n\Collider, 0.0, Rnd(360.0), 10.0)
 											TranslateEntity(n\Collider, Cos(EntityYaw(n\Collider) + 90.0) * n\Speed * fps\Factor[0], 0.0, Sin(EntityYaw(n\Collider) + 90.0) * n\Speed * fps\Factor[0])
-											If (Not chs\NoTarget)
-												n\Angle = Rnd(-120.0, 120.0)
-											Else
+											If chs\NoTarget
 												n\Angle = 0.0
+											Else
+												n\Angle = Rnd(-120.0, 120.0)
 											EndIf
 										EndIf
 									EndIf
@@ -850,7 +833,7 @@ Function UpdateNPCs%()
 							
 							Dist = EntityDistanceSquared(n\Collider, n_I\MTFLeader\Collider)
 							If Dist > PowTwo(HideDistance / 2.0)
-								If (Not EntityInView(n\OBJ, Camera)) And (Not EntityVisible(n\Collider, n_I\MTFLeader\Collider)) Then Tmp = True
+								If (Not EntityInView(n\OBJ, Camera)) Then Tmp = True
 							EndIf
 							If (Not Tmp)
 								PointEntity(n\OBJ, n_I\MTFLeader\Collider)
@@ -922,7 +905,7 @@ Function UpdateNPCs%()
 					
 					If n\Idle = 0 And Spawn106
 						If n\State <= 0.0
-							If EntityY(n\Collider) < EntityY(me\Collider) - 20.0 - 0.55
+							If EntityY(n\Collider) < EntityY(me\Collider) - 20.55
 								If (Not PlayerRoom\RoomTemplate\DisableDecals)
 									de.Decals = CreateDecal(DECAL_CORROSIVE_1, EntityX(me\Collider), 0.01, EntityZ(me\Collider), 90.0, Rnd(360.0), 0.0, 0.05, 0.8)
 									de\SizeChange = 0.001
@@ -966,7 +949,7 @@ Function UpdateNPCs%()
 								If Visible
 									If PlayerRoom\RoomTemplate\RoomID <> r_gate_a Then n\PathTimer = 0.0
 									If EntityInView(n\Collider, Camera)
-										GiveAchievement(Achv106)
+										GiveAchievement("106")
 										
 										SqrValue = (4.0 - Sqr(Dist))
 										
@@ -1125,7 +1108,7 @@ Function UpdateNPCs%()
 							SetNPCFrame(n, 110.0)
 							
 							If (Not PlayerRoom\RoomTemplate\DisableDecals)
-								If PlayerRoom\RoomTemplate\RoomID <> r_gate_a Then n\State = n\State - (fps\Factor[0] * (1.0 + (SelectedDifficulty\AggressiveNPCs)))
+								If PlayerRoom\RoomTemplate\RoomID <> r_gate_a Then n\State = n\State - (fps\Factor[0] * (1.0 + SelectedDifficulty\AggressiveNPCs))
 							EndIf
 						EndIf
 						
@@ -1142,12 +1125,12 @@ Function UpdateNPCs%()
 						If PlayerRoom\RoomTemplate\RoomID = r_dimension_106 Lor IsPlayerOutsideFacility()
 							If (Not EntityHidden(n\OBJ2)) Then HideEntity(n\OBJ2)
 						Else
-							If Dist < PowTwo(opt\CameraFogFar * LightVolume * 0.6)
+							If Dist < PowTwo(me\CameraFogDist * LightVolume * 0.6)
 								If (Not EntityHidden(n\OBJ2)) Then HideEntity(n\OBJ2)
 							Else
 								If n\State <= -10.0
 									If EntityHidden(n\OBJ2) Then ShowEntity(n\OBJ2)
-									EntityAlpha(n\OBJ2, Min(Sqr(Dist) - opt\CameraFogFar * LightVolume * 0.6, 1.0))
+									EntityAlpha(n\OBJ2, Min(Sqr(Dist) - me\CameraFogDist * LightVolume * 0.6, 1.0))
 								EndIf
 							EndIf
 						EndIf
@@ -1160,15 +1143,34 @@ Function UpdateNPCs%()
 				;[Block]
 				Dist = EntityDistanceSquared(me\Collider, n\Collider)
 				Angle = WrapAngle(DeltaYaw(n\Collider, me\Collider))
-				
-				If wi\SCRAMBLE > 0 And Dist < PowTwo(opt\CameraFogFar * LightVolume) And (Angle < 135.0 Lor Angle > 225.0) And EntityVisible(Camera, n\OBJ2)
-					If EntityHidden(n\OBJ2) Then ShowEntity(n\OBJ2)
-					ScaleSprite(n\OBJ2, Rnd(0.06, 0.08), Rnd(0.07, 0.09))
-					PositionEntity(n\OBJ2, Rnd(0.1) - 0.05, Rnd(0.1) - 0.05, Rnd(0.1) - 0.05)
+				Local IsLooking% = Dist < PowTwo(me\CameraFogDist * LightVolume) And (Angle < 135.0 Lor Angle > 225.0) And EntityVisible(Camera, n\OBJ2) And EntityInView(n\OBJ2, Camera)
+				If wi\SCRAMBLE > 0 And IsLooking
+					Local HasBatteryForScramble% = False
+					
+					For i = 0 To MaxItemAmount - 1
+						If Inventory(i) <> Null
+							If (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
+								If Inventory(i)\State > 0.0
+									Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.08 / wi\SCRAMBLE)))
+									HasBatteryForScramble = True
+									Exit
+								EndIf
+							EndIf
+						EndIf
+					Next
+					If HasBatteryForScramble
+						If (Not ChannelPlaying(SCRAMBLECHN)) Then SCRAMBLECHN = PlaySound_Strict(snd_I\SCRAMBLESFX)
+						If EntityHidden(n\OBJ2) Then ShowEntity(n\OBJ2)
+						ScaleSprite(n\OBJ2, Rnd(0.06, 0.08), Rnd(0.07, 0.09))
+						PositionEntity(n\OBJ2, Rnd(0.1) - 0.05, Rnd(0.1) - 0.05, Rnd(0.1) - 0.05)
+					Else
+						If (Not EntityHidden(n\OBJ2)) Then HideEntity(n\OBJ2)
+						If ChannelPlaying(SCRAMBLECHN) Then StopChannel(SCRAMBLECHN) : SCRAMBLECHN = 0
+					EndIf
 				Else
 					If (Not EntityHidden(n\OBJ2)) Then HideEntity(n\OBJ2)
+					If ChannelPlaying(SCRAMBLECHN) Then StopChannel(SCRAMBLECHN) : SCRAMBLECHN = 0
 				EndIf
-				If Dist < 16.0 Then GiveAchievement(Achv096)
 				
 				Select n\State
 					Case 0.0 ; ~ Sitting
@@ -1200,21 +1202,21 @@ Function UpdateNPCs%()
 							EndIf
 							
 							If (Not chs\NoTarget)
-								If Dist < PowTwo(opt\CameraFogFar * LightVolume)
-									If wi\SCRAMBLE = 0 And (Angle < 135.0 Lor Angle > 225.0) And (EntityVisible(Camera, n\OBJ2) And EntityInView(n\OBJ2, Camera))
-										If me\BlinkTimer < -16.0 Lor me\BlinkTimer > -6.0
-											PlaySound_Strict(LoadTempSound("SFX\SCP\096\Triggered.ogg"), True)
-											
-											me\CurrCameraZoom = 10.0
-											
-											SetNPCFrame(n, 194.0)
-											
-											StopStream_Strict(n\SoundCHN) : n\SoundCHN = 0 : n\SoundCHN_IsStream = False
-											n\Sound = 0
-											
-											n\State3 = 0.0
-											n\State = 2.0
-										EndIf
+								If wi\SCRAMBLE = 0 And IsLooking
+									If me\BlinkTimer < -16.0 Lor me\BlinkTimer > -6.0
+										PlaySound_Strict(LoadTempSound("SFX\SCP\096\Triggered.ogg"), True)
+										
+										S2IMapErase(UnlockedAchievements, "096")
+										
+										me\CurrCameraZoom = 10.0
+										
+										SetNPCFrame(n, 194.0)
+										
+										StopStream_Strict(n\SoundCHN) : n\SoundCHN = 0 : n\SoundCHN_IsStream = False
+										n\Sound = 0
+										
+										n\State3 = 0.0
+										n\State = 2.0
 									EndIf
 								EndIf
 							EndIf
@@ -1280,20 +1282,20 @@ Function UpdateNPCs%()
 							EndIf
 							
 							If (Not chs\NoTarget)
-								If Dist < PowTwo(opt\CameraFogFar * LightVolume)
-									If wi\SCRAMBLE = 0 And (Angle < 135.0 Lor Angle > 225.0) And (EntityVisible(Camera, n\OBJ2) And EntityInView(n\OBJ2, Camera))
-										If me\BlinkTimer < -16.0 Lor me\BlinkTimer > -6.0
-											PlaySound_Strict(LoadTempSound("SFX\SCP\096\Triggered.ogg"), True)
-											
-											me\CurrCameraZoom = 10.0
-											
-											If n\Frame >= 422.0 Then SetNPCFrame(n, 677.0)
-											
-											StopStream_Strict(n\SoundCHN) : n\SoundCHN = 0 : n\SoundCHN_IsStream = False
-											n\Sound = 0
-											
-											n\State = 3.0
-										EndIf
+								If wi\SCRAMBLE = 0 And IsLooking
+									If me\BlinkTimer < -16.0 Lor me\BlinkTimer > -6.0
+										PlaySound_Strict(LoadTempSound("SFX\SCP\096\Triggered.ogg"), True)
+										
+										S2IMapErase(UnlockedAchievements, "096")
+										
+										me\CurrCameraZoom = 10.0
+										
+										If n\Frame >= 422.0 Then SetNPCFrame(n, 677.0)
+										
+										StopStream_Strict(n\SoundCHN) : n\SoundCHN = 0 : n\SoundCHN_IsStream = False
+										n\Sound = 0
+										
+										n\State = 3.0
 									EndIf
 								EndIf
 							EndIf
@@ -1476,6 +1478,10 @@ Function UpdateNPCs%()
 													If (Not n\Path[n\PathLocation]\door\Open)
 														n\Path[n\PathLocation]\door\Open = True
 														n\Path[n\PathLocation]\door\FastOpen = True
+														If Dist < 36.0 Then me\BigCameraShake = 3.0
+														
+														emit.Emitter = SetEmitter(Null, EntityX(n\Path[n\PathLocation]\door\OBJ, True), EntityY(n\Path[n\PathLocation]\door\OBJ, True), EntityZ(n\Path[n\PathLocation]\door\OBJ, True), 16)
+														EntityParent(emit\Owner, n\Path[n\PathLocation]\door\OBJ)
 														PlaySound2(snd_I\OpenDoorFastSFX, Camera, n\Path[n\PathLocation]\door\FrameOBJ)
 													EndIf
 												EndIf
@@ -1551,7 +1557,7 @@ Function UpdateNPCs%()
 											If i = 2
 												For i = 0 To MaxItemAmount - 1
 													If Inventory(i) <> Null
-														If Inventory(i)\ItemTemplate\ID >= it_hazmatsuit And Inventory(i)\ItemTemplate\ID =< it_veryfinehazmatsuit
+														If Inventory(i)\ItemTemplate\ID >= it_hazmatsuit And Inventory(i)\ItemTemplate\ID =< it_hazmatsuit148
 															CreateMsg(GetLocalString("msg", "suit.destroyed"))
 															wi\HazmatSuit = 0
 															RemoveItem(Inventory(i))
@@ -1614,9 +1620,6 @@ Function UpdateNPCs%()
 							EndIf
 						EndIf
 					EndIf
-				EndIf
-				If Dist < 16.0
-					If EntityInView(n\Collider, Camera) Then GiveAchievement(Achv049)
 				EndIf
 				
 				If n\Idle > 0.1
@@ -1865,31 +1868,7 @@ Function UpdateNPCs%()
 							PositionEntity(n\Collider, CurveValue(EntityX(me\Collider), EntityX(n\Collider), 20.0), EntityY(n\Collider), CurveValue(EntityZ(me\Collider), EntityZ(n\Collider), 20.0))
 							RotateEntity(n\Collider, 0.0, CurveAngle(EntityYaw(me\Collider) - 180.0, EntityYaw(n\Collider), 40.0), 0.0)
 							;[End Block]
-						Case 4.0 ; ~ Standing on catwalk
-							;[Block]
-							If Dist < 64.0
-								PointEntity(n\Collider, me\Collider)
-								RotateEntity(n\Collider, 0.0, EntityYaw(n\Collider, True), 0.0, True)
-								AnimateNPC(n, 18.0, 19.0, 0.05)
-								n\Angle = CurveAngle(EntityYaw(n\Collider, True), n\Angle, 20.0)
-								
-								n\State3 = 1.0
-							ElseIf Dist > PowTwo(HideDistance * 0.8) And n\State3 > 0.0
-								For r.Rooms = Each Rooms
-									If EntityDistanceSquared(r\OBJ, n\Collider) < 16.0
-										If r\RoomCenter <> 0
-											TeleportEntity(n\Collider, EntityX(r\RoomCenter, True), EntityY(r\OBJ) + 0.5, EntityZ(r\RoomCenter, True), n\CollRadius, True)
-										Else
-											TeleportEntity(n\Collider, EntityX(r\OBJ), EntityY(r\OBJ) + 0.5, EntityZ(r\OBJ), n\CollRadius, True)
-										EndIf
-										Exit
-									EndIf
-								Next
-								n\State3 = 0.0
-								n\State = 2.0
-							EndIf
-							;[End Block]
-						Case 5.0 ; ~ Going to surveillance room
+						Case 4.0 ; ~ Going to surveillance room
 							;[Block]
 							PlayerSeeAble = NPCSeesPlayer(n, 8.0 - me\CrouchState + me\SndVolume, 60.0, True)
 							If PlayerSeeAble = 1
@@ -2150,7 +2129,7 @@ Function UpdateNPCs%()
 										If n\Target = Null
 											If EntityDistanceSquared(n\Collider, me\Collider) < 0.5625
 												PlaySound_Strict(snd_I\DamageSFX[Rand(5, 8)])
-												InjurePlayer(Rnd(0.55, 0.85) * DifficultyDMGMult, 0.0, 0.0, Rnd(0.25, 0.3) * DifficultyDMGMult, 0.2)
+												InjurePlayer(Rnd(0.55, 0.85) * DifficultyDMGMult, 0.0, 0.0, 0.3 * DifficultyDMGMult, 0.2)
 												me\CameraShake = 2.5
 												
 												If me\Injuries > 3.0
@@ -2224,10 +2203,10 @@ Function UpdateNPCs%()
 								DetectDistance = 484.0
 								
 								; ~ Increase accuracy if the player is going slow
-								ShootAccuracy = 0.51 - (10.0 * me\CurrSpeed)
+								ShootAccuracy = 0.5 - (12.0 * me\CurrSpeed)
 							EndIf
 							
-							If Dist < PowTwo(DetectDistance)
+							If Dist < DetectDistance
 								Pvt = CreatePivot()
 								PositionEntity(Pvt, EntityX(n\Collider), EntityY(n\Collider), EntityZ(n\Collider))
 								PointEntity(Pvt, me\Collider)
@@ -2571,7 +2550,7 @@ Function UpdateNPCs%()
 							Else
 								PointEntity(n\OBJ, n\Path[n\PathLocation]\OBJ)
 								
-								RotateEntity(n\Collider, 0.0, CurveAngle(EntityYaw(n\OBJ), EntityYaw(n\Collider), 20.0), 0.0)
+								RotateEntity(n\Collider, 0.0, CurveAngle(EntityYaw(n\OBJ), EntityYaw(n\Collider), 10.0), 0.0)
 								
 								AnimateNPC(n, 39.0, 76.0, n\CurrSpeed * 40.0)
 								n\CurrSpeed = CurveValue(n\Speed * 0.7, n\CurrSpeed, 20.0)
@@ -2735,7 +2714,7 @@ Function UpdateNPCs%()
 				n\Speed = 0.3
 				Visible = (EntityDistanceSquared(me\Collider, n\Collider) < 4.0 And EntityInView(n\OBJ, Camera))
 				
-				If Visible Then GiveAchievement(Achv1048)
+				If Visible Then GiveAchievement("1048")
 				
 				Select n\State
 					Case 0.0 ; ~ Idle
@@ -2805,7 +2784,7 @@ Function UpdateNPCs%()
 					Dist = EntityDistanceSquared(n\Collider, me\Collider)
 					Visible = (Dist < 6.0 And EntityVisible(n\Collider, me\Collider))
 					
-					If Visible Then GiveAchievement(Achv1048)
+					If Visible Then GiveAchievement("1048")
 					
 					Select n\State
 						Case 0.0 ; ~ Idle
@@ -2877,23 +2856,20 @@ Function UpdateNPCs%()
 						If Rand(200) = 1
 							For w.WayPoints = Each WayPoints
 								If w\room <> PlayerRoom
-									x = Abs(EntityX(me\Collider) - EntityX(w\OBJ, True))
-									If x > 3.0 And x < 9.0
-										z = Abs(EntityZ(me\Collider) - EntityZ(w\OBJ, True))
-										If z > 3.0 And z < 9.0
-											PositionEntity(n\Collider, EntityX(w\OBJ, True), EntityY(w\OBJ, True) + 20.0 * RoomScale, EntityZ(w\OBJ, True))
-											ResetEntity(n\Collider)
-											
-											n\LastSeen = 0
-											
-											n\Path[0] = w
-											
-											n\Idle = 0
-											n\State2 = 70.0 * Rnd(15.0, 20.0)
-											n\State = Max(Rand(-1.0, 2.0), 0.0)
-											n\PrevState = Rand(0, 1)
-											Exit
-										EndIf
+									Dist = DistanceSquared(EntityX(me\Collider), EntityX(w\OBJ, True), EntityZ(me\Collider), EntityZ(w\OBJ, True))
+									If Dist > 9.0 And Dist < 81.0
+										PositionEntity(n\Collider, EntityX(w\OBJ, True), EntityY(w\OBJ, True) + 20.0 * RoomScale, EntityZ(w\OBJ, True))
+										ResetEntity(n\Collider)
+										
+										n\LastSeen = 0
+										
+										n\Path[0] = w
+										
+										n\Idle = 0
+										n\State2 = 70.0 * Rnd(15.0, 20.0)
+										n\State = Max(Rand(-1, 2), 0)
+										n\PrevState = Rand(0, 1)
+										Exit
 									EndIf
 								EndIf
 							Next
@@ -2949,17 +2925,14 @@ Function UpdateNPCs%()
 						Else
 							If n\Path[0] = Null
 								; ~ Move towards a waypoint that is:
-								; ~ 1: Max 8 units away from SCP-513-1
+								; ~ 1: Max 64 units away from SCP-513-1
 								; ~ 2: Further away from the player than SCP-513-1's current position 
 								For w.WayPoints = Each WayPoints
-									x = Abs(EntityX(n\Collider, True) - EntityX(w\OBJ, True))
-									If x < 8.0 And x > 1.0
-										z = Abs(EntityZ(n\Collider, True) - EntityZ(w\OBJ, True))
-										If z < 8.0 And z > 1.0
-											If EntityDistanceSquared(me\Collider, w\OBJ) > Dist
-												n\Path[0] = w
-												Exit
-											EndIf
+									Dist2 = DistanceSquared(EntityX(n\Collider), EntityX(w\OBJ), EntityZ(n\Collider), EntityZ(w\OBJ))
+									If Dist2 < 64.0 And Dist2 > 1.0
+										If EntityDistanceSquared(me\Collider, w\OBJ) > Dist
+											n\Path[0] = w
+											Exit
 										EndIf
 									EndIf
 								Next
@@ -3058,7 +3031,7 @@ Function UpdateNPCs%()
 						AnimateNPC(n, 1.0, 300.0, Rnd(0.8, 2.5))
 						
 						If EntityInView(n\OBJ, Camera) And (me\BlinkTimer < -16.0 Lor me\BlinkTimer > -6.0)
-							GiveAchievement(Achv372)
+							GiveAchievement("372")
 							
 							If Rand(30) = 1
 								If EntityVisible(Camera, n\OBJ)
@@ -3092,8 +3065,7 @@ Function UpdateNPCs%()
 				;[End Block]
 			Case NPCTypeApache
 				;[Block]
-				Dist = EntityDistanceSquared(me\Collider, n\Collider)
-				If Dist < 3600.0
+				If EntityDistanceSquared(me\Collider, n\Collider) < 3600.0
 					If PlayerRoom\RoomTemplate\RoomID = r_gate_b
 						Dist2 = Max(Min(EntityDistance(n\Collider, PlayerRoom\Objects[10]) / (8000.0 * RoomScale), 1.0), 0.0)
 					Else
@@ -3111,14 +3083,12 @@ Function UpdateNPCs%()
 						TurnEntity(n\OBJ3, 20.0 * fps\Factor[0], 0.0, 0.0)
 						
 						If n\State = 1.0 And (Not (chs\NoTarget Lor I_268\InvisibilityOn))
-							If Abs(EntityX(me\Collider) - EntityX(n\Collider)) < 30.0
-								If Abs(EntityZ(me\Collider) - EntityZ(n\Collider)) < 30.0
+							If Rand(20) = 1
+								If DistanceSquared(EntityX(me\Collider), EntityX(n\Collider), EntityZ(me\Collider), EntityZ(n\Collider)) < 900.0
 									If Abs(EntityY(me\Collider) - EntityY(n\Collider)) < 20.0
-										If Rand(20) = 1
-											If EntityVisible(me\Collider, n\Collider)
-												PlaySound2(snd_I\AlarmSFX[1], Camera, n\Collider, 50.0, 1.0)
-												n\State = 2.0
-											EndIf
+										If EntityVisible(me\Collider, n\Collider)
+											PlaySound2(snd_I\AlarmSFX[1], Camera, n\Collider, 50.0, 1.0)
+											n\State = 2.0
 										EndIf
 									EndIf
 								EndIf
@@ -3137,64 +3107,62 @@ Function UpdateNPCs%()
 						TurnEntity(n\OBJ2, 0.0, 20.0 * fps\Factor[0], 0.0)
 						TurnEntity(n\OBJ3, 20.0 * fps\Factor[0], 0.0, 0.0)
 						
-						If Abs(EntityX(Target) - EntityX(n\Collider)) < 55.0
-							If Abs(EntityZ(Target) - EntityZ(n\Collider)) < 55.0
-								If Abs(EntityY(Target) - EntityY(n\Collider)) < 20.0
-									PointEntity(n\OBJ, Target)
-									RotateEntity(n\Collider, CurveAngle(Min(WrapAngle(EntityPitch(n\OBJ)), 40.0), EntityPitch(n\Collider), 40.0), CurveAngle(EntityYaw(n\OBJ), EntityYaw(n\Collider), 90.0), EntityRoll(n\Collider), True)
-									PositionEntity(n\Collider, EntityX(n\Collider), CurveValue(EntityY(Target) + 8.0, EntityY(n\Collider), 70.0), EntityZ(n\Collider))
-									
-									Dist = DistanceSquared(EntityX(Target), EntityX(n\Collider), EntityZ(Target), EntityZ(n\Collider))
-									
-									n\CurrSpeed = CurveValue(Min(Sqr(Dist) - 6.5, 6.5) * 0.008, n\CurrSpeed, 50.0)
-									
-									MoveEntity(n\Collider, 0.0, 0.0, n\CurrSpeed * fps\Factor[0])
-									
-									Visible = False
-									If n\PathTimer = 0.0
-										Visible = EntityVisible(n\Collider, Target)
-										n\PathTimer = Rnd(100.0, 200.0)
-									Else
-										n\PathTimer = Min(n\PathTimer - fps\Factor[0], 0.0)
-									EndIf
-									If chs\NoTarget Lor I_268\InvisibilityOn And n\State = 2.0 Then Visible = False
-									
-									If Visible ; ~ Player visible
-										RotateEntity(n\Collider, EntityPitch(n\Collider), EntityYaw(n\Collider), CurveAngle(0.0, EntityRoll(n\Collider), 40.0), True)
-										If n\Reload <= 0.0
-											If Dist < 400.0
-												Pvt = CreatePivot()
-												PositionEntity(Pvt, EntityX(n\Collider), EntityY(n\Collider), EntityZ(n\Collider))
-												RotateEntity(Pvt, EntityPitch(n\Collider), EntityYaw(n\Collider), EntityRoll(n\Collider))
-												MoveEntity(Pvt, 0.0, 0.023, 0.188)
-												PointEntity(Pvt, Target)
+						If DistanceSquared(EntityX(Target), EntityX(n\Collider), EntityZ(Target), EntityZ(n\Collider)) < 3025.0
+							If Abs(EntityY(Target) - EntityY(n\Collider)) < 20.0
+								PointEntity(n\OBJ, Target)
+								RotateEntity(n\Collider, CurveAngle(Min(WrapAngle(EntityPitch(n\OBJ)), 40.0), EntityPitch(n\Collider), 40.0), CurveAngle(EntityYaw(n\OBJ), EntityYaw(n\Collider), 90.0), EntityRoll(n\Collider), True)
+								PositionEntity(n\Collider, EntityX(n\Collider), CurveValue(EntityY(Target) + 8.0, EntityY(n\Collider), 70.0), EntityZ(n\Collider))
+								
+								Dist = DistanceSquared(EntityX(Target), EntityX(n\Collider), EntityZ(Target), EntityZ(n\Collider))
+								
+								n\CurrSpeed = CurveValue(Min(Sqr(Dist) - 6.5, 6.5) * 0.008, n\CurrSpeed, 50.0)
+								
+								MoveEntity(n\Collider, 0.0, 0.0, n\CurrSpeed * fps\Factor[0])
+								
+								Visible = False
+								If n\PathTimer = 0.0
+									Visible = EntityVisible(n\Collider, Target)
+									n\PathTimer = Rnd(100.0, 200.0)
+								Else
+									n\PathTimer = Min(n\PathTimer - fps\Factor[0], 0.0)
+								EndIf
+								If (chs\NoTarget Lor I_268\InvisibilityOn) And n\State = 2.0 Then Visible = False
+								
+								If Visible ; ~ Player visible
+									RotateEntity(n\Collider, EntityPitch(n\Collider), EntityYaw(n\Collider), CurveAngle(0.0, EntityRoll(n\Collider), 40.0), True)
+									If n\Reload <= 0.0
+										If Dist < 400.0
+											Pvt = CreatePivot()
+											PositionEntity(Pvt, EntityX(n\Collider), EntityY(n\Collider), EntityZ(n\Collider))
+											RotateEntity(Pvt, EntityPitch(n\Collider), EntityYaw(n\Collider), EntityRoll(n\Collider))
+											MoveEntity(Pvt, 0.0, 0.023, 0.188)
+											PointEntity(Pvt, Target)
+											
+											If WrapAngle(EntityYaw(Pvt) - EntityYaw(n\Collider)) < 10.0
+												PlaySound2(snd_I\GunshotSFX[1], Camera, n\Collider, 20.0)
 												
-												If WrapAngle(EntityYaw(Pvt) - EntityYaw(n\Collider)) < 10.0
-													PlaySound2(snd_I\GunshotSFX[1], Camera, n\Collider, 20.0)
-													
-													SqrValue = Sqr(Dist)
-													
-													Shoot(EntityX(Pvt), EntityY(Pvt), EntityZ(Pvt), ((10.0 / SqrValue) * (1.0 / SqrValue)) * (n\State = 2.0), (n\State = 2.0))
-													
-													If me\Terminated And n\State <> 3
-														If PlayerRoom\RoomTemplate\RoomID = r_gate_b
-															msg\DeathMsg = GetLocalString("death", "apache.gateb")
-														Else
-															msg\DeathMsg = GetLocalString("death", "apache.gatea")
-														EndIf
+												SqrValue = Sqr(Dist)
+												
+												Shoot(EntityX(Pvt), EntityY(Pvt), EntityZ(Pvt), ((10.0 / SqrValue) * (1.0 / SqrValue)) * (n\State = 2.0), (n\State = 2.0))
+												
+												If me\Terminated And n\State <> 3
+													If PlayerRoom\RoomTemplate\RoomID = r_gate_b
+														msg\DeathMsg = GetLocalString("death", "apache.gateb")
+													Else
+														msg\DeathMsg = GetLocalString("death", "apache.gatea")
 													EndIf
 												EndIf
-												FreeEntity(Pvt) : Pvt = 0
 											EndIf
-											n\Reload = 5.0
+											FreeEntity(Pvt) : Pvt = 0
 										EndIf
-									Else
-										RotateEntity(n\Collider, EntityPitch(n\Collider), EntityYaw(n\Collider), CurveAngle(-20.0, EntityRoll(n\Collider), 40.0), True)
+										n\Reload = 5.0
 									EndIf
-									MoveEntity(n\Collider, (-EntityRoll(n\Collider)) * 0.002, 0.0, 0.0)
-									
-									n\Reload = n\Reload - fps\Factor[0]
+								Else
+									RotateEntity(n\Collider, EntityPitch(n\Collider), EntityYaw(n\Collider), CurveAngle(-20.0, EntityRoll(n\Collider), 40.0), True)
 								EndIf
+								MoveEntity(n\Collider, (-EntityRoll(n\Collider)) * 0.002, 0.0, 0.0)
+								
+								n\Reload = n\Reload - fps\Factor[0]
 							EndIf
 						EndIf
 						If n\State = 3 Then FreeEntity(Target) : Target = 0
@@ -3282,10 +3250,10 @@ Function UpdateNPCs%()
 											If Abs(DeltaYaw(n\Collider, me\Collider)) < 20.0
 												If wi\HazmatSuit > 0
 													PlaySound_Strict(LoadTempSound("SFX\Character\BodyFall.ogg"))
-													InjurePlayer(Rnd(0.5))
+													me\Injuries = me\Injuries + Rnd(0.5)
 												Else
 													PlaySound_Strict(snd_I\DamageSFX[Rand(9, 10)])
-													InjurePlayer(Rnd(0.75, 1.15) * DifficultyDMGMult, 0.0, 100.0, Rnd(0.35, 0.4) * DifficultyDMGMult, 0.2)
+													InjurePlayer(Rnd(0.75, 1.15) * DifficultyDMGMult, 0.0, 100.0, 0.4 * DifficultyDMGMult, 0.2)
 													
 													If me\Injuries > 3.0
 														If PlayerRoom\RoomTemplate\RoomID = r_room2_ez
@@ -3376,8 +3344,8 @@ Function UpdateNPCs%()
 										z = Floor((TFormedZ() + 6.0) / 12.0)
 										
 										; ~ Step through nearby cells
-										For x2 = Max(x - 1, 1.0) To Min(x + 1, ForestGridSize) Step 2
-											For z2 = Max(z - 1, 1.0) To Min(z + 1, ForestGridSize) Step 2
+										For x2 = Max(x - 1, 1) To Min(x + 1, ForestGridSize) Step 2
+											For z2 = Max(z - 1, 1) To Min(z + 1, ForestGridSize) Step 2
 												; ~ Choose an empty cell (not on the path)
 												If fr\Grid[(z2 * ForestGridSize) + x2] = 0
 													; ~ Spawn the monster between the empty cell and the cell the player is in
@@ -3792,13 +3760,17 @@ Function UpdateNPCs%()
 							;[End Block]
 					End Select
 					
+					If EntityDistanceSquared(n\Collider, me\Collider) < 49.0
+						If EntityVisible(me\Collider, n\Collider) And EntityInView(n\Collider, Camera) Then GiveAchievement("939")
+					EndIf
+					
 					If n\State < 3.0 And (Not (chs\NoTarget Lor I_268\InvisibilityOn)); And (Not n\IgnorePlayer)
 						Dist = EntityDistanceSquared(n\Collider, me\Collider) - (EntityVisible(me\Collider, n\Collider) * 1.4641)
 						If PowTwo(me\SndVolume * 1.2) > Dist Lor Dist < 2.25
 							If n\State3 = 0.0
 								LoadNPCSound(n, "SFX\SCP\939\" + (n\ID Mod 3) + "Attack" + Rand(0, 2) + ".ogg")
 								n\SoundCHN = PlaySound2(n\Sound, Camera, n\Collider, 10.0, 1.0, True)
-								
+								GiveAchievement("939")
 								PlaySound_Strict(LoadTempSound("SFX\SCP\939\Horror.ogg"))
 								n\State3 = 1.0
 							EndIf
@@ -3807,7 +3779,7 @@ Function UpdateNPCs%()
 							If n\State <> 1 And n\Reload <= 0.0
 								LoadNPCSound(n, "SFX\SCP\939\" + (n\ID Mod 3) + "Alert" + Rand(0, 2) + ".ogg")
 								n\SoundCHN = PlaySound2(n\Sound, Camera, n\Collider, 10.0, 1.0, True)
-								
+								GiveAchievement("939")
 								SetNPCFrame(n, 175.0)
 								
 								n\Reload = 70.0 * 3.0
@@ -3868,7 +3840,7 @@ Function UpdateNPCs%()
 						
 						If Dist < 1.0 + PowTwo(n\LastDist)
 							If EntityVisible(me\Collider, n\Collider)
-								GiveAchievement(Achv066)
+								GiveAchievement("066")
 								n\State = Rand(2.0, 3.0)
 							EndIf
 						EndIf
@@ -3992,9 +3964,9 @@ Function UpdateNPCs%()
 				;[End Block]
 			Case NPCType966
 				;[Block]
-				Dist = EntityDistanceSquared(n\Collider, me\Collider)
 				
 				If n\State > -1.0
+					Dist = EntityDistanceSquared(n\Collider, me\Collider)
 					If Dist < PowTwo(HideDistance)
 						; ~ n\State: The "general" state (Idles / Wanders off/ Attacks / Echo and etc.)
 						
@@ -4040,7 +4012,7 @@ Function UpdateNPCs%()
 								EndIf
 							EndIf
 						Else
-							If EntityVisible(n\Collider, me\Collider) Then GiveAchievement(Achv966)
+							If EntityVisible(n\Collider, me\Collider) Then GiveAchievement("966")
 							If EntityHidden(n\OBJ) Then ShowEntity(n\OBJ)
 						EndIf
 						n\Reload = n\Reload - fps\Factor[0]
@@ -4304,7 +4276,7 @@ Function UpdateNPCs%()
 									If (n\Frame > 470.0 And PrevFrame <= 470.0) Lor (n\Frame > 500.0 And PrevFrame <= 500.0) Lor (n\Frame > 527.0 And PrevFrame <= 527.0)
 										If Dist < 0.81
 											PlaySound2(snd_I\DamageSFX[Rand(11, 12)], Camera, n\Collider)
-											InjurePlayer(Rnd(0.45, 0.75) * DifficultyDMGMult, 0.0, 500.0, Rnd(0.2, 0.25) * DifficultyDMGMult)
+											InjurePlayer(Rnd(0.45, 0.75) * DifficultyDMGMult, 0.0, 500.0, 0.25 * DifficultyDMGMult)
 											me\CameraShake = 1.8
 											If me\Injuries > 10.0
 												msg\DeathMsg = Format(GetLocalString("death", "966"), SubjectName)
@@ -4638,7 +4610,7 @@ Function UpdateNPCs%()
 									PlaySound2(snd_I\MissSFX, Camera, n\Collider, 2.5)
 								Else
 									PlaySound2(snd_I\DamageSFX[Rand(11, 12)], Camera, n\Collider)
-									InjurePlayer(Rnd(0.65, 1.1) * DifficultyDMGMult, 0.0, 500.0, Rnd(0.3, 0.35) * DifficultyDMGMult, 0.2)
+									InjurePlayer(Rnd(0.65, 1.1) * DifficultyDMGMult, 0.0, 500.0, 0.35 * DifficultyDMGMult, 0.2)
 									me\CameraShake = 2.5
 									
 									If me\Injuries > 10.0
@@ -4859,7 +4831,7 @@ Function UpdateNPCs%()
 									If n\Target = Null
 										If EntityDistanceSquared(n\Collider, me\Collider) < 0.5625
 											PlaySound_Strict(snd_I\DamageSFX[Rand(5, 8)])
-											InjurePlayer(Rnd(0.4, 0.7) * DifficultyDMGMult, 1.0 + SelectedDifficulty\AggressiveNPCs, 0.0, Rnd(0.175, 0.225) * DifficultyDMGMult, 0.2)
+											InjurePlayer(Rnd(0.4, 0.7) * DifficultyDMGMult, 1.0 + SelectedDifficulty\AggressiveNPCs, 0.0, 0.225 * DifficultyDMGMult, 0.2)
 											me\CameraShake = 2.5
 											
 											If me\Injuries > 3.0
@@ -4913,7 +4885,7 @@ Function UpdateNPCs%()
 								ResetEntity(n\Collider)
 							EndIf
 							If n\Idle > 0
-								n\Idle = Max(n\Idle - (1 + (1 * SelectedDifficulty\AggressiveNPCs)) * fps\Factor[0], 0.0)
+								n\Idle = Max(n\Idle - (1 + SelectedDifficulty\AggressiveNPCs) * fps\Factor[0], 0.0)
 							Else
 								If PlayerInReachableRoom(True) ; ~ Player is in a room where SCP-008-1 can teleport to
 									If Rand(50 - (20 * SelectedDifficulty\AggressiveNPCs)) = 1
@@ -5060,8 +5032,9 @@ Function UpdateNPCs%()
 					TranslateEntity(n\Collider, 0.0, n\DropSpeed, 0.0)
 					
 					Local CollidedFloor% = False
+					Local CollCount% = CountCollisions(n\Collider)
 					
-					For i = 1 To CountCollisions(n\Collider)
+					For i = 1 To CollCount
 						If CollisionY(n\Collider, i) < EntityY(n\Collider) - 0.01
 							CollidedFloor = True
 							Exit
@@ -5176,7 +5149,7 @@ Function UpdateMTFUnit%(n.NPCs)
 		
 		n\Reload = Max(n\Reload - fps\Factor[0], 0.0)
 		
-		If Int(n\State) <> MTF_SEARCHING_PLAYER And Int(n\State) <> MTF_DISABLING_TESLA Then n\PrevState = 0
+		If n\State <> MTF_SEARCHING_PLAYER And n\State <> MTF_DISABLING_TESLA Then n\PrevState = 0
 		
 		n\SoundCHN2 = LoopSound2(NPCSound[SOUND_NPC_MTF_BREATH], n\SoundCHN2, Camera, n\Collider, 10.0, 1.0, True) ; ~ Breath channel
 		
@@ -5186,7 +5159,7 @@ Function UpdateMTFUnit%(n.NPCs)
 		Local SqrValue#, PlayerSeeAble%
 		Local FPSFactorEx# = fps\Factor[0] * 2.0
 		
-		Select Int(n\State) ; ~ What is this MTF doing
+		Select n\State ; ~ What is this MTF doing
 			Case MTF_WANDERING_AROUND
 				;[Block]
 				n\Speed = 0.015
@@ -5317,7 +5290,7 @@ Function UpdateMTFUnit%(n.NPCs)
 ;							Next
 						Else
 							For r.Rooms = Each Rooms
-								If ((Abs(r\x - EntityX(n\Collider, True)) > 12.0) Lor (Abs(r\z - EntityZ(n\Collider, True)) > 12.0)) And (Rand(Max(4 - Int(Abs(r\z - EntityZ(n\Collider, True) / 8.0)), 2.0)) = 1)
+								If ((Abs(r\x - EntityX(n\Collider, True)) > 12.0) Lor (Abs(r\z - EntityZ(n\Collider, True)) > 12.0)) And (Rand(Max(4 - Int(Abs(r\z - EntityZ(n\Collider, True) / 8.0)), 2)) = 1)
 									x = r\x
 									y = 0.1
 									z = r\z
@@ -6526,7 +6499,7 @@ Function UpdateMTFUnit%(n.NPCs)
 							PositionEntity(Pvt, EntityX(n\OBJ), EntityY(n\OBJ), EntityZ(n\OBJ))
 							MoveEntity(Pvt, 0.0622, 0.83925, 0.5351)
 							
-							If EntityDistanceSquared(me\Collider, n\Collider) < PowTwo(opt\CameraFogFar) Then LightVolume = TempLightVolume * 1.2
+							If EntityDistanceSquared(me\Collider, n\Collider) < PowTwo(me\CameraFogDist) Then LightVolume = TempLightVolume * 1.2
 							
 							SetEmitter(Null, EntityX(Pvt), EntityY(Pvt), EntityZ(Pvt), 13)
 							SetEmitter(Null, EntityX(n\Target\Collider), EntityY(n\Target\Collider), EntityZ(n\Target\Collider), 15)
@@ -6669,40 +6642,38 @@ Function TeleportCloser%(n.NPCs)
 	Local ClosestDist# = 0.0
 	Local closestWaypoint.WayPoints
 	Local w.WayPoints
-	Local xTemp#, zTemp#
+	Local Dist#
 	
 	If InFacility > UpperFloor Then Return
 	
 	For w.WayPoints = Each WayPoints
 		If w\door = Null
-			xTemp = Abs(EntityX(w\OBJ, True) - EntityX(n\Collider, True))
-			If xTemp > 1.0 And xTemp < 10.0
-				zTemp = Abs(EntityZ(w\OBJ, True) - EntityZ(n\Collider, True))
-				If zTemp > 1.0 And zTemp < 10.0
-					If EntityDistanceSquared(me\Collider, w\OBJ) > PowTwo(16.0 - (8.0 * SelectedDifficulty\AggressiveNPCs))
-						; ~ Teleports to the nearby waypoint that takes it closest to the player
-						Local NewDist# = EntityDistanceSquared(me\Collider, w\OBJ)
-						
-						If NewDist < ClosestDist Lor closestWaypoint = Null
-							ClosestDist = NewDist
-							closestWaypoint = w
-						EndIf
+			Dist = DistanceSquared(EntityX(w\OBJ, True), EntityX(n\Collider, True), EntityZ(w\OBJ, True), EntityZ(n\Collider, True))
+			If Dist > 1.0 And Dist < 100.0
+				If EntityDistanceSquared(me\Collider, w\OBJ) > PowTwo(16.0 - (6.0 * SelectedDifficulty\AggressiveNPCs))
+					; ~ Teleports to the nearby waypoint that takes it closest to the player
+					Local NewDist# = EntityDistanceSquared(me\Collider, w\OBJ)
+					
+					If NewDist < ClosestDist Lor closestWaypoint = Null
+						ClosestDist = NewDist
+						closestWaypoint = w
 					EndIf
 				EndIf
 			EndIf
 		EndIf
 	Next
 	
-	Local ShouldTeleport% = False
 	
 	If closestWaypoint <> Null
+		Local ShouldTeleport% = False
+		
 		If n\InFacility <> NullFloor Lor SelectedDifficulty\AggressiveNPCs Then
 			ShouldTeleport = True
 		ElseIf EntityY(closestWaypoint\OBJ, True) <= 6.5 And EntityY(closestWaypoint\OBJ, True) >= -6.5
 			ShouldTeleport = True
 		EndIf
 		If ShouldTeleport
-			TeleportEntity(n\Collider, EntityX(closestWaypoint\OBJ, True), EntityY(closestWaypoint\OBJ, True) + 60.0 * RoomScale, EntityZ(closestWaypoint\OBJ, True), n\Collider, True)
+			TeleportEntity(n\Collider, EntityX(closestWaypoint\OBJ, True), EntityY(closestWaypoint\OBJ, True) + 0.2, EntityZ(closestWaypoint\OBJ, True), n\CollRadius, True)
 			n\CurrSpeed = 0.0
 			n\PathStatus = PATH_STATUS_NO_SEARCH
 			n\PathTimer = 0.0
@@ -7025,7 +6996,7 @@ Function Shoot%(x#, y#, z#, HitProb# = 1.0, Particles% = True, InstaKill% = Fals
 			Case 16, 17 ; ~ Helmet, Face or Head
 				;[Block]
 				If wi\BallisticHelmet
-					InjurePlayer(0.1)
+					me\Injuries = me\Injuries + 0.1
 				Else
 					For n.NPCs = Each NPCs
 						If n\NPCType = NPCTypeMTF Lor n\NPCType = NPCTypeApache Lor n\NPCType = NPCTypeGuard
@@ -7084,7 +7055,8 @@ Function MoveToPocketDimension%()
 	For r.Rooms = Each Rooms
 		If r\RoomTemplate\RoomID = r_dimension_106
 			me\BlinkTimer = -10.0 : me\FallTimer = 0.0 : me\DropSpeed = 0.0 : me\Playable = True
-			InjurePlayer(0.5, 0.0, 1500.0)
+			me\Injuries = me\Injuries + 0.5
+			me\BlurTimer = 1600.0
 			HideEntity(me\Head)
 			ShowEntity(me\Collider)
 			PlaySound_Strict(snd_I\Use914SFX)
@@ -7151,6 +7123,7 @@ Function ConsoleSpawnNPC%(Name$, NPCState$ = "")
 			n.NPCs = CreateNPC(NPCType049, EntityX(me\Collider), EntityY(me\Collider) + 0.2, EntityZ(me\Collider))
 			n\State = 1.0
 			n_I\Curr049 = n
+			GiveAchievement("049")
 			ConsoleMsg = Format(GetLocalString("console", "spawn"), "SCP-049")
 			;[End Block]
 		Case "049-2", "0492", "scp-049-2", "scp049-2", "049zombie", "curedhuman", "scp0492", "scp-0492", "049_2", "scp_049_2"
@@ -7170,6 +7143,7 @@ Function ConsoleSpawnNPC%(Name$, NPCState$ = "")
 			n.NPCs = CreateNPC(NPCType096, EntityX(me\Collider), EntityY(me\Collider) + 0.2, EntityZ(me\Collider))
 			n\State = 1.0
 			n_I\Curr096 = n
+			GiveAchievement("096")
 			ConsoleMsg = Format(GetLocalString("console", "spawn"), "SCP-096")
 			;[End Block]
 		Case "106", "scp106", "scp-106", "larry", "oldman"
@@ -7423,11 +7397,14 @@ Function UseDoorNPC%(n.NPCs, PlaySFX% = True, PlayCautionSFX% = False)
 End Function
 
 Function UpdateNPCNearTesla%()
-	Local n.NPCs
+	Local n.NPCs, emit.Emitter
 	
 	For n.NPCs = Each NPCs
 		If n\TeslaHit
-			If opt\ParticleAmount > 0 Then SetEmitter(Null, EntityX(n\OBJ, True), EntityY(n\OBJ, True), EntityZ(n\OBJ, True), 14)
+			If opt\ParticleAmount > 0
+				emit.Emitter = SetEmitter(Null, EntityX(n\OBJ, True), EntityY(n\OBJ, True), EntityZ(n\OBJ, True), 14)
+				EntityParent(emit\Owner, n\OBJ)
+			EndIf
 			
 			If n\NPCType = NPCType106
 				If n\State3 = 1.0
@@ -7525,10 +7502,9 @@ Function Animate2#(Entity%, Curr#, FirstFrame%, LastFrame%, Speed#, Loop% = True
 End Function
 
 Function FinishWalking%(n.NPCs, StartFrame#, EndFrame#, Speed#)
-	Local CenterFrame#
-	
 	If n <> Null
-		CenterFrame = (EndFrame - StartFrame) / 2.0
+		Local CenterFrame# = (EndFrame - StartFrame) / 2.0
+		
 		If n\Frame >= CenterFrame
 			AnimateNPC(n, StartFrame, EndFrame, Speed, False)
 		Else
@@ -7538,8 +7514,6 @@ Function FinishWalking%(n.NPCs, StartFrame#, EndFrame#, Speed#)
 End Function
 
 Function ChangeNPCTextureID%(n.NPCs, TextureID%)
-	Local Temp#
-	
 	If n = Null
 		OpenConsoleOnError(GetLocalString("msg", "spawn.invaildtex"))
 		Return

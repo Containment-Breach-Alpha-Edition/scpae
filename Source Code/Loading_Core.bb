@@ -69,7 +69,7 @@ Function LoadDecals%()
 	de_I\DecalTextureID[DECAL_WATER] = LoadTexture_Strict("GFX\Decals\water_decal.png", 1 + 2, DeleteAllTextures, False)
 End Function
 
-Const MaxParticleTextureIDAmount% = 8
+Const MaxParticleTextureIDAmount% = 9
 
 Function RemoveDecalInstances%()
 	Local i%
@@ -77,7 +77,7 @@ Function RemoveDecalInstances%()
 	For i = 0 To MaxDecalTextureIDAmount - 1
 		de_I\DecalTextureID[i] = 0
 	Next
-	Delete Each DecalInstance
+	Delete(de_I) : de_I = Null
 End Function
 
 Type ParticleInstance
@@ -102,6 +102,8 @@ Const PARTICLE_SUN% = 5
 Const PARTICLE_BLOOD% = 6
 
 Const PARTICLE_SPARK% = 7
+
+Const PARTICLE_WATER_DROP% = 8
 ;[End Block]
 
 Function LoadParticles%()
@@ -121,6 +123,8 @@ Function LoadParticles%()
 	p_I\ParticleTextureID[PARTICLE_BLOOD] = LoadTexture_Strict("GFX\Particles\blood.png", 1 + 2, DeleteAllTextures, False)
 	
 	p_I\ParticleTextureID[PARTICLE_SPARK] = LoadTexture_Strict("GFX\Particles\spark.png", 1 + 2, DeleteAllTextures, False)
+	
+	p_I\ParticleTextureID[PARTICLE_WATER_DROP] = LoadTexture_Strict("GFX\Particles\water_drop.png", 1 + 2, DeleteAllTextures, False)
 	
 	; ~ Black smoke in "room2c_gw_lcz"/"room2_6_hcz"/"cont1_035"
 	ParticleEffect[0] = CreateTemplate()
@@ -246,7 +250,7 @@ Function LoadParticles%()
 	SetTemplateAlphaVel(ParticleEffect[9], True)
 	SetTemplateSize(ParticleEffect[9], 0.07, 0.07, 0.5, 1.0)
 	SetTemplateSizeVel(ParticleEffect[9], 0.02, 1.02)
-	SetTemplateFloor(ParticleEffect[9], -18.2, 0.1, True)
+	SetTemplateFloor(ParticleEffect[9], -18.2, 0.1, 1)
 	
 	; ~ White smoke in "room2_nuke"
 	ParticleEffect[10] = CreateTemplate()
@@ -300,7 +304,7 @@ Function LoadParticles%()
 	ParticleEffect[14] = CreateTemplate()
 	SetTemplateEmitterBlend(ParticleEffect[14], 1)
 	SetTemplateInterval(ParticleEffect[14], 20)
-	SetTemplateEmitterLifeTime(ParticleEffect[14], 70.0)
+	SetTemplateEmitterLifeTime(ParticleEffect[14], 70)
 	SetTemplateParticleLifeTime(ParticleEffect[14], 60, 70)
 	SetTemplateTexture(ParticleEffect[14], PARTICLE_BLACK_SMOKE)
 	SetTemplateOffset(ParticleEffect[14], -0.2, 0.2, 0.2, 0.8, -0.2, 0.2)
@@ -320,6 +324,44 @@ Function LoadParticles%()
 	SetTemplateSize(ParticleEffect[15], 0.01, 0.01, 1.0, 2.0)
 	SetTemplateAlphaVel(ParticleEffect[15], True)
 	SetTemplateGravity(ParticleEffect[15], 0.0022)
+	
+	; ~ Sparks effect for fast opened door
+	ParticleEffect[16] = CreateTemplate()
+	SetTemplateEmitterBlend(ParticleEffect[16], 1)
+	SetTemplateEmitterLifeTime(ParticleEffect[16], 15)
+	SetTemplateParticlesPerInterval(ParticleEffect[16], 30)
+	SetTemplateParticleLifeTime(ParticleEffect[16], 60, 70)
+	SetTemplateTexture(ParticleEffect[16], PARTICLE_SPARK)
+	SetTemplateOffset(ParticleEffect[16], -0.03, 0.03, 0.0, 0.05, -0.03, 0.03)
+	SetTemplateVelocity(ParticleEffect[16], -0.008, 0.008, -0.008, 0.008, -0.008, 0.008)
+	SetTemplateSize(ParticleEffect[16], 0.007, 0.007, 1.0, 1.5)
+	SetTemplateAlphaVel(ParticleEffect[16], True)
+	
+	; ~ Water drop particle
+	ParticleEffect[17] = CreateTemplate()
+	SetTemplateEmitterBlend(ParticleEffect[17], 1)
+	SetTemplateEmitterLifeTime(ParticleEffect[17], -1)
+	SetTemplateParticlesPerInterval(ParticleEffect[17], 1)
+	SetTemplateParticleLifeTime(ParticleEffect[17], 110, 120)
+	SetTemplateTexture(ParticleEffect[17], PARTICLE_WATER_DROP)
+	SetTemplateOffset(ParticleEffect[17], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+	SetTemplateVelocity(ParticleEffect[17], -0.0001, 0.0001, -0.008, -0.005, -0.0001, 0.0001)
+	SetTemplateSize(ParticleEffect[17], 0.008, 0.008, 1.0, 1.5)
+	SetTemplateAlphaVel(ParticleEffect[17], True)
+	SetTemplateFloor(ParticleEffect[17], 0.4, 0.02, 0)
+	
+	; ~ Water sprinklet particle
+	ParticleEffect[18] = CreateTemplate()
+	SetTemplateEmitterBlend(ParticleEffect[18], 1)
+	SetTemplateEmitterLifeTime(ParticleEffect[18], -1)
+	SetTemplateParticlesPerInterval(ParticleEffect[18], 10)
+	SetTemplateParticleLifeTime(ParticleEffect[18], 110, 120)
+	SetTemplateTexture(ParticleEffect[18], PARTICLE_WATER_DROP)
+	SetTemplateOffset(ParticleEffect[18], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+	SetTemplateVelocity(ParticleEffect[18], -0.0025, 0.0025, -0.008, -0.005, -0.0025, 0.0025)
+	SetTemplateSize(ParticleEffect[18], 0.008, 0.008, 1.0, 1.5)
+	SetTemplateAlphaVel(ParticleEffect[18], True)
+	SetTemplateFloor(ParticleEffect[18], -13.2, 0.08, 0)
 End Function
 
 Function RemoveParticleInstances%()
@@ -328,7 +370,7 @@ Function RemoveParticleInstances%()
 	For i = 0 To MaxParticleTextureIDAmount - 1
 		p_I\ParticleTextureID[i] = 0
 	Next
-	Delete Each ParticleInstance
+	Delete(p_I) : p_I = Null
 End Function
 
 Const MaxDoorModelIDAmount% = 9
@@ -479,7 +521,7 @@ Function RemoveDoorInstances%()
 	For i = BUTTON_GREEN_TEXTURE To BUTTON_106_TEXTURE
 		d_I\ButtonTextureID[i] = 0
 	Next
-	Delete Each DoorInstance
+	Delete(d_I) : d_I = Null
 End Function
 
 Const MaxLeverModelIDAmount% = 2
@@ -516,7 +558,7 @@ Function RemoveLeverInstances%()
 	For i = 0 To MaxLeverModelIDAmount - 1
 		FreeEntity(lvr_I\LeverModelID[i]) : lvr_I\LeverModelID[i] = 0
 	Next
-	Delete Each LeverInstance
+	Delete(lvr_I) : lvr_I = Null
 End Function
 
 Const MaxCamModelIDAmount% = 2
@@ -573,7 +615,7 @@ Function RemoveSecurityCamInstances%()
 	For i = CAM_HEAD_DEFAULT_TEXTURE To CAM_HEAD_RED_LIGHT_TEXTURE
 		sc_I\CamTextureID[i] = 0
 	Next
-	Delete Each SecurityCamInstance
+	Delete(sc_I) : sc_I = Null
 End Function
 
 Const MaxMonitorModelIDAmount% = 2
@@ -613,7 +655,6 @@ Const MONITOR_895_OVERLAY_2% = 13
 Const MONITOR_895_OVERLAY_3% = 14
 Const MONITOR_895_OVERLAY_4% = 15
 Const MONITOR_895_OVERLAY_5% = 16
-Const MONITOR_895_OVERLAY_6% = 17
 ;[End Block]
 
 Function LoadMonitors%()
@@ -642,7 +683,7 @@ Function LoadMonitors%()
 		mon_I\MonitorOverlayID[i] = LoadTexture_Strict("GFX\Overlays\scp_079_overlay(" + (i - 4) + ").png", 1, DeleteAllTextures, False)
 	Next
 	
-	For i = MONITOR_895_OVERLAY_1 To MONITOR_895_OVERLAY_6
+	For i = MONITOR_895_OVERLAY_1 To MONITOR_895_OVERLAY_5
 		mon_I\MonitorOverlayID[i] = LoadTexture_Strict("GFX\Overlays\scp_895_overlay(" + (i - 11) + ").png", 1, DeleteAllTextures, False)
 	Next
 End Function
@@ -660,10 +701,10 @@ Function RemoveMonitorInstances%()
 	For i = MONITOR_079_OVERLAY_1 To MONITOR_079_OVERLAY_7
 		mon_I\MonitorOverlayID[i] = 0
 	Next
-	For i = MONITOR_895_OVERLAY_1 To MONITOR_895_OVERLAY_6
+	For i = MONITOR_895_OVERLAY_1 To MONITOR_895_OVERLAY_5
 		mon_I\MonitorOverlayID[i] = 0
 	Next
-	Delete Each MonitorInstance
+	Delete(mon_I) : mon_I = Null
 End Function
 
 Const MaxNPCModelIDAmount% = 32
@@ -838,7 +879,7 @@ Function RemoveNPCInstances%()
 	For i = NPC_CLASS_D_GONZALES_TEXTURE To NPC_096_BLOODY_TEXTURE
 		n_I\NPCTextureID[i] = 0
 	Next
-	Delete Each NPCInstance
+	Delete(n_I) : n_I = Null
 End Function
 
 Const MaxMTModelIDAmount% = 7
@@ -896,7 +937,7 @@ Function RemoveMiscInstances%()
 		misc_I\LightSpriteID[i] = 0
 	Next
 	misc_I\AdvancedLightSprite = 0
-	Delete Each MiscInstance
+	Delete(misc_I) : misc_I = Null
 End Function
 
 Function LoadMaterials%(File$)
@@ -943,7 +984,6 @@ End Function
 
 Const ItemsPath$ = "GFX\Items\"
 Const ItemHUDTexturePath$ = "GFX\Items\HUD Textures\"
-Const ItemTexturePath$ = "GFX\Items\"
 Const ItemINVIconPath$ = "GFX\Items\Inventory Icons\"
 
 Function LoadItems%()
@@ -1013,6 +1053,8 @@ Function LoadItems%()
 	CreateItemTemplate(GetLocalString("items", "docrs"), "Research Sector-02 Scheme", it_paper, "paper.b3d", "INV_paper.png", "doc_RS.png", 0.003, 0, "doc_RS.png")
 	
 	CreateItemTemplate(GetLocalString("items", "docscl"), "Security Clearance Levels", it_paper, "paper.b3d", "INV_paper.png", "doc_SCL.png", 0.003, 0, "doc_SCL.png")
+	
+	CreateItemTemplate(GetLocalString("items", "docst"), "Storage Transfers", it_paper, "paper.b3d", "INV_paper.png", "doc_storagetransfers.png", 0.003, 0, "doc_storagetransfers.png")
 	
 	CreateItemTemplate(GetLocalString("items", "docsn"), "Sticky Note", it_paper, "note.b3d", "INV_note(2).png", "note_682.png", 0.0025, 0, "note_682.png")
 	
@@ -1174,11 +1216,11 @@ Function LoadItems%()
 	CreateItemTemplate(GetLocalString("items", "nav310"), "S-NAV 310 Navigator", it_nav310, "navigator.b3d", "INV_navigator.png", "navigator.png", 0.0008, 1)
 	CreateItemTemplate(GetLocalString("items", "navulti"), "S-NAV Navigator Ultimate", it_navulti, "navigator.b3d", "INV_navigator.png", "navigator.png", 0.0008, 1)
 	
-	CreateItemTemplate(GetLocalString("items", "bat"), "9V Battery", it_bat, "battery.b3d", "INV_battery_9v.png", "", 0.008, 1)
-	CreateItemTemplate(GetLocalString("items", "45bat"), "4.5V Battery", it_coarsebat, "battery.b3d", "INV_battery_4.5v.png", "", 0.008, 1, "battery_4.5V.png")
-	CreateItemTemplate(GetLocalString("items", "18bat"), "18V Battery", it_finebat, "battery.b3d", "INV_battery_18v.png", "", 0.01, 1, "battery_18V.png")
-	CreateItemTemplate(GetLocalString("items", "999bat"), "999V Battery", it_veryfinebat, "battery.b3d", "INV_battery_999v.png", "", 0.009, 1, "battery_999V.png")
-	CreateItemTemplate(GetLocalString("items", "killbat"), "Strange Battery", it_killbat, "battery.b3d", "INV_strange_battery.png", "", 0.01, 1, "strange_battery.png")
+	CreateItemTemplate(GetLocalString("items", "bat"), "9V Battery", it_bat, "battery.b3d", "INV_battery_9v.png", "", 0.007, 1)
+	CreateItemTemplate(GetLocalString("items", "45bat"), "4.5V Battery", it_coarsebat, "battery.b3d", "INV_battery_4.5v.png", "", 0.007, 1, "battery_4.5V.png")
+	CreateItemTemplate(GetLocalString("items", "18bat"), "18V Battery", it_finebat, "battery.b3d", "INV_battery_18v.png", "", 0.009, 1, "battery_18V.png")
+	CreateItemTemplate(GetLocalString("items", "999bat"), "999V Battery", it_veryfinebat, "battery.b3d", "INV_battery_999v.png", "", 0.0075, 1, "battery_999V.png")
+	CreateItemTemplate(GetLocalString("items", "killbat"), "Strange Battery", it_killbat, "battery.b3d", "INV_strange_battery.png", "", 0.009, 1, "strange_battery.png")
 	
 	CreateItemTemplate(GetLocalString("items", "syringe"), "Syringe", it_syringe, "syringe.b3d", "INV_syringe.png", "", 0.005, 2)
 	CreateItemTemplate(GetLocalString("items", "syringe"), "Syringe", it_finesyringe, "syringe.b3d", "INV_syringe.png", "", 0.005, 2)
@@ -1697,7 +1739,7 @@ Function RemoveSoundInstances%()
 	
 	snd_I\SinkHoleSFX = 0
 	
-	Delete Each SoundInstance
+	Delete(snd_I) : snd_I = Null
 End Function
 
 Function LoadEvents%()
@@ -1761,8 +1803,6 @@ Function LoadEvents%()
 	
 	; ~ The dead guard
 	CreateEvent(e_room3_2_hcz_guard, r_room3_2_hcz, 0, 0.1)
-	
-	CreateEvent(e_room4_lcz_049, r_room4_lcz, 0)
 	
 	If Rand(5) < 5
 		Select Rand(4)
@@ -2067,6 +2107,7 @@ Type Player
 	Field BlurVolume#, BlurTimer#
 	Field LightBlink#, LightFlash#
 	Field CurrCameraZoom#
+	Field CameraFogDist#
 	Field RefinedItems%
 	Field Deaf%, DeafTimer#
 	Field Zombie%
@@ -2089,6 +2130,8 @@ Function LoadData%()
 	SubColors = JsonGetValue(SubFile, "colors")
 	LocalSubColors = JsonGetValue(LocalSubFile, "colors")
 	SubtitlesInit = True
+	
+	SCP1499Chunks = JsonGetArray(JsonParseFromFile(SCP1499ChunksFile))
 	
 	SubjectName = GetLocalString("misc", "subject")
 	PlayerFallingPickDistance = 10.0
@@ -2136,7 +2179,7 @@ Function LoadData%()
 	
 	bk.BrokenDoor = New BrokenDoor
 	
-	achv.Achievements = New Achievements
+	InitAchievements()
 	LoadAchievementsFile()
 	igm.InGameMenu = New InGameMenu
 	
@@ -2153,7 +2196,7 @@ Function LoadData%()
 			TempStr = GetLocalString("menu", "new.map") + Name
 		EndIf
 	EndIf
-	SetErrorMsg(6, TempStr)
+	SetErrorMsg(8, TempStr)
 End Function
 
 Global Camera%
@@ -2162,7 +2205,6 @@ Function LoadEntities%()
 	CatchErrors("LoadEntities()")
 	
 	Local i%, Tex%
-	Local b%, t1%, SF%
 	Local Name$, Test%, File$
 	
 	DeInitMainMenuAssets()
@@ -2189,9 +2231,9 @@ Function LoadEntities%()
 	Camera = CreateCamera()
 	CameraViewport(Camera, 0, 0, opt\GraphicWidth, opt\GraphicHeight)
 	CameraFogMode(Camera, 1)
-	CameraFogRange(Camera, 0.1, opt\CameraFogFar)
+	CameraFogRange(Camera, 0.1, me\CameraFogDist)
 	CameraFogColor(Camera, 30.0, 30.0, 30.0)
-	CameraRange(Camera, 0.01, opt\CameraFogFar)
+	CameraRange(Camera, 0.01, me\CameraFogDist)
 	CameraClsColor(Camera, 30.0, 30.0, 30.0)
 	AmbientLight(30.0, 30.0, 30.0)
 	
@@ -2229,16 +2271,6 @@ Function LoadEntities%()
 		RotateImage(t\IconID[i + 10], i * 90.0)
 		HandleImage(t\IconID[i + 10], 0, 0)
 	Next
-	
-	For i = 0 To MaxAchievements - 1
-		Local Loc$ = "a" + Str(i)
-		
-		achv\AchievementStrings[i] = GetFileLocalString(AchievementsFile, Loc, "AchvName")
-		achv\AchievementDescs[i] = GetFileLocalString(AchievementsFile, Loc, "AchvDesc")
-	Next
-	
-	achv\AchvLocked = LoadImage_Strict("GFX\Menu\achievements\AchvLocked.png")
-	achv\AchvLocked = ScaleImage2(achv\AchvLocked, opt\GraphicHeight / 768.0, opt\GraphicHeight / 768.0)
 	
 	t\ImageID[0] = LoadImage_Strict("GFX\Menu\pause_menu.png")
 	t\ImageID[0] = ScaleImage2(t\ImageID[0], MenuScale, MenuScale)
@@ -2295,7 +2327,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[1], 1)
 	EntityOrder(t\OverlayID[1], -1003)
 	MoveEntity(t\OverlayID[1], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\hazmat_suit_overlay.png", 1, DeleteAllTextures, False) ; ~ HAZMAT SUIT
 	t\OverlayID[2] = CreateSprite(ArkBlurCam)
@@ -2305,7 +2337,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[2], 1)
 	EntityOrder(t\OverlayID[2], -1003)
 	MoveEntity(t\OverlayID[2], 0, 0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\scp_008_overlay.png", 1, DeleteAllTextures, False) ; ~ SCP-008
 	t\OverlayID[3] = CreateSprite(ArkBlurCam)
@@ -2315,7 +2347,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[3], 1)
 	EntityOrder(t\OverlayID[3], -1003)
 	MoveEntity(t\OverlayID[3], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	t\OverlayTextureID[1] = LoadTexture_Strict("GFX\Overlays\night_vision_goggles_overlay.png", 1, DeleteAllTextures, False) ; ~ NIGHT VISION GOGGLES
 	t\OverlayID[4] = CreateSprite(ArkBlurCam)
@@ -2350,7 +2382,7 @@ Function LoadEntities%()
 	EntityBlend(t\OverlayID[6], 1)
 	EntityOrder(t\OverlayID[6], -1002)
 	MoveEntity(t\OverlayID[6], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\scp_409_overlay.png", 1, DeleteAllTextures, False) ; ~ SCP-409
 	t\OverlayID[7] = CreateSprite(ArkBlurCam)
@@ -2360,7 +2392,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[7], 1)
 	EntityOrder(t\OverlayID[7], -1003)
 	MoveEntity(t\OverlayID[7], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0	
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\helmet_overlay.png", 1, DeleteAllTextures, False) ; ~ HELMET
 	t\OverlayID[8] = CreateSprite(ArkBlurCam)
@@ -2370,7 +2402,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[8], 1)
 	EntityOrder(t\OverlayID[8], -1003)
 	MoveEntity(t\OverlayID[8], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\blood_overlay.png", 1, DeleteAllTextures, False) ; ~ BLOOD
 	t\OverlayID[9] = CreateSprite(ArkBlurCam)
@@ -2380,7 +2412,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[9], 1)
 	EntityOrder(t\OverlayID[9], -1003)
 	MoveEntity(t\OverlayID[9], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	Tex = LoadTexture_Strict("GFX\Overlays\fog_gas_mask_overlay.png", 1, DeleteAllTextures, False) ; ~ FOG IN GAS MASK
 	t\OverlayID[10] = CreateSprite(ArkBlurCam)
@@ -2390,7 +2422,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[10], 1)
 	EntityOrder(t\OverlayID[10], -1002)
 	MoveEntity(t\OverlayID[10], 0.0, 0.0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 
 	Tex = LoadTexture_Strict("GFX\Overlays\fire_overlay.png", 1, DeleteAllTextures)
 	t\OverlayID[11] = CreateSprite(ArkBlurCam)
@@ -2400,7 +2432,7 @@ Function LoadEntities%()
 	EntityFX(t\OverlayID[11], 1)
 	EntityOrder(t\OverlayID[11], -1003) 
 	MoveEntity(t\OverlayID[11], 0, 0, 1.0)
-	DeleteSingleTextureEntryFromCache(Tex)
+	DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 	
 	For i = 1 To 11
 		HideEntity(t\OverlayID[i])
@@ -2495,10 +2527,18 @@ End Function
 Function RemoveTextureInstances%()
 	Local i%
 	
-	For i = 0 To MaxAchievements - 1
-		If achv\AchvIMG[i] <> 0 Then FreeImage(achv\AchvIMG[i]) : achv\AchvIMG[i] = 0
+	Local Achievements% = JsonGetArray(JsonGetValue(AchievementsArray, "achievements"))
+	Local ArraySize% = JsonGetArraySize(Achievements)
+	
+	For i = 0 To ArraySize - 1
+		FreeImage(S2IMapGet(AchievementsImages, JsonGetString(JsonGetValue(JsonGetArrayValue(Achievements, i), "id"))))
 	Next
-	FreeImage(achv\AchvLocked) : achv\AchvLocked = 0
+	FreeImage(S2IMapGet(AchievementsImages, "locked"))
+	DestroyS2IMap(AchievementsIndex) : AchievementsIndex = 0
+	DestroyS2IMap(AchievementsImages) : AchievementsImages = 0
+	DestroyS2IMap(UnlockedAchievements) : UnlockedAchievements = 0
+	AchievementsArray = 0
+	LocalAchievementsArray = 0
 	
 	For i = 0 To MaxIconIDAmount - 1
 		FreeImage(t\IconID[i]) : t\IconID[i] = 0
@@ -2512,8 +2552,7 @@ Function RemoveTextureInstances%()
 	For i = 0 To MaxOverlayIDAmount - 1
 		FreeEntity(t\OverlayID[i]) : t\OverlayID[i] = 0
 	Next
-	Delete Each Achievements
-	Delete Each Textures
+	Delete(t) : t = Null
 End Function
 
 Function Init294Drinks%()
@@ -2527,10 +2566,14 @@ Function Init294Drinks%()
 	EndIf
 	
 	I_294\DrinksMap = CreateS2IMap()
-	For i = 0 To JsonGetArraySize(I_294\Drinks) - 1
+	
+	Local ArraySize% = JsonGetArraySize(I_294\Drinks)
+	
+	For i = 0 To ArraySize - 1
 		Local DrinkNames% = JsonGetArray(JsonGetValue(JsonGetArrayValue(I_294\Drinks, i), "name"))
+		Local DrinkArraySize% = JsonGetArraySize(DrinkNames)
 		
-		For j = 0 To JsonGetArraySize(DrinkNames) - 1
+		For j = 0 To DrinkArraySize - 1
 			S2IMapSet(I_294\DrinksMap, Upper(JsonGetString(JsonGetArrayValue(DrinkNames, j))), i)
 		Next
 	Next
@@ -2539,13 +2582,13 @@ End Function
 Function InitNewGame%()
 	CatchErrors("InitNewGame()")
 	
-	Local de.Decals, d.Doors, it.Items, r.Rooms, sc.SecurityCams, e.Events, rt.RoomTemplates
-	Local i%, Skip%
+	Local de.Decals, d.Doors, it.Items, r.Rooms, sc.SecurityCams, e.Events, rt.RoomTemplates, p.Props
+	Local i%, Tex%
 	
 	LoadEntities()
 	LoadSounds()
 	
-	opt\CameraFogFar = 6.0
+	me\CameraFogDist = 6.0
 	
 	IsBlackOut = False : PrevIsBlackOut = False
 	RemoteDoorOn = True
@@ -2619,6 +2662,16 @@ Function InitNewGame%()
 	For sc.SecurityCams = Each SecurityCams
 		EntityParent(sc\BaseOBJ, 0)
 		If sc\MonitorOBJ <> 0 Then EntityParent(sc\MonitorOBJ, 0)
+	Next
+	
+	For p.Props = Each Props
+		If p\TexPath <> ""
+			; ~ Such a stupid way, but it works
+			Tex = LoadTexture_Strict(p\TexPath)
+			EntityTexture(p\OBJ, Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
+			p\TexPath = ""
+		EndIf
 	Next
 	
 	For r.Rooms = Each Rooms
@@ -2731,8 +2784,8 @@ End Function
 Function InitLoadGame%()
 	CatchErrors("InitLoadGame()")
 	
-	Local d.Doors, sc.SecurityCams, rt.RoomTemplates, e.Events
-	Local i%, x#, y#, z#
+	Local d.Doors, sc.SecurityCams, rt.RoomTemplates, e.Events, p.Props
+	Local i%, x#, y#, z#, Tex%
 	
 	InitOtherStuff()
 	LoadWayPoints()
@@ -2750,6 +2803,16 @@ Function InitLoadGame%()
 	For sc.SecurityCams = Each SecurityCams
 		EntityParent(sc\BaseOBJ, 0)
 		If sc\MonitorOBJ <> 0 Then EntityParent(sc\MonitorOBJ, 0)
+	Next
+	
+	For p.Props = Each Props
+		If p\TexPath <> ""
+			; ~ Such a stupid way, but it works
+			Tex = LoadTexture_Strict(p\TexPath)
+			EntityTexture(p\OBJ, Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
+			p\TexPath = ""
+		EndIf
 	Next
 	
 	For rt.RoomTemplates = Each RoomTemplates
@@ -2862,7 +2925,7 @@ Function NullGame%(PlayButtonSFX% = True)
 	Local du.Dummy1499_1, n.NPCs, s.Screens, w.WayPoints, pr.Props, l.Lights, rt.RoomTemplates, r.Rooms, m.Materials, snd.Sound, fr.Forest, mt.MTGrid
 	Local ch.Chunk, chp.ChunkPart, sv.Save, cm.CustomMaps, se.SoundEmitters, tmp.Template, emit.Emitter
 	
-	Local i%, x%, y%, Lvl%
+	Local i%
 	
 	DeleteTextureEntriesFromCache(DeleteAllTextures)
 	
@@ -2873,7 +2936,7 @@ Function NullGame%(PlayButtonSFX% = True)
 	RandomSeed = ""
 	
 	UsedConsole = False
-	Delete Each Cheats
+	Delete(chs) : chs = Null
 	WireFrameState = 0
 	WireFrame(0)
 	ConsoleOpen = False
@@ -2897,6 +2960,7 @@ Function NullGame%(PlayButtonSFX% = True)
 	SecondaryLightOn = 0.0
 	IsBlackOut = False : PrevIsBlackOut = False
 	UpdateLightsTimer = 0.0
+	LightRenderDistance = 0.0
 	
 	RemoteDoorOn = False
 	
@@ -2947,36 +3011,38 @@ Function NullGame%(PlayButtonSFX% = True)
 	Next
 	
 	SubFile = 0
+	LocalSubFile = 0
 	SubColors = 0
+	LocalSubColors = 0
 	SubtitlesInit = False
 	ClearSubtitles()
 	DeInitSubtitlesAssets()
-	Delete Each Messages
-	Delete Each AutoSave
+	Delete(msg) : msg = Null
+	Delete(as) : as = Null
 	
-	opt\CameraFogFar = 0.0
 	FreeEntity(me\Collider) : me\Collider = 0
 	FreeEntity(me\Head) : me\Head = 0
-	Delete Each Player
-	Delete Each WearableItems
+	Delete(me) : me = Null
+	Delete(wi) : wi = Null
 	
-	Delete Each SCP005
-	Delete Each SCP008
-	Delete Each SCP035
-	Delete Each SCP268
-	DestroyS2IMap(I_294\DrinksMap)
-	Delete Each SCP294
-	Delete Each SCP409
+	Delete(I_005) : I_005 = Null
+	Delete(I_008) : I_008 = Null
+	Delete(I_035) : I_035 = Null
+	Delete(I_268) : I_268 = Null
+	DestroyS2IMap(I_294\DrinksMap) : I_294\DrinksMap = 0
+	Delete(I_294) : I_294 = Null
+	Delete(I_409) : I_409 = Null
 	For i = 0 To 1
 		I_427\Sound[i] = 0
 	Next
-	Delete Each SCP427
-	Delete Each SCP500
-	Delete Each SCP714
-	Delete Each SCP1025
+	Delete(I_427) : I_427 = Null
+	Delete(I_500) : I_500 = Null
+	Delete(I_714) : I_714 = Null
+	Delete(I_1025) : I_1025 = Null
 	If I_1499\Sky <> 0 Then FreeEntity(I_1499\Sky) : I_1499\Sky = 0
-	Delete Each SCP1499
-	Delete Each SCP1048A
+	Delete(I_1499) : I_1499 = Null
+	SCP1499Chunks = 0
+	Delete(I_1048A) : I_1048A = Null
 	
 	QuickLoadPercent = 0
 	QuickLoadPercent_DisplayTimer = 0.0
@@ -3021,7 +3087,7 @@ Function NullGame%(PlayButtonSFX% = True)
 		RemoveParticle(p)
 	Next
 	RemoveParticleInstances()
-	Delete Each BrokenDoor
+	Delete(bk) : bk = Null
 	For d.Doors = Each Doors
 		RemoveDoor(d)
 	Next
@@ -3069,8 +3135,8 @@ Function NullGame%(PlayButtonSFX% = True)
 		RemoveChunkPart(chp)
 	Next
 	Dim MapRoom$(0, 0)
-	Delete Each MapGrid
-	Delete Each MapZones
+	Delete(CurrMapGrid) : CurrMapGrid = Null
+	Delete(I_Zone) : I_Zone = Null
 	RoomTempID = 0
 	For r.Rooms = Each Rooms
 		RemoveRoom(r)
@@ -3144,7 +3210,7 @@ Function NullGame%(PlayButtonSFX% = True)
 	DeleteMenuGadgets()
 	InitMainMenuAssets()
 	MenuOpen = False
-	Delete Each InGameMenu
+	Delete(igm) : igm = Null
 	MainMenuOpen = True
 	mm\MainMenuTab = MainMenuTab_Default
 	

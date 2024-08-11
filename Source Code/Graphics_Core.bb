@@ -113,8 +113,6 @@ Function ScaleImage2%(SrcImage%, ScaleX#, ScaleY#, ExactSize% = False)
 	FreeImage(ScratchImage) : ScratchImage = 0
 	; ~ Free the source image
 	FreeImage(SrcImage) : SrcImage = 0
-	SrcWidth = 0 : SrcHeight = 0
-	DestWidth = 0 : DestHeight = 0
 	
 	; ~ Return the new image
 	Return(DestImage)
@@ -152,30 +150,41 @@ Function RenderGamma%()
 	
 	; ~ Not by any means a perfect solution
 	; ~ Not even proper gamma correction but it's a nice looking alternative that works in windowed mode
+	Local RenderScale#
+	Local Ratio#
+	
 	If opt\ScreenGamma > 1.0
+		RenderScale = 1.0 / RealGraphicWidthFloat
+		Ratio = SMALLEST_POWER_TWO / RealGraphicWidthFloat
+		
 		CopyRect(0, 0, opt\RealGraphicWidth, opt\RealGraphicHeight, SMALLEST_POWER_TWO_HALF - opt\RealGraphicWidth / 2, SMALLEST_POWER_TWO_HALF - opt\RealGraphicHeight / 2, BackBuffer(), TextureBuffer(FresizeTexture))
 		EntityBlend(FresizeImage, 1)
 		ClsColor(0, 0, 0)
 		Cls()
-		ScaleRender((-1.0) / RealGraphicWidthFloat, 1.0 / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat)
+		ScaleRender(-RenderScale, RenderScale, Ratio, Ratio)
 		EntityFX(FresizeImage, 1 + 32)
 		EntityBlend(FresizeImage, 3)
 		EntityAlpha(FresizeImage, opt\ScreenGamma - 1.0)
-		ScaleRender((-1.0) / RealGraphicWidthFloat, 1.0 / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat)
+		ScaleRender(-RenderScale, RenderScale, Ratio, Ratio)
 	ElseIf opt\ScreenGamma < 1.0 ; ~ Maybe optimize this if it's too slow, alternatively give players the option to disable gamma
+		RenderScale = 1.0 / RealGraphicWidthFloat
+		Ratio = SMALLEST_POWER_TWO / RealGraphicWidthFloat
+		
+		Local Gamma% = 255 * opt\ScreenGamma
+		
 		CopyRect(0, 0, opt\RealGraphicWidth, opt\RealGraphicHeight, SMALLEST_POWER_TWO_HALF - opt\RealGraphicWidth / 2, SMALLEST_POWER_TWO_HALF - opt\RealGraphicHeight / 2, BackBuffer(), TextureBuffer(FresizeTexture))
 		EntityBlend(FresizeImage, 1)
 		ClsColor(0, 0, 0)
 		Cls()
-		ScaleRender((-1.0) / RealGraphicWidthFloat, 1.0 / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat)
+		ScaleRender(-RenderScale, RenderScale, Ratio, Ratio)
 		EntityFX(FresizeImage, 1 + 32)
 		EntityBlend(FresizeImage, 2)
 		EntityAlpha(FresizeImage, 1.0)
 		SetBuffer(TextureBuffer(FresizeTexture2))
-		ClsColor(255 * opt\ScreenGamma, 255 * opt\ScreenGamma, 255 * opt\ScreenGamma)
+		ClsColor(Gamma, Gamma, Gamma)
 		Cls()
 		SetBuffer(BackBuffer())
-		ScaleRender((-1.0) / RealGraphicWidthFloat, 1.0 / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat, SMALLEST_POWER_TWO / RealGraphicWidthFloat)
+		ScaleRender(-RenderScale, RenderScale, Ratio, Ratio)
 		SetBuffer(TextureBuffer(FresizeTexture2))
 		ClsColor(0, 0, 0)
 		Cls()
@@ -202,16 +211,12 @@ Function UpdateWorld2%()
 	Local HasBattery%
 	Local Power%
 	
-	If wi\NightVision > 0 Lor wi\SCRAMBLE > 0
+	If (wi\NightVision > 0 And wi\NightVision <> 3)  Lor wi\SCRAMBLE > 0
 		For i = 0 To MaxItemAmount - 1
 			If Inventory(i) <> Null
-				If (wi\NightVision = 1 And Inventory(i)\ItemTemplate\ID = it_nvg) Lor (wi\NightVision = 2 And Inventory(i)\ItemTemplate\ID = it_veryfinenvg) Lor (wi\NightVision = 3 And Inventory(i)\ItemTemplate\ID = it_finenvg) Lor (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
-					If wi\NightVision = 3
-						Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * 0.015))
-					ElseIf wi\NightVision > 0
-						Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.03 * wi\NightVision)))
-					EndIf
-					If wi\SCRAMBLE > 0 Then Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.12 / wi\SCRAMBLE)))
+				If (wi\NightVision = 1 And Inventory(i)\ItemTemplate\ID = it_nvg) Lor (wi\NightVision = 2 And Inventory(i)\ItemTemplate\ID = it_veryfinenvg) Lor (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
+					If wi\NightVision > 0 Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.02 * wi\NightVision)))
+					If wi\SCRAMBLE > 0 Then Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.08 / wi\SCRAMBLE)))
 					Power = Int(Inventory(i)\State)
 					If Power = 0 ; ~ This NVG or SCRAMBLE can't be used
 						HasBattery = 0
@@ -246,16 +251,13 @@ Function UpdateWorld2%()
 		EndIf
 	EndIf
 	
-	If wi\SCRAMBLE > 0 And HasBattery <> 0
-		If (Not ChannelPlaying(SCRAMBLECHN)) Then SCRAMBLECHN = PlaySound_Strict(snd_I\SCRAMBLESFX)
-	Else
-		If ChannelPlaying(SCRAMBLECHN) Then StopChannel(SCRAMBLECHN) : SCRAMBLECHN = 0
-	EndIf
-	
 	If HasBattery = 1
 		UpdateBatteryTimer()
 		If BatMsgTimer >= 70.0
-			If (Not ChannelPlaying(LowBatteryCHN[1])) Then LowBatteryCHN[1] = PlaySound_Strict(snd_I\LowBatterySFX[1])
+			If (Not ChannelPlaying(LowBatteryCHN[1]))
+				me\SndVolume = Max(3.0, me\SndVolume)
+				LowBatteryCHN[1] = PlaySound_Strict(snd_I\LowBatterySFX[1])
+			EndIf
 		EndIf
 	EndIf
 End Function
@@ -273,10 +275,10 @@ Function RenderWorld2%(Tween#)
 	Local HasBattery%
 	Local Power%
 	
-	If wi\NightVision > 0 Lor wi\SCRAMBLE > 0
+	If (wi\NightVision > 0 And wi\NightVision <> 3) Lor wi\SCRAMBLE > 0
 		For i = 0 To MaxItemAmount - 1
 			If Inventory(i) <> Null
-				If (wi\NightVision = 1 And Inventory(i)\ItemTemplate\ID = it_nvg) Lor (wi\NightVision = 2 And Inventory(i)\ItemTemplate\ID = it_veryfinenvg) Lor (wi\NightVision = 3 And Inventory(i)\ItemTemplate\ID = it_finenvg) Lor (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
+				If (wi\NightVision = 1 And Inventory(i)\ItemTemplate\ID = it_nvg) Lor (wi\NightVision = 2 And Inventory(i)\ItemTemplate\ID = it_veryfinenvg) Lor (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
 					Power = Int(Inventory(i)\State)
 					If Power = 0 ; ~ This NVG or SCRAMBLE can't be used
 						HasBattery = 0
@@ -306,10 +308,11 @@ Function RenderWorld2%(Tween#)
 			If HasBattery = 1 Then PlusY = 40
 			
 			Local RefreshHint$ = GetLocalString("msg", "refresh")
+			Local InstrRefreshHint% = Instr(RefreshHint, "%s")
 			
-			TextEx(mo\Viewport_Center_X, (20 + PlusY) * MenuScale, Trim(Left(RefreshHint, Instr(RefreshHint, "%s") - 1)), True, False)
+			TextEx(mo\Viewport_Center_X, (20 + PlusY) * MenuScale, Trim(Left(RefreshHint, InstrRefreshHint - 1)), True, False)
 			TextEx(mo\Viewport_Center_X, (60 + PlusY) * MenuScale, Max(FloatToString(wi\NVGTimer / 60.0, 1), 0.0), True, False)
-			TextEx(mo\Viewport_Center_X, (100 + PlusY) * MenuScale, Trim(Right(RefreshHint, Len(RefreshHint) - Instr(RefreshHint, "%s") - 1)), True, False)
+			TextEx(mo\Viewport_Center_X, (100 + PlusY) * MenuScale, Trim(Right(RefreshHint, Len(RefreshHint) - InstrRefreshHint - 1)), True, False)
 			
 			Local Temp% = CreatePivot()
 			Local Temp2% = CreatePivot()

@@ -45,7 +45,7 @@ Type QueuedSubtitlesMsg
 End Type
 
 Function UpdateSubtitles%()
-	If (Not opt\EnableSubtitles) Then Return
+	If SelectedDifficulty\Name = difficulties[APOLLYON]\Name Lor (Not opt\EnableSubtitles) Then Return
 	
 	Local queue.QueuedSubtitlesMsg
 	Local lastSubtitles.SubtitlesMsg
@@ -69,7 +69,7 @@ Function UpdateSubtitles%()
 					
 					While StringRight > subassets\BoxLeft + subassets\BoxWidth - CoordEx
 						NextLine = Right(TxtLine, 1) + NextLine
-						TxtLine = Left(TxtLine, Max(Len(TxtLine) - 1, 0.0))
+						TxtLine = Left(TxtLine, Max(Len(TxtLine) - 1, 0))
 						StringRight = subassets\BoxLeft + CoordEx + StringWidth(TxtLine)
 					Wend
 					
@@ -77,7 +77,7 @@ Function UpdateSubtitles%()
 					
 					While Right(TxtLine, 1) <> " "
 						NextLine = Right(TxtLine, 1) + NextLine
-						TxtLine = Left(TxtLine, Max(Len(TxtLine) - 1, 0.0))
+						TxtLine = Left(TxtLine, Max(Len(TxtLine) - 1, 0))
 						
 						Local NextStringRight# = subassets\BoxLeft + CoordEx + StringWidth(NextLine)
 						
@@ -132,7 +132,7 @@ Function UpdateSubtitles%()
 End Function
 
 Function RenderSubtitles%()
-	If (Not opt\EnableSubtitles) Then Return
+	If SelectedDifficulty\Name = difficulties[APOLLYON]\Name Lor (Not opt\EnableSubtitles) Then Return
 	
 	Local sub.SubtitlesMsg
 	Local Lines% = 0
@@ -160,8 +160,6 @@ Function RenderSubtitles%()
 	For sub.SubtitlesMsg = Each SubtitlesMsg
 		Lines = Lines + 1
 		
-		Local Txt$ = sub\Txt
-		
 		sub\yPos = BoxTop + (subassets\TextHeight * Lines) + (CoordEx * 2)
 		sub\CurrYPos = CurveValue(sub\yPos, sub\CurrYPos, 7.0)
 		
@@ -170,24 +168,28 @@ Function RenderSubtitles%()
 		Else
 			Color(sub\R, sub\G, sub\B)
 		EndIf
-		TextEx(subassets\BoxLeft + (10 * MenuScale), sub\CurrYPos, Txt)
+		TextEx(subassets\BoxLeft + (10 * MenuScale), sub\CurrYPos, sub\Txt)
 	Next
 End Function
 
 Function CreateSubtitlesToken%(SoundPath$, sound.Sound)
 	If (Not opt\EnableSubtitles) Lor (Not SubtitlesInit) Then Return
+	If SelectedDifficulty\Name = difficulties[APOLLYON]\Name Then Return ; ~ Call this line when first line is passed
 	
 	Local i%
 	Local Token% = JsonGetValue(LocalSubFile, SoundPath)
 	
 	If JsonIsNull(Token) Lor (Not JsonIsArray(Token))
-		If (JsonGetBool(JsonGetValue(LocalSubFile, "fallback"))) Lor (JsonIsNull(JsonGetValue(LocalSubFile, "fallback"))) Token = JsonGetValue(SubFile, SoundPath)
+		Local FallBack% = JsonGetValue(LocalSubFile, "fallback")
+		
+		If (JsonGetBool(FallBack)) Lor (JsonIsNull(FallBack)) Token = JsonGetValue(SubFile, SoundPath)
 		If (Not JsonIsArray(Token)) Then Return
 	EndIf
 	
 	Local Arr% = JsonGetArray(Token)
-
-	For i = 0 To JsonGetArraySize(Arr) - 1
+	Local ArraySize% = JsonGetArraySize(Arr)
+	
+	For i = 0 To ArraySize - 1
 		Local Subtitle% = JsonGetArrayValue(Arr, i)
 		Local TxtVal% = JsonGetValue(Subtitle, "text")
 		Local DelayVal% = JsonGetValue(Subtitle, "delay")
@@ -207,9 +209,11 @@ Function CreateSubtitlesToken%(SoundPath$, sound.Sound)
 			ColorArray = JsonGetValue(SubColors, JsonGetString(JsonGetValue(Subtitle, "color")))
 			If (Not JsonIsArray(ColorArray)) Then ColorArray = JsonGetValue(LocalSubColors, JsonGetString(JsonGetValue(Subtitle, "color")))
 			If JsonIsArray(ColorArray)
-				ColorR = JsonGetInt(JsonGetArrayValue(JsonGetArray(ColorArray), 0))
-				ColorG = JsonGetInt(JsonGetArrayValue(JsonGetArray(ColorArray), 1))
-				ColorB = JsonGetInt(JsonGetArrayValue(JsonGetArray(ColorArray), 2))
+				Local JsonArrayVal% = JsonGetArray(ColorArray)
+				
+				ColorR = JsonGetInt(JsonGetArrayValue(JsonArrayVal, 0))
+				ColorG = JsonGetInt(JsonGetArrayValue(JsonArrayVal, 1))
+				ColorB = JsonGetInt(JsonGetArrayValue(JsonArrayVal, 2))
 			EndIf
 		EndIf
 		QueueSubtitlesMsg(SoundPath, sound, Txt, DelayTime, Length, ColorR, ColorG, ColorB)
@@ -261,7 +265,6 @@ Function CreateSubtitlesMsg%(SoundPath$, sound.Sound, Txt$, TimeLeft#, R% = 255,
 		For i = 0 To MaxChannelsAmount - 1
 			If ChannelPlaying(sound\Channels[i]) Then IsChannelPlaying = True
 		Next
-		
 		If (Not IsChannelPlaying) Then Return
 	EndIf
 	
@@ -286,10 +289,10 @@ Function CreateSubtitlesMsg%(SoundPath$, sound.Sound, Txt$, TimeLeft#, R% = 255,
 	
 	Local BoxTop# = (subassets\BoxTop + subassets\TextHeight) - subassets\TextHeight * Lines
 	Local BoxHeight# = subassets\TextHeight * Lines
-	Local CoordEx% = 10 * MenuScale
+	Local CoordEx% = subassets\TextHeight + 10 * MenuScale
 	
-	sub\yPos = (BoxTop + BoxHeight) - subassets\TextHeight + CoordEx
-	sub\CurrYPos = (BoxTop + BoxHeight) - subassets\TextHeight + CoordEx
+	sub\yPos = (BoxTop + BoxHeight) - CoordEx
+	sub\CurrYPos = (BoxTop + BoxHeight) - CoordEx
 	
 	Insert sub After Last SubtitlesMsg
 End Function
@@ -300,7 +303,7 @@ Function DeInitSubtitlesAssets%()
 	For snd.Sound = Each Sound
 		RemoveSubtitlesToken(snd)
 	Next
-	Delete Each SubtitlesAssets
+	Delete(subassets) : subassets = Null
 End Function
 
 ;~IDEal Editor Parameters:

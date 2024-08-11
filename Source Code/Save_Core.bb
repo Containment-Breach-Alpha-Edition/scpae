@@ -5,9 +5,11 @@ Function SaveGame%(File$)
 	
 	If me\DropSpeed > 0.02 * fps\Factor[0] Lor me\DropSpeed < (-0.02) * fps\Factor[0] Then Return
 	
+	If MenuOpen Lor MainMenuOpen Then Return
+	
 	CatchErrors("SaveGame(" + File + ")")
 	
-	Local n.NPCs, r.Rooms, d.Doors
+	Local n.NPCs, r.Rooms, d.Doors, emit.Emitter
 	Local x%, y%, i%, Temp%
 	
 	GameSaved = True
@@ -85,6 +87,10 @@ Function SaveGame%(File$)
 	WriteFloat(f, me\LightBlink)
 	WriteFloat(f, me\LightFlash)
 	
+	WriteFloat(f, me\Sanity)
+	
+	WriteInt(f, me\RefinedItems)
+	
 	WriteByte(f, I_005\ChanceToSpawn)
 
 	WriteByte(f, I_006\Used)
@@ -110,12 +116,10 @@ Function SaveGame%(File$)
 				WriteByte(f, SelectedDifficulty\AggressiveNPCs)
 				WriteByte(f, SelectedDifficulty\SaveType)
 				WriteByte(f, SelectedDifficulty\OtherFactors)
+				WriteByte(f, SelectedDifficulty\InventorySlots)
 			EndIf
 		EndIf
 	Next
-	WriteByte(f, SelectedDifficulty\InventorySlots)
-	
-	WriteFloat(f, me\Sanity)
 	
 	WriteFloat(f, wi\GasMaskFogTimer)
 	
@@ -141,6 +145,9 @@ Function SaveGame%(File$)
 		WriteFloat(f, 0.0)
 	EndIf
 	
+	WriteFloat(f, I_1048A\EarGrowTimer)
+	WriteByte(f, I_1048A\Revert)
+	
 	WriteByte(f, I_268\Using)
 	WriteFloat(f, I_268\Timer)
 	WriteByte(f, I_427\Using)
@@ -159,24 +166,22 @@ Function SaveGame%(File$)
 	
 	WriteByte(f, SoundTransmission)
 	
-	For i = 0 To MaxAchievements - 1
-		WriteByte(f, achv\Achievement[i])
-	Next
-	WriteInt(f, me\RefinedItems)
+	Local Achievements% = JsonGetArray(JsonGetValue(AchievementsArray, "achievements"))
+	Local ArraySize% = JsonGetArraySize(Achievements)
 	
-	If UsedConsole
-		WriteInt(f, 100)
-	Else
-		WriteInt(f, 994)
-	EndIf
+	For i = 0 To ArraySize - 1
+		Local ID$ = JsonGetString(JsonGetValue(JsonGetArrayValue(Achievements, i), "id"))
+		
+		If S2IMapContains(UnlockedAchievements, ID) Then WriteString(f, ID)
+	Next
+	WriteString(f, "EOA") ; ~ End of achievements
+	
+	WriteByte(f, UsedConsole)
 	
 	WriteFloat(f, MTFTimer)
 	
 	WriteFloat(f, Remove714Timer)
 	WriteFloat(f, RemoveHazmatTimer)
-	
-	WriteFloat(f, I_1048A\EarGrowTimer)
-	WriteByte(f, I_1048A\Revert)
 	
 	For x = 0 To MapGridSize
 		For y = 0 To MapGridSize
@@ -273,11 +278,7 @@ Function SaveGame%(File$)
 		WriteByte(f, r\Found)
 		WriteInt(f, r\Zone)
 		
-		If PlayerRoom = r
-			WriteByte(f, 1)
-		Else
-			WriteByte(f, 0)
-		EndIf
+		WriteByte(f, PlayerRoom = r)
 		
 		For i = 0 To MaxRoomNPCs - 1
 			If r\NPC[i] = Null
@@ -291,11 +292,7 @@ Function SaveGame%(File$)
 			If r\RoomLevers[i] = Null
 				WriteByte(f, 2)
 			Else
-				If EntityPitch(r\RoomLevers[i]\OBJ, True) > 0.0
-					WriteByte(f, 0)
-				Else
-					WriteByte(f, 1)
-				EndIf
+				WriteByte(f, EntityPitch(r\RoomLevers[i]\OBJ, True) =< 0.0)
 			EndIf
 		Next
 		
@@ -314,10 +311,10 @@ Function SaveGame%(File$)
 		If r\fr = Null ; ~ This room doesn't have a forest
 			WriteByte(f, 0)
 		Else ; ~ This room has a forest
-			If (Not I_Zone\HasCustomForest)
-				WriteByte(f, 1)
-			Else
+			If I_Zone\HasCustomForest
 				WriteByte(f, 2)
+			Else
+				WriteByte(f, 1)
 			EndIf
 			For y = 0 To ForestGridSize - 1
 				For x = 0 To ForestGridSize - 1
@@ -331,6 +328,24 @@ Function SaveGame%(File$)
 	Next
 	
 	WriteInt(f, 954)
+	
+	Temp = 0
+	For emit.Emitter = Each Emitter
+		Temp = Temp + 1
+	Next
+	WriteInt(f, Temp)
+	For emit.Emitter = Each Emitter
+		WriteFloat(f, EntityX(emit\Owner, True))
+		WriteFloat(f, EntityY(emit\Owner, True))
+		WriteFloat(f, EntityZ(emit\Owner, True))
+		
+		WriteInt(f, emit\ID)
+		WriteByte(f, emit\State)
+		
+		For r.Rooms = Each Rooms
+			WriteByte(f, emit\room = r)
+		Next
+	Next
 	
 	Temp = 0
 	For d.Doors = Each Doors
@@ -446,11 +461,7 @@ Function SaveGame%(File$)
 		WriteFloat(f, it\State3)
 		WriteByte(f, it\Picked)
 		
-		If SelectedItem = it
-			WriteByte(f, 1) 
-		Else
-			WriteByte(f, 0)
-		EndIf
+		WriteByte(f, SelectedItem = it)
 		
 		Local ItemFound% = False
 		
@@ -469,11 +480,7 @@ Function SaveGame%(File$)
 		If it\ItemTemplate\IsAnim Then WriteFloat(f, AnimTime(it\Model))
 		WriteByte(f, it\InvSlots)
 		WriteInt(f, it\ID)
-		If it\ItemTemplate\InvImg = it\InvImg
-			WriteByte(f, 0)
-		Else
-			WriteByte(f, 1)
-		EndIf
+		WriteByte(f, it\ItemTemplate\InvImg <> it\InvImg)
 	Next
 	
 	Temp = 0
@@ -506,15 +513,13 @@ Function SaveGame%(File$)
 	
 	CloseFile(f)
 	
-	If (Not MenuOpen) And (Not MainMenuOpen)
-		If SelectedDifficulty\SaveType = SAVE_ON_SCREENS
-			PlaySound_Strict(LoadTempSound("SFX\General\Save1.ogg"))
-		Else
-			PlaySound_Strict(LoadTempSound("SFX\General\Save0.ogg"))
-			as\Timer = 70.0 * 120.0
-		EndIf
-		CreateHintMsg(GetLocalString("save", "saved"))
+	If SelectedDifficulty\SaveType = SAVE_ON_SCREENS
+		PlaySound_Strict(LoadTempSound("SFX\General\Save1.ogg"))
+	Else
+		PlaySound_Strict(LoadTempSound("SFX\General\Save0.ogg"))
+		as\Timer = 70.0 * 120.0
 	EndIf
+	CreateHintMsg(GetLocalString("save", "saved"))
 	
 	CatchErrors("Uncaught: SaveGame(" + File + ")")
 End Function
@@ -522,7 +527,7 @@ End Function
 Function LoadGame%(File$)
 	CatchErrors("LoadGame(" + File + ")")
 	
-	Local r.Rooms, n.NPCs, d.Doors, rt.RoomTemplates
+	Local r.Rooms, n.NPCs, d.Doors, emit.Emitter, rt.RoomTemplates
 	Local x#, y#, z#, i%, j%, Temp%, StrTemp$, Tex%, ID%
 	Local f% = ReadFile_Strict(SavePath + File + "\save.cb")
 	
@@ -547,7 +552,7 @@ Function LoadGame%(File$)
 	x = ReadFloat(f)
 	y = ReadFloat(f)
 	z = ReadFloat(f)
-	PositionEntity(me\Collider, x, y + 0.4, z)
+	PositionEntity(me\Collider, x, y + 0.3, z)
 	
 	ResetEntity(me\Collider)
 	ShowEntity(me\Collider)
@@ -555,7 +560,7 @@ Function LoadGame%(File$)
 	x = ReadFloat(f)
 	y = ReadFloat(f)
 	z = ReadFloat(f)
-	PositionEntity(me\Head, x, y + 0.4, z)
+	PositionEntity(me\Head, x, y + 0.3, z)
 	ResetEntity(me\Head)
 	
 	x = ReadFloat(f)
@@ -600,6 +605,10 @@ Function LoadGame%(File$)
 	me\LightBlink = ReadFloat(f)
 	me\LightFlash = ReadFloat(f)
 	
+	me\Sanity = ReadFloat(f)
+	
+	me\RefinedItems = ReadInt(f)
+	
 	I_005\ChanceToSpawn = ReadByte(f)
 
 	I_006\Used = ReadByte(f)
@@ -624,13 +633,11 @@ Function LoadGame%(File$)
 		SelectedDifficulty\AggressiveNPCs = ReadByte(f)
 		SelectedDifficulty\SaveType = ReadByte(f)
 		SelectedDifficulty\OtherFactors = ReadByte(f)
+		SelectedDifficulty\InventorySlots = ReadByte(f)
 	EndIf
-	SelectedDifficulty\InventorySlots = ReadByte(f)
 	
 	MaxItemAmount = SelectedDifficulty\InventorySlots
 	Dim Inventory.Items(MaxItemAmount)
-	
-	me\Sanity = ReadFloat(f)
 	
 	wi\GasMaskFogTimer = ReadFloat(f)
 	
@@ -652,6 +659,9 @@ Function LoadGame%(File$)
 	Local r1499_x# = ReadFloat(f)
 	Local r1499_z# = ReadFloat(f)
 	
+	I_1048A\EarGrowTimer = ReadFloat(f)
+	I_1048A\Revert = ReadByte(f)
+	
 	I_268\Using = ReadByte(f)
 	I_268\Timer = ReadFloat(f)
 	I_427\Using = ReadByte(f)
@@ -669,25 +679,20 @@ Function LoadGame%(File$)
 	RemoteDoorOn = ReadByte(f)
 	
 	SoundTransmission = ReadByte(f)
+
+	Repeat
+		Local Achv$ = ReadString(f)
+		
+		If Achv = "EOA" Then Exit
+		S2IMapSet(UnlockedAchievements, Achv, True)
+	Forever
 	
-	For i = 0 To MaxAchievements - 1
-		achv\Achievement[i] = ReadByte(f)
-		If achv\Achievement[i] = True
-			achv\AchvIMG[i] = LoadImage_Strict("GFX\Menu\achievements\" + GetFileLocalString(AchievementsFile, "a" + i, "AchvImage") + ".png")
-			achv\AchvIMG[i] = ScaleImage2(achv\AchvIMG[i], opt\GraphicHeight / 768.0, opt\GraphicHeight / 768.0)
-		EndIf
-	Next
-	me\RefinedItems = ReadInt(f)
-	
-	UsedConsole = (ReadInt(f) <> 994)
+	UsedConsole = ReadByte(f)
 	
 	MTFTimer = ReadFloat(f)
 	
 	Remove714Timer = ReadFloat(f)
 	RemoveHazmatTimer = ReadFloat(f)
-	
-	I_1048A\EarGrowTimer = ReadFloat(f)
-	I_1048A\Revert = ReadByte(f)
 	
 	CurrMapGrid.MapGrid = New MapGrid
 	For x = 0 To MapGridSize
@@ -699,9 +704,9 @@ Function LoadGame%(File$)
 	
 	If ReadInt(f) <> 113 Then RuntimeError(GetLocalString("save", "corrupted_1"))
 	
-	For n.NPCs = Each NPCs
-		RemoveNPC(n)
-	Next
+;	For n.NPCs = Each NPCs
+;		RemoveNPC(n)
+;	Next
 	
 	Temp = ReadInt(f)
 	For i = 1 To Temp
@@ -732,6 +737,10 @@ Function LoadGame%(File$)
 			Case NPCType049
 				;[Block]
 				n_I\Curr049 = n
+				;[End Block]
+			Case NPCType066
+				;[Block]
+				n_I\Curr066 = n
 				;[End Block]
 		End Select
 		
@@ -764,7 +773,7 @@ Function LoadGame%(File$)
 		If n\Texture <> ""
 			Tex = LoadTexture_Strict(n\Texture)
 			EntityTexture(n\OBJ, Tex)
-			DeleteSingleTextureEntryFromCache(Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 		EndIf
 		
 		n\HasAsset = ReadByte(f)
@@ -911,10 +920,37 @@ Function LoadGame%(File$)
 			DestroyForest(r\fr)
 			Delete(r\fr)
 		EndIf
-		If r\x = r1499_x And r\z = r1499_z Then I_1499\PrevRoom = r
+	Next
+	For r.Rooms = Each Rooms
+		If r\x = r1499_x And r\z = r1499_z
+			I_1499\PrevRoom = r
+			Exit
+		EndIf
 	Next
 	
 	If ReadInt(f) <> 954 Then RuntimeError(GetLocalString("save", "corrupted_3"))
+	
+	For emit.Emitter = Each Emitter
+		FreeEmitter(emit, True)
+	Next
+	
+	; ~ TODO: r\RoomEmitters vars aren't saved
+	Temp = ReadInt(f)
+	For i = 1 To Temp
+		x = ReadFloat(f)
+		y = ReadFloat(f)
+		z = ReadFloat(f)
+		
+		ID = ReadInt(f)
+		Temp2 = ReadByte(f)
+		
+		For r.Rooms = Each Rooms
+			If ReadByte(f) = 1
+				emit.Emitter = SetEmitter(r, x, y, z, ID)
+				emit\State = Temp2
+			EndIf
+		Next
+	Next
 	
 	Local Zone%, ShouldSpawnDoor%
 	
@@ -955,7 +991,7 @@ Function LoadGame%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If x + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
+								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						
@@ -983,7 +1019,7 @@ Function LoadGame%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If y + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
+								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						Exit
@@ -1115,7 +1151,8 @@ Function LoadGame%(File$)
 		Next
 		e\EventStr = ReadString(f)
 		FindForestEvent(e)
-		
+	Next
+	For e.Events = Each Events
 		Select e\EventID
 			Case e_dimension_1499
 				;[Block]
@@ -1127,6 +1164,7 @@ Function LoadGame%(File$)
 					For chp.ChunkPart = Each ChunkPart
 						RemoveChunkPart(chp)
 					Next
+					FreeEntity(I_1499\Sky) : I_1499\Sky = 0
 					For n.NPCs = Each NPCs
 						If n\NPCType = NPCType1499_1
 							If n\InFacility = Floor1499 Then RemoveNPC(n)
@@ -1268,11 +1306,11 @@ Function LoadGame%(File$)
 	CloseFile(f)
 	
 	If wi\NightVision > 0
-		opt\CameraFogFar = 17.0
+		me\CameraFogDist = 17.0
 	ElseIf wi\SCRAMBLE > 0
-		opt\CameraFogFar = 9.0
+		me\CameraFogDist = 9.0
 	Else
-		opt\CameraFogFar = 6.0
+		me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
 	EndIf
 	
 	For i = 0 To 1
@@ -1339,7 +1377,7 @@ End Function
 Function LoadGameQuick%(File$)
 	CatchErrors("LoadGameQuick(" + File + ")")
 	
-	Local r.Rooms, n.NPCs, d.Doors
+	Local r.Rooms, n.NPCs, d.Doors, emit.Emitter
 	Local x#, y#, z#, i%, j%, Temp%, StrTemp$, ID%, Tex%
 	Local SF%, b%, t1%
 	Local Player_X#, Player_Y#, Player_Z#
@@ -1391,7 +1429,7 @@ Function LoadGameQuick%(File$)
 	x = ReadFloat(f)
 	y = ReadFloat(f)
 	z = ReadFloat(f)
-	PositionEntity(me\Collider, x, y + 0.4, z)
+	PositionEntity(me\Collider, x, y + 0.3, z)
 	
 	ResetEntity(me\Collider)
 	ShowEntity(me\Collider)
@@ -1399,7 +1437,7 @@ Function LoadGameQuick%(File$)
 	x = ReadFloat(f)
 	y = ReadFloat(f)
 	z = ReadFloat(f)
-	PositionEntity(me\Head, x, y + 0.4, z)
+	PositionEntity(me\Head, x, y + 0.3, z)
 	ResetEntity(me\Head)
 	
 	x = ReadFloat(f)
@@ -1444,6 +1482,10 @@ Function LoadGameQuick%(File$)
 	me\LightBlink = ReadFloat(f)
 	me\LightFlash = ReadFloat(f)
 	
+	me\Sanity = ReadFloat(f)
+	
+	me\RefinedItems = ReadInt(f)
+	
 	I_005\ChanceToSpawn = ReadByte(f)
 
 	I_006\Used = ReadByte(f)
@@ -1465,16 +1507,11 @@ Function LoadGameQuick%(File$)
 	
 	SelectedDifficulty = difficulties[DifficultyIndex]
 	If DifficultyIndex = ESOTERIC
-		SelectedDifficulty\AggressiveNPCs = ReadByte(f)
-		SelectedDifficulty\SaveType = ReadByte(f)
-		SelectedDifficulty\OtherFactors = ReadByte(f)
+		ReadByte(f)
+		ReadByte(f)
+		ReadByte(f)
+		ReadByte(f)
 	EndIf
-	SelectedDifficulty\InventorySlots = ReadByte(f)
-	
-	MaxItemAmount = SelectedDifficulty\InventorySlots
-	Dim Inventory.Items(MaxItemAmount)
-	
-	me\Sanity = ReadFloat(f)
 	
 	wi\GasMaskFogTimer = ReadFloat(f)
 	
@@ -1496,6 +1533,9 @@ Function LoadGameQuick%(File$)
 	Local r1499_x# = ReadFloat(f)
 	Local r1499_z# = ReadFloat(f)
 	
+	I_1048A\EarGrowTimer = ReadFloat(f)
+	I_1048A\Revert = ReadByte(f)
+	
 	I_268\Using = ReadByte(f)
 	I_268\Timer = ReadFloat(f)
 	I_427\Using = ReadByte(f)
@@ -1514,20 +1554,20 @@ Function LoadGameQuick%(File$)
 	
 	SoundTransmission = ReadByte(f)
 	
-	For i = 0 To MaxAchievements - 1
-		achv\Achievement[i] = ReadByte(f)
-	Next
-	me\RefinedItems = ReadInt(f)
+	ClearS2IMap(UnlockedAchievements)
+	Repeat
+		Local Achv$ = ReadString(f)
+		
+		If Achv = "EOA" Then Exit
+		S2IMapSet(UnlockedAchievements, Achv, True)
+	Forever
 	
-	UsedConsole = (ReadInt(f) <> 994)
+	UsedConsole = ReadByte(f)
 	
 	MTFTimer = ReadFloat(f)
 	
 	Remove714Timer = ReadFloat(f)
 	RemoveHazmatTimer = ReadFloat(f)
-	
-	I_1048A\EarGrowTimer = ReadFloat(f)
-	I_1048A\Revert = ReadByte(f)
 	
 	For x = 0 To MapGridSize
 		For y = 0 To MapGridSize
@@ -1572,6 +1612,10 @@ Function LoadGameQuick%(File$)
 				;[Block]
 				n_I\Curr049 = n
 				;[End Block]
+			Case NPCType066
+				;[Block]
+				n_I\Curr066 = n
+				;[End Block]
 		End Select
 		
 		x = ReadFloat(f)
@@ -1603,7 +1647,7 @@ Function LoadGameQuick%(File$)
 		If n\Texture <> ""
 			Tex = LoadTexture_Strict(n\Texture)
 			EntityTexture(n\OBJ, Tex)
-			DeleteSingleTextureEntryFromCache(Tex)
+			DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 		EndIf
 		
 		n\HasAsset = ReadByte(f)
@@ -1725,10 +1769,35 @@ Function LoadGameQuick%(File$)
 			DestroyForest(r\fr)
 			Delete(r\fr)
 		EndIf
-		If r\x = r1499_x And r\z = r1499_z Then I_1499\PrevRoom = r
+	Next
+	For r.Rooms = Each Rooms
+		If r\x = r1499_x And r\z = r1499_z
+			I_1499\PrevRoom = r
+			Exit
+		EndIf
+	Next
+	If ReadInt(f) <> 954 Then RuntimeError(GetLocalString("save", "corrupted_3"))
+	
+	For emit.Emitter = Each Emitter
+		FreeEmitter(emit, True)
 	Next
 	
-	If ReadInt(f) <> 954 Then RuntimeError(GetLocalString("save", "corrupted_3"))
+	Temp = ReadInt(f)
+	For i = 1 To Temp
+		x = ReadFloat(f)
+		y = ReadFloat(f)
+		z = ReadFloat(f)
+		
+		ID = ReadInt(f)
+		Temp2 = ReadByte(f)
+		
+		For r.Rooms = Each Rooms
+			If ReadByte(f) = 1
+				emit.Emitter = SetEmitter(r, x, y, z, ID)
+				emit\State = Temp2
+			EndIf
+		Next
+	Next
 	
 	Temp = ReadInt(f)
 	
@@ -1852,7 +1921,8 @@ Function LoadGameQuick%(File$)
 		Next
 		e\EventStr = ReadString(f)
 		FindForestEvent(e)
-		
+	Next
+	For e.Events = Each Events
 		Select e\EventID
 			Case e_cont1_173
 				;[Block]
@@ -1865,7 +1935,7 @@ Function LoadGameQuick%(File$)
 				;[End Block]
 			Case e_dimension_1499
 				;[Block]
-				If e\EventState > 0.0
+				If e\EventState = 1.0
 					HideChunks()
 					For ch.Chunk = Each Chunk
 						RemoveChunk(ch)
@@ -1873,6 +1943,7 @@ Function LoadGameQuick%(File$)
 					For chp.ChunkPart = Each ChunkPart
 						RemoveChunkPart(chp)
 					Next
+					FreeEntity(I_1499\Sky) : I_1499\Sky = 0
 					For n.NPCs = Each NPCs
 						If n\NPCType = NPCType1499_1
 							If n\InFacility = Floor1499 Then RemoveNPC(n)
@@ -2031,12 +2102,15 @@ Function LoadGameQuick%(File$)
 	
 	d_I\AnimButton = 0
 	
+	If wi\GasMask = 0 Then HideEntity(t\OverlayID[1])
+	If wi\HazmatSuit = 0 Then HideEntity(t\OverlayID[2])
+	
 	If wi\NightVision > 0
-		opt\CameraFogFar = 17.0
+		me\CameraFogDist = 17.0
 	ElseIf wi\SCRAMBLE > 0
-		opt\CameraFogFar = 9.0
+		me\CameraFogDist = 9.0
 	Else
-		opt\CameraFogFar = 6.0
+		me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
 	EndIf
 	
 	; ~ Free some entities that could potentially cause memory leaks (for the endings)
@@ -2101,13 +2175,6 @@ Function LoadGameQuick%(File$)
 		End Select
 	Next
 	
-	; ~ Remove old emitters and particles immediately
-	Local emit.Emitter
-	
-	For emit.Emitter = Each Emitter
-		If emit\room = Null Then FreeEmitter(emit, True)
-	Next
-	
 	; ~ Resetting some stuff (those get changed when going to the endings)
 	HideDistance = 17.0
 	
@@ -2156,7 +2223,7 @@ Function SaveAchievementsFile%()
 	Local File$
 	
 	File = WriteFile(GetEnv("AppData") + "\scpcb-ue\Data\Does the Black Moon howl.cb")
-	WriteByte(File, achv\Achievement[AchvKeter])
+	WriteByte(File, S2IMapContains(UnlockedAchievements, "keter"))
 	CloseFile(File)
 End Function
 
@@ -2166,8 +2233,8 @@ Function LoadAchievementsFile%()
 	
 	Local File$
 	
-	File = OpenFile_Strict(GetEnv("AppData") + "\scpcb-ue\Data\Does the Black Moon howl.cb")
-	achv\Achievement[AchvKeter] = ReadByte(File)
+	File = OpenFile(GetEnv("AppData") + "\scpcb-ue\Data\Does the Black Moon howl.cb")
+	If ReadByte(File) Then S2IMapSet(UnlockedAchievements, "keter", True)
 	CloseFile(File)
 End Function
 
@@ -2604,7 +2671,7 @@ Function LoadMap%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If x + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
+								If CurrMapGrid\Grid[(x + 1) + (y * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[0] = CreateDoor(r, Float(x) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Float(y) * RoomSpacing, 90.0, Max(Rand(-3, 1), 0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						
@@ -2632,7 +2699,7 @@ Function LoadMap%(File$)
 						End Select
 						If ShouldSpawnDoor
 							If y + 1 < MapGridSize + 1
-								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0.0), ((Zone - 1) Mod 2) * 2)
+								If CurrMapGrid\Grid[x + ((y + 1) * MapGridSize)] > MapGrid_NoTile Then r\AdjDoor[3] = CreateDoor(r, Float(x) * RoomSpacing, 0.0, Float(y) * RoomSpacing + (RoomSpacing / 2.0), 0.0, Max(Rand(-3, 1), 0), ((Zone - 1) Mod 2) * 2)
 							EndIf
 						EndIf
 						Exit

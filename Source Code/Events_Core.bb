@@ -34,61 +34,60 @@ Const e_cont2_1123% = 15
 Const e_cont2c_066_1162_arc% = 16
 Const e_room3_storage% = 17
 Const e_cont3_372% = 18
-Const e_room4_lcz_049% = 19
-Const e_room4_ic% = 20
+Const e_room4_ic% = 19
 ; ~ HCZ
-Const e_cont1_035% = 21
-Const e_cont1_079% = 22
-Const e_cont1_106% = 23
-Const e_cont1_895% = 24
-Const e_room2_2_hcz_106% = 25
-Const e_room2_4_hcz_106% = 26
-Const e_room2_5_hcz_106% = 27
-Const e_room2_6_hcz_smoke% = 28, e_room2_6_hcz_173% = 29
-Const e_room2_mt% = 30
-Const e_room2_nuke% = 31
-Const e_room2_servers_hcz% = 32
-Const e_room2_shaft% = 33
-Const e_room2_test_hcz% = 34
-Const e_cont2_008% = 35
-Const e_cont2_049% = 36
-Const e_cont2_409% = 37
-Const e_room3_hcz_duck% = 38, e_room3_hcz_1048% = 39
-Const e_room3_2_hcz_guard% = 40
-Const e_cont3_966% = 41
-Const e_room4_2_hcz_d% = 42
+Const e_cont1_035% = 20
+Const e_cont1_079% = 21
+Const e_cont1_106% = 22
+Const e_cont1_895% = 23
+Const e_room2_2_hcz_106% = 24
+Const e_room2_4_hcz_106% = 25
+Const e_room2_5_hcz_106% = 26
+Const e_room2_6_hcz_smoke% = 27, e_room2_6_hcz_173% = 28
+Const e_room2_mt% = 29
+Const e_room2_nuke% = 30
+Const e_room2_servers_hcz% = 31
+Const e_room2_shaft% = 32
+Const e_room2_test_hcz% = 33
+Const e_cont2_008% = 34
+Const e_cont2_049% = 35
+Const e_cont2_409% = 36
+Const e_room3_hcz_duck% = 37, e_room3_hcz_1048% = 38
+Const e_room3_2_hcz_guard% = 39
+Const e_cont3_966% = 40
+Const e_room4_2_hcz_d% = 41
 ; ~ EZ
-Const e_gate_b_entrance% = 43, e_gate_b% = 44
-Const e_gate_a_entrance% = 45, e_gate_a% = 46
-Const e_room1_dead_end_guard% = 47
-Const e_room2_ez_035% = 48
-Const e_room2_2_ez_duck% = 49
-Const e_room2_6_ez_789_j% = 50, e_room2_6_ez_guard% = 51
-Const e_room2_cafeteria% = 52
-Const e_room2_ic% = 53
-Const e_room2_medibay% = 54
-Const e_room2_scientists_2% = 55
-Const e_cont2_860_1% = 56
-Const e_room2c_ec% = 57
-Const e_room2c_gw_ez_096% = 58
-Const e_room3_2_ez_duck% = 59
+Const e_gate_b_entrance% = 42, e_gate_b% = 43
+Const e_gate_a_entrance% = 44, e_gate_a% = 45
+Const e_room1_dead_end_guard% = 46
+Const e_room2_ez_035% = 47
+Const e_room2_2_ez_duck% = 48
+Const e_room2_6_ez_789_j% = 49, e_room2_6_ez_guard% = 50
+Const e_room2_cafeteria% = 51
+Const e_room2_ic% = 52
+Const e_room2_medibay% = 53
+Const e_room2_scientists_2% = 54
+Const e_cont2_860_1% = 55
+Const e_room2c_ec% = 56
+Const e_room2c_gw_ez_096% = 57
+Const e_room3_2_ez_duck% = 58
 ; ~ OTHERS
-Const e_096_spawn% = 60
-Const e_106_victim% = 61
-Const e_106_sinkhole% = 62
-Const e_173_appearing% = 63
-Const e_682_roar% = 64
-Const e_1048_a% = 65
-Const e_checkpoint% = 66
-Const e_door_closing% = 67
-Const e_gateway% = 68
-Const e_tesla% = 69
-Const e_trick% = 70
-Const e_dimension_106% = 71, e_dimension_1499% = 72
+Const e_096_spawn% = 59
+Const e_106_victim% = 60
+Const e_106_sinkhole% = 61
+Const e_173_appearing% = 62
+Const e_682_roar% = 63
+Const e_1048_a% = 64
+Const e_checkpoint% = 65
+Const e_door_closing% = 66
+Const e_gateway% = 67
+Const e_tesla% = 68
+Const e_trick% = 69
+Const e_dimension_106% = 70, e_dimension_1499% = 71
 
 ; { Alpha Edition}
 ; ~ HCZ
-Const e_cont2_006 = 73
+Const e_cont2_006 = 72
 ;[End Block]
 
 ; ~ For Map Creator
@@ -173,10 +172,6 @@ Function FindEventID%(EventName$)
 		Case "cont3_372"
 			;[Block]
 			Return(e_cont3_372)
-			;[End Block]
-		Case "room4_lcz_049"
-			;[Block]
-			Return(e_room4_lcz_049)
 			;[End Block]
 		Case "room4_ic"
 			;[Block]
@@ -490,9 +485,9 @@ Function UpdateQuickLoading%()
 End Function
 
 Function RenderQuickLoading%()
-	Local CoordEx% = 90 * MenuScale
-	
 	If QuickLoadPercent > -1 And opt\HUDEnabled
+		Local CoordEx% = 90 * MenuScale
+		
 		MidHandle(t\IconID[9])
 		DrawImage(t\IconID[9], opt\GraphicWidth - CoordEx, opt\GraphicHeight - (150 * MenuScale))
 		Color(255, 255, 255)
@@ -501,7 +496,7 @@ Function RenderQuickLoading%()
 	EndIf
 End Function
 
-Function QuickLoadEvents%()
+Function QuickLoadEvents%() ; ~ Get rid of this shit - Jabka
 	If QuickLoad_CurrEvent = Null
 		QuickLoadPercent = -1
 		Return
@@ -511,7 +506,7 @@ Function QuickLoadEvents%()
 	
 	Local e.Events = QuickLoad_CurrEvent
 	Local r.Rooms, sc.SecurityCams, sc2.SecurityCams, n.NPCs
-	Local Scale#, Pvt%, i%, x#, y#, z#
+	Local i%, x#, y#, z#
 	
 	; ~ Might be a good idea to use QuickLoadPercent to determine the "steps" of the loading process 
 	; ~ Instead of magic values in e\EventState and e\EventStr
@@ -520,69 +515,81 @@ Function QuickLoadEvents%()
 		Case e_cont1_205
 			;[Block]
 			If e\EventState = 0.0 Lor e\EventStr <> "LoadDone"
-				If e\EventStr = "Load0"
-					e\room\Objects[2] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_1_MODEL])
-					e\room\ScriptedObject[2] = True
-					QuickLoadPercent = 10
-					e\EventStr = "Load1"
-				ElseIf e\EventStr = "Load1"
-					e\room\Objects[3] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_2_MODEL])
-					e\room\ScriptedObject[3] = True
-					QuickLoadPercent = 20
-					e\EventStr = "Load2"
-				ElseIf e\EventStr = "Load2"
-					e\room\Objects[4] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_3_MODEL])
-					e\room\ScriptedObject[4] = True
-					QuickLoadPercent = 30
-					e\EventStr = "Load3"
-				ElseIf e\EventStr = "Load3"
-					e\room\Objects[5] = CopyEntity(n_I\NPCModelID[NPC_205_WOMAN_MODEL])
-					e\room\ScriptedObject[5] = True
-					QuickLoadPercent = 40
-					e\EventStr = "Load4"
-				ElseIf e\EventStr = "Load4"
-					QuickLoadPercent = 50
-					e\EventStr = "Load5"
-				ElseIf e\EventStr = "Load5"
-					For i = 2 To 5
-						PositionEntity(e\room\Objects[i], EntityX(e\room\Objects[0], True), EntityY(e\room\Objects[0], True), EntityZ(e\room\Objects[0], True), True)
-						RotateEntity(e\room\Objects[i], -90.0, EntityYaw(e\room\Objects[0], True), 0.0, True)
-						ScaleEntity(e\room\Objects[i], 0.05, 0.05, 0.05, True)
-					Next
-					QuickLoadPercent = 70
-					e\EventStr = "Load6"
-				ElseIf e\EventStr = "Load6"
-					For i = 2 To 5
-						HideEntity(e\room\Objects[i])
-					Next
-					QuickLoadPercent = 100
-					e\EventStr = "LoadDone"
-				EndIf
+				Select e\EventStr
+					Case "Load0"
+						;[Block]
+						e\room\Objects[2] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_1_MODEL])
+						e\room\ScriptedObject[2] = True
+						QuickLoadPercent = 15
+						e\EventStr = "Load1"
+						;[End Block]
+					Case "Load1"
+						;[Block]
+						e\room\Objects[3] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_2_MODEL])
+						e\room\ScriptedObject[3] = True
+						QuickLoadPercent = 30
+						e\EventStr = "Load2"
+						;[End Block]
+					Case "Load2"
+						;[Block]
+						e\room\Objects[4] = CopyEntity(n_I\NPCModelID[NPC_205_DEMON_3_MODEL])
+						e\room\ScriptedObject[4] = True
+						QuickLoadPercent = 45
+						e\EventStr = "Load3"
+						;[End Block]
+					Case "Load3"
+						;[Block]
+						e\room\Objects[5] = CopyEntity(n_I\NPCModelID[NPC_205_WOMAN_MODEL])
+						e\room\ScriptedObject[5] = True
+						QuickLoadPercent = 60
+						e\EventStr = "Load4"
+						;[End Block]
+					Case "Load4"
+						;[Block]
+						For i = 2 To 5
+							PositionEntity(e\room\Objects[i], EntityX(e\room\Objects[0], True), EntityY(e\room\Objects[0], True), EntityZ(e\room\Objects[0], True), True)
+							RotateEntity(e\room\Objects[i], -90.0, EntityYaw(e\room\Objects[0], True), 0.0, True)
+							ScaleEntity(e\room\Objects[i], 0.05, 0.05, 0.05, True)
+						Next
+						QuickLoadPercent = 75
+						e\EventStr = "Load5"
+						;[End Block]
+					Case "Load5"
+						;[Block]
+						For i = 2 To 5
+							HideEntity(e\room\Objects[i])
+						Next
+						QuickLoadPercent = 100
+						e\EventStr = "LoadDone"
+						;[End Block]
+				End Select
 			EndIf
 			;[End Block]
 		Case e_cont2_860_1
 			;[Block]
-			If e\EventStr = "Load0"
-				QuickLoadPercent = 15
-				ForestNPC = CreateSprite()
-				ScaleSprite(ForestNPC, 0.75 * (140.0 / 410.0), 0.75)
-				SpriteViewMode(ForestNPC, 4)
-				EntityFX(ForestNPC, 1 + 8)
-				ForestNPCTex = LoadAnimTexture_Strict("GFX\NPCs\AgentIJ.AIJ", 1 + 2, 140, 410, 0, 4, DeleteAllTextures)
-				ForestNPCData[0] = 0.0
-				EntityTexture(ForestNPC, ForestNPCTex, ForestNPCData[0])
-				ForestNPCData[1] = 0.0
-				ForestNPCData[2] = 0.0
-				HideEntity(ForestNPC)
-				e\EventStr = "Load1"
-			ElseIf e\EventStr = "Load1"
-				QuickLoadPercent = 40
-				e\EventStr = "Load2"
-			ElseIf e\EventStr = "Load2"
-				QuickLoadPercent = 100
-				If e\room\NPC[0] = Null Then e\room\NPC[0] = CreateNPC(NPCType860_2, 0.0, 0.0, 0.0)
-				e\EventStr = "LoadDone"
-			EndIf
+			Select e\EventStr
+				Case "Load0"
+					;[Block]
+					QuickLoadPercent = 50
+					ForestNPC = CreateSprite()
+					ScaleSprite(ForestNPC, 0.75 * (140.0 / 410.0), 0.75)
+					SpriteViewMode(ForestNPC, 4)
+					EntityFX(ForestNPC, 1 + 8)
+					ForestNPCTex = LoadAnimTexture_Strict("GFX\NPCs\AgentIJ.AIJ", 1 + 2, 140, 410, 0, 4, DeleteAllTextures)
+					ForestNPCData[0] = 0.0
+					EntityTexture(ForestNPC, ForestNPCTex, ForestNPCData[0])
+					ForestNPCData[1] = 0.0
+					ForestNPCData[2] = 0.0
+					HideEntity(ForestNPC)
+					e\EventStr = "Load1"
+					;[End Block]
+				Case "Load1"
+					;[Block]
+					QuickLoadPercent = 100
+					If e\room\NPC[0] = Null Then e\room\NPC[0] = CreateNPC(NPCType860_2, 0.0, 0.0, 0.0)
+					e\EventStr = "LoadDone"
+					;[End Block]
+			End Select
 			;[End Block]
 		Case e_dimension_1499
 			;[Block]
@@ -598,17 +605,19 @@ Function QuickLoadEvents%()
 					I_1499\Sky = CreateSky("GFX\Map\Textures\1499sky")
 					e\EventStr = 1
 				Else
-					If Int(e\EventStr) < 16
+					Local EventStrInt% = Int(e\EventStr)
+					
+					If EventStrInt < 16
 						QuickLoadPercent = QuickLoadPercent + 2
-						e\room\Objects[Int(e\EventStr)] = LoadRMesh("GFX\Map\dimension1499\dimension_1499_object(" + (Int(e\EventStr)) + ").rmesh", Null, False)
-						ScaleEntity(e\room\Objects[Int(e\EventStr)], RoomScale, RoomScale, RoomScale)
-						HideEntity(e\room\Objects[Int(e\EventStr)])
-						e\EventStr = Int(e\EventStr) + 1
-					ElseIf Int(e\EventStr) = 16
+						e\room\Objects[EventStrInt] = LoadRMesh("GFX\Map\dimension1499\dimension_1499_object(" + (EventStrInt) + ").rmesh", Null, False)
+						ScaleEntity(e\room\Objects[EventStrInt], RoomScale, RoomScale, RoomScale)
+						HideEntity(e\room\Objects[EventStrInt])
+						e\EventStr = EventStrInt + 1
+					ElseIf EventStrInt = 16
 						QuickLoadPercent = 90
 						CreateChunkParts(e\room)
 						e\EventStr = 17
-					ElseIf Int(e\EventStr) = 17
+					ElseIf EventStrInt = 17
 						QuickLoadPercent = 100
 						
 						x = EntityX(e\room\OBJ)
@@ -637,15 +646,16 @@ Function UpdateEvents%()
 	CatchErrors("UpdateEvents()")
 	
 	Local p.Particles, n.NPCs, r.Rooms, e.Events, e2.Events, de.Decals, du.Dummy1499_1, w.WayPoints, pr.Props, l.Lights, se.SoundEmitters
-	Local it.Items, it2.Items, sc.SecurityCams, sc2.SecurityCams, wayp.WayPoints, d.Doors, s.Screens, emit.Emitter
-	Local Dist#, i%, Temp%, Pvt%, StrTemp$, j%, k%
+	Local it.Items, it2.Items, sc.SecurityCams, sc2.SecurityCams, wayp.WayPoints, d.Doors, s.Screens, emit.Emitter, itt.ItemTemplates
+	Local i%, j%, k%
+	Local Temp%, StrTemp$, Pvt%
 	Local fDir#, Scale#, Tex%, t1%, Name$ ;CurrTrigger$ = "",
-	Local x#, y#, z#, xTemp#, yTemp#, b%, BT%, SF%, TexName$
-	Local Angle#, RoomExists%
+	Local x1#, y1#, z1#, x2#, y2#, z2#
+	Local Angle#, Dist#
+	Local b%, BT%, SF%, TexName$, SurfCount%
+	Local RoomExists%
 	Local SinValue#, CosValue#, SqrValue#
-	Local PlayerPosX#, PlayerPosY#, PlayerPosZ#
 	Local FPSFactorEx#
-	Local itt.ItemTemplates
 	
 	For e.Events = Each Events
 		Select e\EventID
@@ -721,8 +731,8 @@ Function UpdateEvents%()
 					If e\room\NPC[0] <> Null Then AnimateNPC(e\room\NPC[0], 249.0, 286.0, 0.4, False)
 					
 					If EntityDistanceSquared(me\Collider, e\room\RoomDoors[2]\FrameOBJ) < 1.21 Then e\EventState = Max(e\EventState, 500.0)
+					If e\EventState >= 500.0 Lor EntityDistanceSquared(me\Collider, e\room\RoomDoors[2]\FrameOBJ) < 4.0 Then e\EventState = e\EventState + fps\Factor[0]
 					If e\EventState >= 500.0
-						e\EventState = e\EventState + fps\Factor[0]
 						If e\EventState2 = 0.0
 							If e\EventState > 900.0 And e\room\RoomDoors[3]\Open
 								If e\EventState - fps\Factor[0] <= 900.0 
@@ -769,6 +779,7 @@ Function UpdateEvents%()
 									If e\EventState - fps\Factor[0] < 900.0 + (70.0 * 4.0)
 										PlaySound_Strict(snd_I\LightSFX[Rand(0, 2)])
 										me\LightBlink = 3.0
+										me\BlinkTimer = -10.0
 										PlaySound2(snd_I\StoneDragSFX, Camera, n_I\Curr173\Collider)
 										PointEntity(n_I\Curr173\Collider, e\room\NPC[2]\Collider)
 									EndIf
@@ -866,16 +877,11 @@ Function UpdateEvents%()
 						If i = 0 Then PlayAnnouncement("SFX\Room\Intro\IA\Scripted\Scripted5.ogg")
 						If i > 0 And i < 26
 							If (Not CommotionState[i]) ; ~ Prevents the same commotion file from playing more then once
-								PlaySound_Strict(LoadTempSound("SFX\Room\Intro\Commotion\Commotion" + (i + 1) + ".ogg"))
+								PlaySound_Strict(LoadTempSound("SFX\Room\Intro\Commotion\Commotion" + (i - 1) + ".ogg"))
 								CommotionState[i] = True
 							EndIf
 						EndIf
-						
-						If i > 26 
-							RemoveNPC(e\room\NPC[0])
-							
-							RemoveEvent(e)
-						EndIf
+						If i > 26 Then RemoveEvent(e)
 					EndIf
 				EndIf
 				;[End Block]
@@ -917,15 +923,15 @@ Function UpdateEvents%()
 								EndIf
 							Else
 								Dist = DistanceSquared(EntityX(me\Collider), EntityX(e\room\RoomDoors[0]\FrameOBJ), EntityZ(me\Collider), EntityZ(e\room\RoomDoors[0]\FrameOBJ))
-								If Dist < 0.16 And (Not chs\NoTarget)
+								If Dist < 0.16 And e\room\RoomDoors[0]\OpenState > 0.0 And (Not chs\NoTarget)
 									If e\EventState2 = 0.0 Then PlaySound_Strict(LoadTempSound("SFX\Room\SinkholeFall.ogg"))
 									
 									MakeMeUnplayable()
 									
-									x = CurveValue(EntityX(e\room\RoomDoors[0]\FrameOBJ), EntityX(me\Collider), 10.0)
-									y = CurveValue(EntityY(e\room\RoomDoors[0]\FrameOBJ) - e\EventState2, EntityY(me\Collider), 25.0)
-									z = CurveValue(EntityZ(e\room\RoomDoors[0]\FrameOBJ), EntityZ(me\Collider), 10.0)
-									PositionEntity(me\Collider, x, y, z, True)
+									x1 = CurveValue(EntityX(e\room\RoomDoors[0]\FrameOBJ), EntityX(me\Collider), 10.0)
+									y1 = CurveValue(EntityY(e\room\RoomDoors[0]\FrameOBJ) - e\EventState2, EntityY(me\Collider), 25.0)
+									z1 = CurveValue(EntityZ(e\room\RoomDoors[0]\FrameOBJ), EntityZ(me\Collider), 10.0)
+									PositionEntity(me\Collider, x1, y1, z1, True)
 									
 									me\DropSpeed = 0.0
 									
@@ -940,10 +946,7 @@ Function UpdateEvents%()
 									EndIf
 									me\BlurTimer = e\EventState2 * 500.0
 									
-									If e\EventState2 = 2.0
-										MoveToPocketDimension()
-										RemoveEvent(e)
-									EndIf
+									If e\EventState2 = 2.0 Then MoveToPocketDimension()
 								Else
 									If chs\NoClip Then me\Playable = True
 								EndIf
@@ -1010,7 +1013,7 @@ Function UpdateEvents%()
 								e\EventState = 2.0
 							ElseIf e\EventState = 2.0
 								If EntityDistanceSquared(e\room\Objects[0], me\Collider) < 9.0
-									GiveAchievement(Achv079)
+									GiveAchievement("079")
 									
 									If e\SoundCHN <> 0 Then StopStream_Strict(e\SoundCHN) : e\SoundCHN = 0 : e\SoundCHN_IsStream = False
 									e\SoundCHN = StreamSound_Strict("SFX\SCP\079\Speech.ogg", opt\VoiceVolume * opt\MasterVolume, 0)
@@ -1064,8 +1067,8 @@ Function UpdateEvents%()
 						If (Not EntityHidden(e\room\Objects[0])) Then HideEntity(e\room\Objects[0])
 					EndIf
 					
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]))
 					ToElevatorFloor = LowerFloor
 					e\EventState4 = UpdateElevators(e\EventState4, e\room\RoomDoors[1], e\room\RoomDoors[2], e\room\Objects[2], e\room\Objects[3], e)
 				EndIf
@@ -1179,7 +1182,7 @@ Function UpdateEvents%()
 										
 										de.Decals = CreateDecal(DECAL_CORROSIVE_1, EntityX(e\room\RoomSecurityCams[0]\CameraOBJ, True), EntityY(e\room\RoomSecurityCams[0]\CameraOBJ, True), EntityZ(e\room\RoomSecurityCams[0]\CameraOBJ, True), 0.0, 0.0, 0.0, 0.05, 0.01) 
 										de\Timer = 90000.0 : de\AlphaChange = 0.005 : de\SizeChange = 0.002
-										RotateEntity(de\OBJ, EntityPitch(e\room\RoomSecurityCams[0]\CameraOBJ, True) + Rnd(10.0, 20.0), EntityYaw(e\room\RoomSecurityCams[0]\CameraOBJ, True) + 30.0, EntityRoll(de\OBJ))
+										RotateEntity(de\OBJ, EntityPitch(e\room\RoomSecurityCams[0]\CameraOBJ, True), EntityYaw(e\room\RoomSecurityCams[0]\CameraOBJ, True) + 30.0, EntityRoll(de\OBJ))
 										MoveEntity(de\OBJ, 0.0, 0.05, 0.2) 
 										EntityParent(de\OBJ, e\room\OBJ)
 									ElseIf e\EventState3 > 3200.0
@@ -1214,8 +1217,8 @@ Function UpdateEvents%()
 						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle + 180.0, 0.0, True)
 						SetNPCFrame(e\room\NPC[0], 17.0)
 					EndIf
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]))
 					ToElevatorFloor = LowerFloor
 					e\EventState4 = UpdateElevators(e\EventState4, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[2], e\room\Objects[3], e)
 				Else
@@ -1236,7 +1239,7 @@ Function UpdateEvents%()
 						EndIf
 						
 						If e\room\RoomDoors[1]\Open Lor e\room\RoomDoors[2]\Open
-							GiveAchievement(Achv205)
+							GiveAchievement("205")
 							
 							TFormPoint(-1055.0, -74.8, 650.0, e\room\OBJ, 0)
 							e\room\NPC[0] = CreateNPC(NPCTypeClerk, TFormedX(), TFormedY(), TFormedZ())
@@ -1397,8 +1400,6 @@ Function UpdateEvents%()
 								;[Block]
 								If DistanceSquared(EntityX(me\Collider), EntityX(e\room\Objects[1], True), EntityZ(me\Collider), EntityZ(e\room\Objects[1], True)) < 7.0 And (Not (chs\NoTarget Lor I_268\InvisibilityOn))
 									If Rand(100) = 1
-										msg\DeathMsg = Format(GetLocalString("death", "205"), SubjectName)
-										
 										InjurePlayer(Rnd(0.3, 0.6), 0.0, 300.0)
 										PlaySound_Strict(snd_I\DamageSFX[Rand(2, 3)])
 										me\CameraShake = 0.5
@@ -1406,7 +1407,10 @@ Function UpdateEvents%()
 										e\EventState2 = Rnd(-0.1, 0.1)
 										e\EventState3 = Rnd(-0.1, 0.1)
 										
-										If me\Injuries > 5.0 Then Kill(True)
+										If me\Injuries > 5.0
+											msg\DeathMsg = Format(GetLocalString("death", "205"), SubjectName)
+											Kill(True)
+										EndIf
 									EndIf
 								EndIf
 								
@@ -1472,7 +1476,7 @@ Function UpdateEvents%()
 					me\Zone = 1
 					CoffinDistance = EntityDistance(me\Collider, e\room\Objects[0])
 					If CoffinDistance < 2.0
-						GiveAchievement(Achv895)
+						GiveAchievement("895")
 						If e\room\NPC[0] = Null
 							e\room\NPC[0] = CreateNPC(NPCTypeGuard, e\room\x, e\room\y, e\room\z)
 							e\room\NPC[0]\State = 8.0 : e\room\NPC[0]\GravityMult = 0.0 : e\room\NPC[0]\FallingPickDistance = 0.0
@@ -1485,12 +1489,12 @@ Function UpdateEvents%()
 						EndIf
 						If (Not n_I\Curr106\Contained) And e\EventState2 = 0.0 And (Not (chs\NoTarget Lor I_268\InvisibilityOn))
 							TFormPoint(0.0, -1531.0, 2356.0, e\room\OBJ, 0)
-							x = TFormedX() : y = TFormedY() : z = TFormedZ()
-							de.Decals = CreateDecal(DECAL_CORROSIVE_1, x, y, z, 90.0, Rnd(360.0), 0.0, 0.05, 0.8)
+							x1 = TFormedX() : y1 = TFormedY() : z1 = TFormedZ()
+							de.Decals = CreateDecal(DECAL_CORROSIVE_1, x1, y1, z1, 90.0, Rnd(360.0), 0.0, 0.05, 0.8)
 							de\SizeChange = 0.001
 							EntityParent(de\OBJ, e\room\OBJ)
 							
-							PositionEntity(n_I\Curr106\Collider, x, y - 12.0 * RoomScale, z)
+							PositionEntity(n_I\Curr106\Collider, x1, y1 - 12.0 * RoomScale, z1)
 							ResetEntity(n_I\Curr106\Collider)
 							SetNPCFrame(n_I\Curr106, 110.0)
 							n_I\Curr106\State = -0.1
@@ -1572,7 +1576,7 @@ Function UpdateEvents%()
 						For i = 0 To MaxItemAmount - 1
 							If Inventory(i) <> Null
 								If (wi\NightVision > 0 And (Inventory(i)\ItemTemplate\ID = it_nvg Lor Inventory(i)\ItemTemplate\ID = it_veryfinenvg Lor Inventory(i)\ItemTemplate\ID = it_finenvg)) Lor ((wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble))
-									If Inventory(i)\State > 0.0
+									If Inventory(i)\State > 0.0 Lor (wi\NightVision = 3 And Inventory(i)\ItemTemplate\ID = it_finenvg)
 										HasBatteryFor895 = True
 										Exit
 									EndIf
@@ -1589,18 +1593,19 @@ Function UpdateEvents%()
 							
 							If me\Sanity < -1000.0
 								If wi\NightVision > 1
-									msg\DeathMsg = GetLocalString("death", "895.nvg.914")
+									StrTemp = "895.nvg.914"
 								ElseIf wi\SCRAMBLE > 0
-									msg\DeathMsg = GetLocalString("death", "895.nvg.096")
+									StrTemp = "895.nvg.096"
 								Else
-									msg\DeathMsg = GetLocalString("death", "895.nvg")
+									StrTemp = "895.nvg"
 								EndIf
+								msg\DeathMsg = GetLocalString("death", StrTemp)
 								EntityTexture(t\OverlayID[4], t\OverlayTextureID[1])
 								If me\VomitTimer < -10.0 Then Kill()
 							ElseIf me\Sanity < -800.0
 								If Rand(3) = 1 Then EntityTexture(t\OverlayID[4], t\OverlayTextureID[1])
 								If Rand(6) < 5
-									EntityTexture(t\OverlayID[4], mon_I\MonitorOverlayID[Rand(MONITOR_895_OVERLAY_1, MONITOR_895_OVERLAY_6)])
+									EntityTexture(t\OverlayID[4], mon_I\MonitorOverlayID[Rand(MONITOR_895_OVERLAY_1, MONITOR_895_OVERLAY_5)])
 									For i = 0 To MaxItemAmount - 1
 										If Inventory(i) <> Null
 											If (wi\NightVision > 0 And (Inventory(i)\ItemTemplate\ID = it_nvg Lor Inventory(i)\ItemTemplate\ID = it_veryfinenvg Lor Inventory(i)\ItemTemplate\ID = it_finenvg)) Lor ((wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble))
@@ -1616,7 +1621,7 @@ Function UpdateEvents%()
 							ElseIf me\Sanity < -500.0
 								If Rand(7) = 1 Then EntityTexture(t\OverlayID[4], t\OverlayTextureID[1])
 								If Rand(50) = 1
-									EntityTexture(t\OverlayID[4], mon_I\MonitorOverlayID[Rand(MONITOR_895_OVERLAY_1, MONITOR_895_OVERLAY_6)])
+									EntityTexture(t\OverlayID[4], mon_I\MonitorOverlayID[Rand(MONITOR_895_OVERLAY_1, MONITOR_895_OVERLAY_5)])
 									For i = 0 To MaxItemAmount - 1
 										If Inventory(i) <> Null
 											If (wi\NightVision > 0 And (Inventory(i)\ItemTemplate\ID = it_nvg Lor Inventory(i)\ItemTemplate\ID = it_veryfinenvg Lor Inventory(i)\ItemTemplate\ID = it_finenvg)) Lor ((wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble))
@@ -1659,7 +1664,7 @@ Function UpdateEvents%()
 				;[Block]
 				If PlayerRoom = e\room
 					If e\room\RoomDoors[2]\Open Lor EntityPitch(e\room\RoomLevers[0]\OBJ) < 0.0
-						GiveAchievement(Achv914)
+						GiveAchievement("914")
 						e\EventState2 = 1.0
 					EndIf
 					
@@ -1903,7 +1908,7 @@ Function UpdateEvents%()
 						ShouldPlay = 30
 						me\Zone = 1
 						
-						GiveAchievement(Achv008)
+						GiveAchievement("008")
 						If e\EventState = 0.0
 							If n_I\Curr173\Idle = 0 And EntityDistanceSquared(n_I\Curr173\Collider, me\Collider) > 36.0 ; ~ Just making sure that SCP-173 is far away enough to spawn him to this room
 								PositionEntity(n_I\Curr173\Collider, EntityX(e\room\Objects[4], True), EntityY(e\room\Objects[4], True), EntityZ(e\room\Objects[4], True), True)
@@ -1984,8 +1989,8 @@ Function UpdateEvents%()
 					ElseIf e\EventState = 1.0
 						e\EventState = 0.0
 					EndIf
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[8]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[9]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[8]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[9]))
 					ToElevatorFloor = LowerFloor
 					e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[4], e\room\RoomDoors[5], e\room\Objects[8], e\room\Objects[9], e)
 				Else
@@ -2000,7 +2005,7 @@ Function UpdateEvents%()
 						If (Not me\Terminated)
 							If e\EventState = 0.0
 								If EntityDistanceSquared(me\Collider, e\room\RoomDoors[0]\OBJ) < 6.25 And RemoteDoorOn
-									GiveAchievement(Achv012)
+									GiveAchievement("012")
 									
 									PlaySound_Strict(snd_I\HorrorSFX[7])
 									PlaySound2(snd_I\LeverSFX, Camera, e\room\RoomDoors[0]\OBJ)
@@ -2013,7 +2018,7 @@ Function UpdateEvents%()
 								If e\Sound = 0 Then e\Sound = LoadSound_Strict("SFX\Music\012Golgotha.ogg")
 								e\SoundCHN = LoopSound2(e\Sound, e\SoundCHN, Camera, e\room\Objects[0])
 								
-								e\EventState = CurveValue(90.0, e\EventState, 500)
+								e\EventState = CurveValue(90.0, e\EventState, 500.0)
 								PositionEntity(e\room\Objects[0], EntityX(e\room\Objects[0], True), (-130.0 - (448.0 * Sin(e\EventState))) * RoomScale, EntityZ(e\room\Objects[0], True), True)
 								
 								RotateEntity(e\room\RoomLevers[0]\OBJ, CurveAngle(-80.0, EntityPitch(e\room\RoomLevers[0]\OBJ), 10.0), EntityYaw(e\room\RoomLevers[0]\OBJ), 0.0)
@@ -2065,35 +2070,35 @@ Function UpdateEvents%()
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech0.ogg"), True)
 											ElseIf e\EventState2 > 70.0 * 13.0 And e\EventState2 - fps\Factor[0] <= 70.0 * 13.0
 												CreateMsg(GetLocalString("msg", "012_1"))
-												InjurePlayer(0.5)
+												me\Injuries = me\Injuries + 0.5
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech1.ogg"), True)
 											ElseIf e\EventState2 > 70.0 * 31.0 And e\EventState2 - fps\Factor[0] <= 70.0 * 31.0
 												Tex = LoadTexture_Strict("GFX\Map\Textures\scp_012(2).png")
 												EntityTexture(e\room\Objects[3], Tex)
-												DeleteSingleTextureEntryFromCache(Tex)
+												DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 												
 												CreateMsg(GetLocalString("msg", "012_2"))
 												me\Injuries = Max(me\Injuries, 1.5)
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech" + Rand(2, 3) + ".ogg"), True)
 											ElseIf e\EventState2 > 70.0 * 49.0 And e\EventState2 - fps\Factor[0] <= 70.0 * 49.0
 												CreateMsg(GetLocalString("msg", "012_3"))
-												InjurePlayer(0.3)
+												me\Injuries = me\Injuries + 0.3
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech4.ogg"), True)
 											ElseIf e\EventState2 > 70.0 * 63.0 And e\EventState2 - fps\Factor[0] <= 70.0 * 63.0
 												Tex = LoadTexture_Strict("GFX\Map\Textures\scp_012(3).png")
 												EntityTexture(e\room\Objects[3], Tex)
-												DeleteSingleTextureEntryFromCache(Tex)
+												DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 												
-												InjurePlayer(0.5)
+												me\Injuries = me\Injuries + 0.5
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech5.ogg"), True)
 											ElseIf e\EventState2 > 70.0 * 74.0 And e\EventState2 - fps\Factor[0] <= 70.0 * 74.0
 												Tex = LoadTexture_Strict("GFX\Map\Textures\scp_012(4).png")
 												EntityTexture(e\room\Objects[3], Tex)
-												DeleteSingleTextureEntryFromCache(Tex)
+												DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 												
 												CreateMsg(GetLocalString("msg", "012_4"))
 												me\CameraShake = 2.0
-												InjurePlayer(0.8)
+												me\Injuries = me\Injuries + 0.8
 												e\SoundCHN2 = PlaySound_Strict(LoadTempSound("SFX\SCP\012\Speech6.ogg"), True)
 												PlaySound_Strict(LoadTempSound("SFX\SCP\1162_ARC\BodyHorrorExchange" + Rand(0, 3) + ".ogg"))
 												If (Not me\Crouch) Then SetCrouch(True)
@@ -2153,21 +2158,14 @@ Function UpdateEvents%()
 				;[Block]
 				If PlayerRoom = e\room
 					If EntityY(me\Collider) > (-2848.0) * RoomScale
-						PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-						me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]))
+						x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+						me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]))
 						ToElevatorFloor = LowerFloor
 						e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 						e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[2], e\room\Objects[3], e)
 					Else
 						ShouldPlay = 24
 						me\Zone = 1
-						
-						UpdateButton(e\room\Objects[5])
-						If d_I\ClosestButton = e\room\Objects[5] And mo\MouseHit1
-							CreateMsg(GetLocalString("msg", "button.nothappend"))
-							PlaySound2(ButtonSFX[1], Camera, e\room\Objects[5])
-							mo\MouseHit1 = False
-						EndIf
 						
 						If e\EventState = 0.0
 							TFormPoint(528.0, -3440.0, 96.0, e\room\OBJ, 0)
@@ -2209,23 +2207,46 @@ Function UpdateEvents%()
 							Local PrevGenLever% = (EntityPitch(e\room\RoomLevers[1]\OBJ, True) < 0.0)
 							
 							Temp = UpdateLever(e\room\RoomLevers[0]\OBJ) ; ~ Power feed
-							x = UpdateLever(e\room\RoomLevers[1]\OBJ) ; ~ Generator
+							x2 = UpdateLever(e\room\RoomLevers[1]\OBJ) ; ~ Generator
 							
 							e\room\RoomDoors[1]\Locked = 1
 							e\room\RoomDoors[3]\Locked = 1
 							e\room\RoomDoors[1]\IsElevatorDoor = 0
 							e\room\RoomDoors[3]\IsElevatorDoor = 0
 							
-							If PrevGenLever <> x
-								If (Not x)
-									PlaySound_Strict(snd_I\LightOffSFX)
-								Else
+							If PrevGenLever <> x2
+								If x2
 									PlaySound_Strict(snd_I\TeslaPowerUpSFX)
+								Else
+									PlaySound_Strict(snd_I\LightOffSFX)
+								EndIf
+							EndIf
+							
+							UpdateButton(e\room\Objects[5])
+						
+							If e\EventState4 > 0.0
+								e\EventState4 = e\EventState4 + fps\Factor[0]
+								EntityTexture(e\room\Objects[5], d_I\ButtonTextureID[BUTTON_YELLOW_TEXTURE])
+								If e\EventState4 > 350.0
+									If e\room\RoomEmitters[0] <> Null Then FreeEmitter(e\room\RoomEmitters[0])
+									EntityTexture(e\room\Objects[5], d_I\ButtonTextureID[BUTTON_GREEN_TEXTURE])
+									e\EventState4 = 0.0
+								EndIf
+							ElseIf d_I\ClosestButton = e\room\Objects[5] And mo\MouseHit1 And x2
+								PlaySound2(ButtonSFX[0], Camera, e\room\Objects[5])
+								mo\MouseHit1 = False
+								If e\EventState4 = 0.0
+									If opt\ParticleAmount > 0
+										e\room\RoomEmitters[0] = SetEmitter(r, EntityX(e\room\Objects[6], True), EntityY(e\room\Objects[6], True), EntityZ(e\room\Objects[6], True), 18)
+										e\room\RoomEmitters[0]\State = 3
+									EndIf
+									e\EventState4 = 0.01
 								EndIf
 							EndIf
 							
 							If e\EventState >= 70.0
-								If x
+								If wi\NightVision = 0 And wi\SCRAMBLE = 0 Then me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
+								If x2
 									ShouldPlay = 8
 									IsBlackOut = False
 									If e\Sound2 = 0 Then LoadEventSound(e, "SFX\Ambient\Room Ambience\FuelPump.ogg", 1)
@@ -2245,11 +2266,11 @@ Function UpdateEvents%()
 								e\EventState = Min(e\EventState + fps\Factor[0], 70.0)
 							EndIf
 							
-							If Temp And x
+							If Temp And x2
 								e\room\RoomDoors[1]\Locked = 0
 								e\room\RoomDoors[3]\Locked = 0
-								PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-								me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]))
+								x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+								me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]))
 								ToElevatorFloor = LowerFloor
 								e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 								e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[2], e\room\Objects[3], e)
@@ -2264,6 +2285,7 @@ Function UpdateEvents%()
 									If i > 0
 										PositionEntity(e\room\NPC[0]\Collider, EntityX(e\room\Objects[i], True), EntityY(e\room\Objects[i], True), EntityZ(e\room\Objects[i], True))
 										ResetEntity(e\room\NPC[0]\Collider)
+										GiveAchievement("049")
 										PlaySound2(snd_I\ElevatorBeepSFX, Camera, e\room\Objects[i], 4.0)
 										e\room\RoomDoors[i]\Locked = 0
 										OpenCloseDoor(e\room\RoomDoors[i])
@@ -2306,8 +2328,8 @@ Function UpdateEvents%()
 										ShowEntity(me\Collider)
 										
 										I_268\Using = 0 : wi\GasMask = 0 : wi\BallisticHelmet = 0
-										If wi\NightVision > 0 Then opt\CameraFogFar = 6.0 : wi\NightVision = 0
-										If wi\SCRAMBLE > 0 Then opt\CameraFogFar = 6.0 : wi\SCRAMBLE = 0
+										If wi\NightVision > 0 Then me\CameraFogDist = 6.0 : wi\NightVision = 0
+										If wi\SCRAMBLE > 0 Then me\CameraFogDist = 6.0 : wi\SCRAMBLE = 0
 										
 										me\DropSpeed = 0.0 : me\BlinkTimer = -10.0 : I_008\Timer = 0.0 : I_409\Timer = 0.0 : me\FallTimer = 0.0
 										
@@ -2356,14 +2378,14 @@ Function UpdateEvents%()
 						If e\EventState = 0.0
 							If I_005\ChanceToSpawn = 2
 								TFormPoint(-4843.8, -4440.8, 1729.0, e\room\OBJ, 0)
-								x = TFormedX() : y = TFormedY() : z = TFormedZ()
-								e\room\NPC[0] = CreateNPC(NPCTypeD, x, y, z)
+								x2 = TFormedX() : y2 = TFormedY() : z2 = TFormedZ()
+								e\room\NPC[0] = CreateNPC(NPCTypeD, x2, y2, z2)
 								e\room\NPC[0]\State3 = -1.0 : e\room\NPC[0]\IsDead = True
 								ChangeNPCTextureID(e\room\NPC[0], NPC_CLASS_D_VICTIM_409_TEXTURE)
 								SetNPCFrame(e\room\NPC[0], 19.0)
 								RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle, 0.0, True)
 								
-								de.Decals = CreateDecal(DECAL_409, x, y - (56.2 * RoomScale) + 0.005, z, 90.0, Rnd(360.0), 0.0, 0.85, 0.8)
+								de.Decals = CreateDecal(DECAL_409, x2, y2 - (56.2 * RoomScale) + 0.005, z2, 90.0, Rnd(360.0), 0.0, 0.85, 0.8)
 								EntityParent(de\OBJ, e\room\OBJ)
 								
 								TFormPoint(-5000.0, -4409.0, 1520.0, e\room\OBJ, 0)
@@ -2381,7 +2403,7 @@ Function UpdateEvents%()
 							If I_409\Timer = 0.0
 								If I_005\ChanceToSpawn = 2
 									If EntityDistanceSquared(me\Collider, e\room\NPC[0]\Collider) < 0.81
-										GiveAchievement(Achv409)
+										GiveAchievement("409")
 										If (Not I_427\Using) And I_427\Timer < 70.0 * 360.0
 											me\BlurTimer = 1000.0
 											I_409\Timer = 0.001
@@ -2391,7 +2413,7 @@ Function UpdateEvents%()
 								
 								; ~ Touching SCP-409
 								If InteractObject(e\room\Objects[2], 0.8)
-									GiveAchievement(Achv409)
+									GiveAchievement("409")
 									If (Not I_427\Using) And I_427\Timer < 70.0 * 360.0
 										CreateMsg(GetLocalString("msg", "409"))
 										me\BlurTimer = 1000.0
@@ -2420,8 +2442,8 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 					EndIf
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]))
 					ToElevatorFloor = LowerFloor
 					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 				EndIf
@@ -2441,7 +2463,7 @@ Function UpdateEvents%()
 								EntityTexture(e\room\RoomDoors[0]\OBJ, Tex)
 								EntityTexture(e\room\RoomDoors[0]\OBJ2, Tex)
 								EntityTexture(e\room\RoomDoors[0]\FrameOBJ, Tex)
-								DeleteSingleTextureEntryFromCache(Tex)
+								DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 								
 								e\EventState = 1.0
 							EndIf
@@ -2481,18 +2503,15 @@ Function UpdateEvents%()
 						UpdateForest(fr)
 						
 						If e\EventStr = "" And QuickLoadPercent = -1
-							GiveAchievement(Achv860)
+							GiveAchievement("860")
 							QuickLoadPercent = 0
 							QuickLoad_CurrEvent = e
 							e\EventStr = "Load0"
 						EndIf
 						
+						ShouldPlay = 9
 						If e\room\NPC[0] <> Null
-							If (e\room\NPC[0]\State2 = 1.0 And e\room\NPC[0]\State > 1.0) Lor e\room\NPC[0]\State > 2.0 ; ~ The monster is chasing the player
-								ShouldPlay = 12
-							Else
-								ShouldPlay = 9
-							EndIf
+							If (e\room\NPC[0]\State2 = 1.0 And e\room\NPC[0]\State > 1.0) Lor e\room\NPC[0]\State > 2.0 Then ShouldPlay = 12 ; ~ The monster is chasing the player
 						EndIf
 						
 						; ~ The player fell
@@ -2536,11 +2555,11 @@ Function UpdateEvents%()
 								
 								IsBlackOut = PrevIsBlackOut
 								If wi\NightVision > 0
-									opt\CameraFogFar = 17.0
+									me\CameraFogDist = 17.0
 								ElseIf wi\SCRAMBLE > 0
-									opt\CameraFogFar = 9.0
+									me\CameraFogDist = 9.0
 								Else
-									opt\CameraFogFar = 6.0
+									me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
 								EndIf
 								
 								e\EventState = 0.0
@@ -2618,7 +2637,7 @@ Function UpdateEvents%()
 					If I_714\Using <> 2 And wi\HazmatSuit <> 4 And wi\GasMask <> 4
 						If EntityDistanceSquared(me\Collider, e\room\Objects[0]) < 0.81 Lor e\EventState > 0.0
 							If e\EventState = 0.0 Then me\BlurTimer = 1000.0 - (200.0 * (I_714\Using = 1))
-							me\CameraShake = 1.0  - (0.5 * (I_714\Using = 1))
+							me\CameraShake = 1.0 - (0.5 * (I_714\Using = 1))
 							If e\Sound2 = 0 Then e\Sound2 = LoadSound_Strict("SFX\SCP\1123\Ambient.ogg")
 							e\SoundCHN2 = LoopSound2(e\Sound2, e\SoundCHN2, Camera, me\Collider, 4.0, 4.0)
 						EndIf
@@ -2768,11 +2787,10 @@ Function UpdateEvents%()
 							EndIf
 						Next
 						
-						GiveAchievement(Achv1123)
+						GiveAchievement("1123")
 						
 						RemoveNPC(e\room\NPC[0])
 						FreeEntity(e\room\Objects[7]) : e\room\Objects[7] = 0
-						; ~ TODO: REMOVE ALL PROPS/LIGHTS/DOORS. THE MAIN REASON WHY I DIDN'T DO THAT I CANNOT SAVE/LOAD THEM PROPERLY
 						RemoveEvent(e)
 					EndIf
 				Else
@@ -2840,12 +2858,7 @@ Function UpdateEvents%()
 								If (Not IsSlotEmpty) Then e\EventState2 = (i + e\EventState2) Mod MaxItemAmount
 								
 								If Rand(8) = 1
-									If IsSlotEmpty
-										e\EventState3 = 3.1
-									Else
-										e\EventState3 = 3.0
-									EndIf
-									
+									e\EventState3 = 3.0 + (0.1 * IsSlotEmpty)
 									e\EventState = Rand(5)
 									
 									; ~ Checking if the selected nostalgia item already exists or not
@@ -2942,14 +2955,14 @@ Function UpdateEvents%()
 								PlaySound_Strict(LoadTempSound("SFX\SCP\1162_ARC\Exchange" + Rand(0, 4) + ".ogg"))
 								e\EventState3 = 0.0
 								
-								GiveAchievement(Achv1162_ARC)
+								GiveAchievement("1162arc")
 								mo\MouseHit1 = False
 								Exit
 							EndIf
 						Next
 					; ~ Trade not sucessful (player got in return to injuries a new item)
 					ElseIf e\EventState3 = 2.0
-						InjurePlayer(5.0)
+						me\Injuries = me\Injuries + 5.0
 						Pvt = CreatePivot()
 						PositionEntity(Pvt, EntityX(me\Collider), EntityY(me\Collider) - 0.05, EntityZ(me\Collider))
 						TurnEntity(Pvt, 90.0, 0.0, 0.0)
@@ -2962,7 +2975,7 @@ Function UpdateEvents%()
 								it.Items = CreateItem(itt\Name, itt\ID, EntityX(pp, True), EntityY(pp, True), EntityZ(pp, True))
 								EntityType(it\Collider, HIT_ITEM)
 								
-								GiveAchievement(Achv1162_ARC)
+								GiveAchievement("1162arc")
 								mo\MouseHit1 = False
 								e\EventState3 = 0.0
 								If me\Injuries > 15.0
@@ -2985,7 +2998,7 @@ Function UpdateEvents%()
 							RemoveWearableItems(Inventory(e\EventState2))
 							RemoveItem(Inventory(e\EventState2))
 						Else
-							InjurePlayer(5.0)
+							me\Injuries = me\Injuries + 5.0
 							Pvt = CreatePivot()
 							PositionEntity(Pvt, EntityX(me\Collider), EntityY(me\Collider) - 0.05, EntityZ(me\Collider))
 							TurnEntity(Pvt, 90.0, 0.0, 0.0)
@@ -3030,7 +3043,7 @@ Function UpdateEvents%()
 						End Select
 						EntityType(it\Collider, HIT_ITEM)
 						
-						GiveAchievement(Achv1162_ARC)
+						GiveAchievement("1162arc")
 						mo\MouseHit1 = False
 						e\EventState3 = 0.0
 					EndIf
@@ -3041,7 +3054,7 @@ Function UpdateEvents%()
 			Case e_cont3_966
 				;[Block]
 				If PlayerRoom = e\room
-					If e\EventState = 0.0 And Rand(50) = 1
+					If Rand(50) = 1
 						If RemoteDoorOn
 							PlaySound_Strict(snd_I\LightOffSFX)
 							me\LightBlink = 4.0
@@ -3064,27 +3077,32 @@ Function UpdateEvents%()
 				;[End Block]
 			Case e_room2_6_ez_789_j
 				;[Block]
-				If e\EventState = 0.0
-					If PlayerRoom = e\room
-						If e\room\Objects[0] = 0
-							TFormPoint(1040.0, 50.0, 0.0, e\room\OBJ, 0)
-							e\room\Objects[0] = CreatePivot()
-							PositionEntity(e\room\Objects[0], TFormedX(), TFormedY(), TFormedZ())
-							EntityParent(e\room\Objects[0], e\room\OBJ)
-						Else
-							If EntityDistanceSquared(me\Collider, e\room\Objects[0]) < 4.0
-								GiveAchievement(Achv789_J)
-								e\SoundCHN = PlaySound2(LoadTempSound("SFX\SCP\Joke\789J.ogg"), Camera, e\room\Objects[0], 10.0, 1.0, True)
-								e\EventState = 1.0
+				If e\room\Objects[0] = 0
+					TFormPoint(1072.0, 50.0, 0.0, e\room\OBJ, 0)
+					e\room\Objects[0] = CreatePivot()
+					PositionEntity(e\room\Objects[0], TFormedX(), TFormedY(), TFormedZ())
+					EntityParent(e\room\Objects[0], e\room\OBJ)
+				Else
+					Select e\EventState
+						Case 0.0
+							;[Block]
+							If PlayerRoom = e\room
+								If EntityDistanceSquared(me\Collider, e\room\Objects[0]) < 4.0
+									GiveAchievement("789j")
+									e\SoundCHN = PlaySound2(LoadTempSound("SFX\SCP\Joke\789J.ogg"), Camera, e\room\Objects[0], 10.0, 1.0, True)
+									e\EventState = 1.0
+								EndIf
 							EndIf
-						EndIf
-					EndIf
-				ElseIf e\EventState = 1.0
-					UpdateSoundOrigin(e\SoundCHN, Camera, e\room\Objects[0], 10.0, 1.5)
-					If (Not ChannelPlaying(e\SoundCHN))
-						If e\room\Objects[0] <> 0 Then FreeEntity(e\room\Objects[0]) : e\room\Objects[0] = 0
-						RemoveEvent(e)
-					EndIf
+							;[End Block]
+						Case 1.0
+							;[Block]
+							UpdateSoundOrigin(e\SoundCHN, Camera, e\room\Objects[0], 10.0, 1.5)
+							If (Not ChannelPlaying(e\SoundCHN))
+								If e\room\Objects[0] <> 0 Then FreeEntity(e\room\Objects[0]) : e\room\Objects[0] = 0
+								RemoveEvent(e)
+							EndIf
+							;[End Block]
+					End Select
 				EndIf
 				;[End Block]
 			Case e_room2_6_ez_guard
@@ -3093,13 +3111,13 @@ Function UpdateEvents%()
 					Case 0.0
 						;[Block]
 						If e\room\Dist < 6.0 And e\room\Dist > 0.0
-							TFormPoint(1290.0, 52.0, 491.0, e\room\OBJ, 0)
+							TFormPoint(1322.0, 52.0, 491.0, e\room\OBJ, 0)
 							e\room\NPC[0] = CreateNPC(NPCTypeGuard, TFormedX(), TFormedY(), TFormedZ())
 							e\room\NPC[0]\State = 8.0 : e\room\NPC[0]\IsDead = True
 							SetNPCFrame(e\room\NPC[0], 287.0)
 							RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle + 90.0, 0.0, True)
 							
-							TFormPoint(1295.0, 150.0, 491.0, e\room\OBJ, 0)
+							TFormPoint(1328.0, 150.0, 491.0, e\room\OBJ, 0)
 							de.Decals = CreateDecal(DECAL_BLOOD_2, TFormedX(), TFormedY(), TFormedZ(), 0.0, e\room\Angle + 270.0, 0.0, 0.3)
 							EntityParent(de\OBJ, e\room\OBJ)
 							
@@ -3408,11 +3426,9 @@ Function UpdateEvents%()
 						Temp = True
 						For it.Items = Each Items
 							If (Not it\Picked)
-								If EntityX(it\Collider) - EntityX(e\room\Objects[2], True) = 0.0
-									If EntityZ(it\Collider) - EntityZ(e\room\Objects[2], True) = 0.0
-										Temp = False
-										Exit
-									EndIf
+								If DistanceSquared(EntityX(it\Collider), EntityX(e\room\Objects[2], True), EntityZ(it\Collider), EntityZ(e\room\Objects[2], True)) = 0.0
+									Temp = False
+									Exit
 								EndIf
 							EndIf
 						Next
@@ -3443,7 +3459,7 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 						If e\EventState2 = 2.0
-							GiveAchievement(Achv294)
+							GiveAchievement("294")
 							
 							I_294\Using = Temp
 							If I_294\Using
@@ -3463,7 +3479,7 @@ Function UpdateEvents%()
 					
 					If InteractObject(e\room\Objects[1], 0.8)
 						If ItemAmount < MaxItemAmount
-							GiveAchievement(Achv458)
+							GiveAchievement("458")
 							CreateMsg(GetLocalString("msg", "458"))
 							it.Items = CreateItem("Pizza Slice", it_pizza, 1.0, 1.0, 1.0)
 							EntityType(it\Collider, HIT_ITEM)
@@ -3514,8 +3530,8 @@ Function UpdateEvents%()
 							EndIf
 						Next
 						
-						PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-						me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]))
+						x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+						me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]))
 						ToElevatorFloor = UpperFloor
 						e\EventState = UpdateElevators(e\EventState, e\room\RoomDoors[0], gateb\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e, True, True)
 						
@@ -3555,8 +3571,8 @@ Function UpdateEvents%()
 							EndIf
 						Next
 						
-						PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-						me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]))
+						x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+						me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]))
 						ToElevatorFloor = UpperFloor
 						e\EventState = UpdateElevators(e\EventState, e\room\RoomDoors[0], gatea\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 						If (Not n_I\Curr106\Contained)
@@ -3577,6 +3593,7 @@ Function UpdateEvents%()
 					If n_I\Curr096 = Null
 						n_I\Curr096 = CreateNPC(NPCType096, e\room\x, 0.3, e\room\z)
 						RotateEntity(n_I\Curr096\Collider, 0.0, e\room\Angle + 45.0, 0.0, True)
+						GiveAchievement("096")
 					EndIf
 					RemoveEvent(e)
 				EndIf
@@ -3593,6 +3610,7 @@ Function UpdateEvents%()
 					e\EventState2 = UpdateLever(e\room\RoomLevers[1]\OBJ)
 					If (PrevState2 <> e\EventState2) And e\EventState > 0.0 Then PlaySound2(snd_I\LightOffSFX, Camera, e\room\RoomLevers[1]\OBJ)
 					IsBlackOut = (e\EventState2 = 0.0)
+					If wi\NightVision = 0 And wi\SCRAMBLE = 0 Then me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
 					
 					If e\EventState = 0.0
 						If Rand(200) = 1
@@ -3612,16 +3630,16 @@ Function UpdateEvents%()
 				;[End Block]
 			Case e_173_appearing
 				;[Block]
-				If e\room\Dist < 6.0 Lor PlayerRoom = e\room
+				If e\room\Dist < 6.0 And PlayerRoom <> e\room
 					If n_I\Curr173\Idle > 1
 						RemoveEvent(e)
 					Else
 						If n_I\Curr173\Idle = 0
-							If (Not EntityInView(n_I\Curr173\OBJ, Camera)) And (Not EntityInView(n_I\Curr173\OBJ2, Camera)) And EntityDistanceSquared(me\Collider, n_I\Curr173\Collider) > 36.0
+							If (Not PlayerSees173(n_I\Curr173)) And EntityDistanceSquared(me\Collider, n_I\Curr173\Collider) > 36.0
 								Select e\room\RoomTemplate\RoomID
 									Case r_room2_4_lcz, r_room2_4_hcz
 										;[Block]
-										TFormPoint(640.0, 100.0, 896.0, e\room\OBJ, 0)
+										TFormPoint(640.0, 100.0, -896.0, e\room\OBJ, 0)
 										;[End Block]
 									Case r_room2_6_lcz
 										;[Block]
@@ -3725,11 +3743,11 @@ Function UpdateEvents%()
 				;[Block]
 				If PlayerRoom = e\room
 					TFormPoint(-1200.0, 51.2, 0.0, e\room\OBJ, 0)
-					x = TFormedX() : y = TFormedY() : z = TFormedZ()
-					de.Decals = CreateDecal(DECAL_BLOOD_2, x, y - (51.2 * RoomScale) + 0.005, z, 90.0, Rnd(360.0), 0.0)
+					x1 = TFormedX() : y1 = TFormedY() : z1 = TFormedZ()
+					de.Decals = CreateDecal(DECAL_BLOOD_2, x1, y1 - (51.2 * RoomScale) + 0.005, z1, 90.0, Rnd(360.0), 0.0)
 					EntityParent(de\OBJ, e\room\OBJ)
 					
-					e\room\NPC[0] = CreateNPC(NPCTypeD, x, y, z)
+					e\room\NPC[0] = CreateNPC(NPCTypeD, x1, y1, z1)
 					e\room\NPC[0]\State3 = -1.0 : e\room\NPC[0]\IsDead = True
 					ChangeNPCTextureID(e\room\NPC[0], NPC_CLASS_D_GONZALES_TEXTURE)
 					SetNPCFrame(e\room\NPC[0], 19.0)
@@ -3785,15 +3803,9 @@ Function UpdateEvents%()
 				EndIf
 				
 				If PlayerRoom = e\room
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]))
-					ToElevatorFloor = LowerFloor
-					; ~ Shit code
-					y = EntityY(me\Collider)
-					If y > 6.0 Then InFacility = LowerFloor
-					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
-					
-					If y > 6.0
+					If EntityY(me\Collider, True) > 6.0
+						InFacility = LowerFloor
+						
 						e\EventState = UpdateLever(e\room\RoomLevers[0]\OBJ)
 						UpdateLever(e\room\RoomLevers[1]\OBJ)
 						
@@ -3803,47 +3815,47 @@ Function UpdateEvents%()
 									Select i
 										Case 0
 											;[Block]
-											x = 813.0
-											z = -152.0
+											x1 = 813.0
+											z1 = -152.0
 											;[End Block]
 										Case 1
 											;[Block]
-											x = 818.0
-											z = 147.0
+											x1 = 818.0
+											z1 = 147.0
 											;[End Block]
 										Case 2
 											;[Block]
-											x = 621.0
-											z = 341.0
+											x1 = 621.0
+											z1 = 341.0
 											;[End Block]
 										Case 3
 											;[Block]
-											x = 327.0
-											z = 349.0
+											x1 = 327.0
+											z1 = 349.0
 											;[End Block]
 										Case 4
 											;[Block]
-											x = 137.0
-											z = 143.0
+											x1 = 137.0
+											z1 = 143.0
 											;[End Block]
 										Case 5
 											;[Block]
-											x = 137.0
-											z = -155.0
+											x1 = 137.0
+											z1 = -155.0
 											;[End Block]
 										Case 6
 											;[Block]
-											x = 330.0
-											z = -346.0
+											x1 = 330.0
+											z1 = -346.0
 											;[End Block]
 										Case 7
 											;[Block]
-											x = 635.0
-											z = -346.0
+											x1 = 635.0
+											z1 = -346.0
 											;[End Block]
 									End Select
-									y = 3010.0
-									TFormPoint(x, y, z, e\room\OBJ, 0)
+									y1 = 3010.0
+									TFormPoint(x1, y1, z1, e\room\OBJ, 0)
 									e\room\RoomEmitters[i] = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 10)
 								Next
 							EndIf
@@ -3855,6 +3867,11 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 					EndIf
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]))
+					ToElevatorFloor = LowerFloor
+					
+					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 				EndIf
 				;[End Block]
 			Case e_room2_2_ez_duck
@@ -3916,11 +3933,7 @@ Function UpdateEvents%()
 							ChangeNPCTextureID(e\room\NPC[0], NPC_CLASS_D_VICTIM_035_TEXTURE)
 						EndIf
 						If EntityDistanceSquared(e\room\NPC[0]\Collider, me\Collider) < 6.25
-							If wi\HazmatSuit = 0
-								InjurePlayer(fps\Factor[0] / 5000.0)
-							Else
-								InjurePlayer(fps\Factor[0] / 10000.0)
-							EndIf
+								me\Injuries = me\Injuries + (fps\Factor[0] / (5000.0 * (1.0 + (wi\HazmatSuit > 0))))
 							If e\room\NPC[1] = Null
 								e\room\NPC[1] = CreateNPC(NPCType035_Tentacle, EntityX(e\room\NPC[0]\Collider), 0.13, EntityZ(e\room\NPC[0]\Collider))
 								RotateEntity(e\room\NPC[1]\Collider, 0.0, e\room\Angle, 0.0)
@@ -3952,19 +3965,19 @@ Function UpdateEvents%()
 				If e\room\Dist < 16.0
 					Local PrevLever% = (EntityPitch(e\room\RoomLevers[0]\OBJ, True) < 0.0)
 					
-					x = UpdateLever(e\room\RoomLevers[0]\OBJ)
+					Temp = UpdateLever(e\room\RoomLevers[0]\OBJ)
 					
-					If (Not x)
-						StopChannel(e\SoundCHN) : e\SoundCHN = 0
-						e\EventState = 3.0
-						e\EventState2 = (-70.0) * 90.0
-					Else
-						If PrevLever <> x
-							If x
+					If Temp
+						If PrevLever <> Temp
+							If Temp
 								PlaySound_Strict(snd_I\TeslaPowerUpSFX)
 								e\EventState = 0.0
 							EndIf
 						EndIf
+					Else
+						StopChannel(e\SoundCHN) : e\SoundCHN = 0
+						e\EventState = 3.0
+						e\EventState2 = (-70.0) * 90.0
 					EndIf
 					
 					If PlayerRoom = e\room
@@ -3983,23 +3996,15 @@ Function UpdateEvents%()
 						If e\room\NPC[0] = Null And Temp
 							e\room\RoomDoors[0]\Locked = 1
 							If (e\room\Angle Mod 180 = 90.0)
-								If Abs(EntityX(me\Collider, True) < EntityX(e\room\OBJ, True))
-									x = 800.0
-									z = 0.0
-								Else
-									x = -800.0
-									z = 0.0
-								EndIf
+								i = (Abs(EntityX(me\Collider, True) < EntityX(e\room\OBJ, True)))
+								x1 = i * 800.0 + (Not i) * (-800.0)
+								z1 = 0.0
 							Else
-								If Abs(EntityZ(me\Collider, True) < EntityZ(e\room\OBJ, True))
-									x = 0.0
-									z = 800.0
-								Else
-									x = 0.0
-									z = -800.0
-								EndIf
+								i = (Abs(EntityZ(me\Collider, True)) < EntityZ(e\room\OBJ, True))
+								x1 = 0.0
+								z1 = i * 800.0 + (Not i) * (-800.0)
 							EndIf
-							e\room\NPC[0] = CreateNPC(NPCTypeClerk, EntityX(e\room\OBJ, True) + x * RoomScale, 0.4, EntityZ(e\room\OBJ, True) + z * RoomScale)
+							e\room\NPC[0] = CreateNPC(NPCTypeClerk, EntityX(e\room\OBJ, True) + x1 * RoomScale, 0.4, EntityZ(e\room\OBJ, True) + z1 * RoomScale)
 							e\room\NPC[0]\State = 2.0
 							PointEntity(e\room\NPC[0]\Collider, e\room\OBJ)
 							e\EventState = 0.0
@@ -4015,7 +4020,8 @@ Function UpdateEvents%()
 							HideEntity(e\room\Objects[0])
 							e\SoundCHN = LoopSound2(snd_I\TeslaIdleSFX, e\SoundCHN, Camera, e\room\Objects[0], 4.0, 0.5)
 							e\EventState2 = 0.0
-							If Abs(EntityX(me\Collider, True) - EntityX(e\room\OBJ, True)) < 1.0 And Abs(EntityZ(me\Collider, True) - EntityZ(e\room\OBJ, True)) < 1.0 And Abs(EntityY(me\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+							x2 = EntityX(e\room\OBJ, True) : z2 = EntityZ(e\room\OBJ, True) : y2 = EntityY(e\room\OBJ, True)
+							If Abs(EntityX(me\Collider, True) - x2) < 1.0 And Abs(EntityZ(me\Collider, True) - z2) < 1.0 And Abs(EntityY(me\Collider, True) - y2) < 1.3
 								If (Not me\Terminated) And (Not chs\NoTarget)
 									If e\room\NPC[0] = Null Lor e\room\NPC[0]\IsDead
 										If ChannelPlaying(e\SoundCHN) Then StopChannel(e\SoundCHN) : e\SoundCHN = 0
@@ -4026,8 +4032,9 @@ Function UpdateEvents%()
 							EndIf
 							For n.NPCs = Each NPCs
 								If n\NPCType <> NPCType966 And n\NPCType <> NPCType513_1 And (Not n\IsDead)
+									x1 = EntityX(n\Collider, True) : z1 = EntityZ(n\Collider, True) : y1 = EntityY(n\Collider, True)
 									If n\NPCType = NPCTypeMTF And e\room\NPC[1] = Null
-										If Abs(EntityX(n\Collider, True) - EntityX(e\room\OBJ, True)) < 2.0 And Abs(EntityZ(n\Collider, True) - EntityZ(e\room\OBJ, True)) < 2.0 And Abs(EntityY(n\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+										If Abs(x1 - x2) < 2.0 And Abs(z1 - z2) < 2.0 And Abs(y1 - y2) < 1.3
 											n\PrevState = 1
 											n\PathTimer = 0.0
 											n\PathStatus = PATH_STATUS_NO_SEARCH
@@ -4037,7 +4044,7 @@ Function UpdateEvents%()
 											e\room\NPC[1] = n
 										EndIf
 									Else
-										If Abs(EntityX(n\Collider, True) - EntityX(e\room\OBJ, True)) < 0.81 And Abs(EntityZ(n\Collider, True) - EntityZ(e\room\OBJ, True)) < 0.81 And Abs(EntityY(n\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+										If Abs(x1 - x2) < 0.81 And Abs(z1 - z2) < 0.81 And Abs(y1 - y2) < 1.3
 											If ChannelPlaying(e\SoundCHN) Then StopChannel(e\SoundCHN) : e\SoundCHN = 0
 											e\SoundCHN = PlaySound2(snd_I\TeslaActivateSFX, Camera, e\room\Objects[0], 4.0, 0.5)
 											e\EventState = 1.0
@@ -4066,9 +4073,13 @@ Function UpdateEvents%()
 							;[End Block]
 						Case 2.0 ; ~ Zap state
 							;[Block]
-							If Abs(EntityX(me\Collider, True) - EntityX(e\room\OBJ, True)) < 0.75 And Abs(EntityZ(me\Collider, True) - EntityZ(e\room\OBJ, True)) < 0.75 And Abs(EntityY(me\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+							x2 = EntityX(e\room\OBJ, True) : z2 = EntityZ(e\room\OBJ, True) : y2 = EntityY(e\room\OBJ, True)
+							If Abs(EntityX(me\Collider, True) - x2) < 0.75 And Abs(EntityZ(me\Collider, True) - z2) < 0.75 And Abs(EntityY(me\Collider, True) - y2) < 1.3
 								If (Not me\Terminated)
-									If opt\ParticleAmount > 0 Then SetEmitter(Null, EntityX(me\Collider, True), EntityY(me\Collider, True), EntityZ(me\Collider, True), 14)
+									If opt\ParticleAmount > 0
+										emit.Emitter = SetEmitter(Null, EntityX(me\Collider, True), EntityY(me\Collider, True), EntityZ(me\Collider, True), 14)
+										EntityParent(emit\Owner, me\Collider)
+									EndIf
 									me\LightFlash = 0.4
 									me\CameraShake = 1.0
 									msg\DeathMsg = Format(GetLocalString("death", "tesla"), SubjectName)
@@ -4081,13 +4092,13 @@ Function UpdateEvents%()
 										e\room\RoomDoors[0]\Locked = 0
 										n\State3 = 1.0
 									EndIf
-									If Abs(EntityX(n\Collider, True) - EntityX(e\room\OBJ, True)) < 0.6 And Abs(EntityZ(n\Collider, True) - EntityZ(e\room\OBJ, True)) < 0.6 And Abs(EntityY(n\Collider, True) - EntityY(e\room\OBJ, True)) < 1.3
+									If Abs(EntityX(n\Collider, True) - x2) < 0.6 And Abs(EntityZ(n\Collider, True) - z2) < 0.6 And Abs(EntityY(n\Collider, True) - y2) < 1.3
 										n\CurrSpeed = 0.0 : n\TeslaHit = True
 										Select n\NPCType
 											Case NPCType106
 												;[Block]
 												If n\State3 = 0.0
-													GiveAchievement(AchvTesla)
+													GiveAchievement("tesla")
 													
 													n\SoundCHN = PlaySound2(LoadTempSound("SFX\Ending\GateA\106Retreat.ogg"), Camera, n\OBJ, 10.0, 1.0, True)
 													
@@ -4182,7 +4193,6 @@ Function UpdateEvents%()
 				;[Block]
 				If PlayerRoom = e\room
 					Local Meshes%[MaxMTModelIDAmount]
-					Local TempStr$
 					Local iA%, iB%, iC%, iD%
 					Local TempInt%, TempInt2%
 					Local iX%, iY%
@@ -4210,12 +4220,7 @@ Function UpdateEvents%()
 						iY = (MTGridSize) / 2 + Rand(-2, 2)
 						
 						e\room\mt\Grid[iX + (iY * MTGridSize)] = 1
-						
-						If Dir = 2
-							e\room\mt\Grid[(iX + 1) + (iY * MTGridSize)] = 1
-						Else
-							e\room\mt\Grid[(iX - 1) + (iY * MTGridSize)] = 1
-						EndIf
+						e\room\mt\Grid[(iX + (Dir = 2) - (Dir <> 2)) + (iY * MTGridSize)] = 1
 						
 						Local Count% = 2
 						
@@ -4477,7 +4482,6 @@ Function UpdateEvents%()
 										RotateEntity(d\ElevatorPanel[1], EntityPitch(d\ElevatorPanel[1], True) + 45.0, EntityYaw(d\ElevatorPanel[1], True), EntityRoll(d\ElevatorPanel[1], True), True)
 										
 										TempInt2 = CreatePivot()
-										RotateEntity(TempInt2, 0.0, EntityYaw(TempInt, True) + 180.0, 0.0, True)
 										PositionEntity(TempInt2, e\room\x + (iX * 2.0) + (CosValue * 552.0 * RoomScale), e\room\y + MTGridY + (240.0 * RoomScale), e\room\z + (iY * 2.0) + (SinValue * 552.0 * RoomScale))
 										If e\room\mt\Grid[iX + (iY * MTGridSize)] = MT_SECOND_ELEVATOR
 											If e\room\RoomDoors[1] <> Null
@@ -4488,6 +4492,7 @@ Function UpdateEvents%()
 											EndIf
 											If e\room\Objects[3] = 0
 												e\room\Objects[3] = TempInt2
+												RotateEntity(e\room\Objects[3], 0.0, EntityYaw(TempInt, True), 0.0, True)
 												PositionEntity(e\room\Objects[1], e\room\x + (iX * 2.0), EntityY(e\room\Objects[1], True), e\room\z + (iY * 2.0), True)
 											Else
 												FreeEntity(TempInt2) : TempInt2 = 0
@@ -4501,6 +4506,7 @@ Function UpdateEvents%()
 											EndIf
 											If e\room\Objects[5] = 0
 												e\room\Objects[5] = TempInt2
+												RotateEntity(e\room\Objects[5], 0.0, EntityYaw(TempInt, True) + 180.0, 0.0, True)
 												PositionEntity(e\room\Objects[0], e\room\x + (iX * 2.0), EntityY(e\room\Objects[0], True), e\room\z + (iY * 2.0), True)
 											Else
 												FreeEntity(TempInt2) : TempInt2 = 0
@@ -4679,7 +4685,6 @@ Function UpdateEvents%()
 										RotateEntity(d\ElevatorPanel[1], EntityPitch(d\ElevatorPanel[1], True) + 45.0, EntityYaw(d\ElevatorPanel[1], True), EntityRoll(d\ElevatorPanel[1], True), True)
 										
 										TempInt2 = CreatePivot()
-										RotateEntity(TempInt2, 0.0, EntityYaw(TempInt, True) + 180.0, 0.0, True)
 										PositionEntity(TempInt2, e\room\x + (iX * 2.0) + (CosValue * 552.0 * RoomScale), e\room\y + MTGridY + (240.0 * RoomScale), e\room\z + (iY * 2.0) + (SinValue * 552.0 * RoomScale))
 										If e\room\mt\Grid[iX + (iY * MTGridSize)] = MT_SECOND_ELEVATOR
 											If e\room\RoomDoors[1] <> Null
@@ -4690,6 +4695,7 @@ Function UpdateEvents%()
 											EndIf
 											If e\room\Objects[3] = 0
 												e\room\Objects[3] = TempInt2
+												RotateEntity(e\room\Objects[3], 0.0, EntityYaw(TempInt, True), 0.0, True)
 												PositionEntity(e\room\Objects[1], e\room\x + (iX * 2.0), EntityY(e\room\Objects[1], True), e\room\z + (iY * 2.0), True)
 											Else
 												FreeEntity(TempInt2) : TempInt2 = 0
@@ -4703,6 +4709,7 @@ Function UpdateEvents%()
 											EndIf
 											If e\room\Objects[5] = 0
 												e\room\Objects[5] = TempInt2
+												RotateEntity(e\room\Objects[5], 0.0, EntityYaw(TempInt, True) + 180.0, 0.0, True)
 												PositionEntity(e\room\Objects[0], e\room\x + (iX * 2.0), EntityY(e\room\Objects[0], True), e\room\z + (iY * 2.0), True)
 											Else
 												FreeEntity(TempInt2) : TempInt2 = 0
@@ -4848,10 +4855,10 @@ Function UpdateEvents%()
 							For i = 0 To 1
 								Local spawnPoint.WayPoints = Null
 								
-								For x = i * (PowTwo(MTGridSize) / 5.0) To (PowTwo(MTGridSize) - 1)
-									If Rand(2) = 1 And e\room\mt\waypoints[x] <> Null 
-										spawnPoint = e\room\mt\waypoints[x]
-										x = PowTwo(MTGridSize)
+								For x2 = i * (PowTwo(MTGridSize) / 5.0) To (PowTwo(MTGridSize) - 1)
+									If Rand(2) = 1 And e\room\mt\waypoints[x2] <> Null 
+										spawnPoint = e\room\mt\waypoints[x2]
+										x2 = PowTwo(MTGridSize)
 									EndIf
 								Next 
 								If spawnPoint <> Null Then e\room\NPC[i] = CreateNPC(NPCType966, EntityX(spawnPoint\OBJ, True), EntityY(spawnPoint\OBJ, True), EntityZ(spawnPoint\OBJ, True))
@@ -4872,8 +4879,8 @@ Function UpdateEvents%()
 					
 					UpdateMT(e\room\mt)
 					
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[4]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[5]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[4]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[5]))
 					ToElevatorFloor = UpperFloor
 					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[2], e\room\Objects[3], e, False, e\EventState = 1.0)
 					e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[4], e\room\Objects[5], e, False, e\EventState = 1.0)
@@ -4964,16 +4971,16 @@ Function UpdateEvents%()
 							If PlayerRoom = e\room And (Not (chs\NoTarget Lor I_268\InvisibilityOn)) Then e\EventState = 1.0
 						ElseIf e\EventState = 1.0
 							TFormPoint(-864.0, -447.0, -632.0, e\room\OBJ, 0)
-							x = TFormedX() : y = TFormedY() : z = TFormedZ()
-							de.Decals = CreateDecal(DECAL_CORROSIVE_1, x, y + 0.005, z, 90.0, Rnd(360.0), 0.0, 0.05, 0.8)
+							x1 = TFormedX() : y1 = TFormedY() : z1 = TFormedZ()
+							de.Decals = CreateDecal(DECAL_CORROSIVE_1, x1, y1 + 0.005, z1, 90.0, Rnd(360.0), 0.0, 0.05, 0.8)
 							de\SizeChange = 0.001
 							EntityParent(de\OBJ, e\room\OBJ)
 							
-							PositionEntity(n_I\Curr106\Collider, x, y, z)
+							PositionEntity(n_I\Curr106\Collider, x1, y1, z1)
 							ResetEntity(n_I\Curr106\Collider)
 							SetNPCFrame(n_I\Curr106, 110.0)
 							n_I\Curr106\State = -0.1
-							n_I\Curr106\PrevY = y
+							n_I\Curr106\PrevY = y1
 							
 							RemoveEvent(e)
 						EndIf
@@ -4993,7 +5000,7 @@ Function UpdateEvents%()
 						RotateEntity(e\room\Objects[0], 0.0, Rnd(360.0), 0.0)
 						Tex = LoadTexture_Strict("GFX\NPCs\duck(3).png")
 						EntityTexture(e\room\Objects[0], Tex)
-						DeleteSingleTextureEntryFromCache(Tex)
+						DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 						EntityParent(e\room\Objects[0], e\room\OBJ)
 					Else
 						If (Not EntityInView(e\room\Objects[0], Camera))
@@ -5025,14 +5032,15 @@ Function UpdateEvents%()
 								itt\TexPath = itt\ImgPath
 								Tex = GetRescaledTexture(itt\TexPath, 1, 256, 256)
 								EntityTexture(itt\OBJ, Tex)
-								DeleteSingleTextureEntryFromCache(Tex)
+								DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 								Exit
 							EndIf
 						Next
 						
 						Local Brush% = GetRescaledTexture(ItemHUDTexturePath + DrawingName, 1, 256, 256, True)
 						
-						For i = 1 To CountSurfaces(e\room\NPC[0]\OBJ)
+						SurfCount = CountSurfaces(e\room\NPC[0]\OBJ)
+						For i = 1 To SurfCount
 							SF = GetSurface(e\room\NPC[0]\OBJ, i)
 							b = GetSurfaceBrush(SF)
 							BT = GetBrushTexture(b, 0)
@@ -5095,7 +5103,7 @@ Function UpdateEvents%()
 								If (Not n_I\Curr106\Contained)
 									If n_I\Curr106\State > 0.0 Then n_I\Curr106\State = n_I\Curr106\State - (fps\Factor[0] * 3.0)
 								EndIf
-								InjurePlayer(fps\Factor[0] * 0.00005)
+								me\Injuries = me\Injuries + (fps\Factor[0] * 0.00005)
 							EndIf
 						EndIf
 					EndIf
@@ -5117,6 +5125,7 @@ Function UpdateEvents%()
 							ResetEntity(n_I\Curr096\Collider)
 						Else
 							n_I\Curr096 = CreateNPC(NPCType096, TFormedX(), TFormedY(), TFormedZ())
+							GiveAchievement("096")
 						EndIf
 						n_I\Curr096\State = 6.0 : n_I\Curr096\State2 = 70.0 * 10.0
 						RotateEntity(n_I\Curr096\Collider, 0.0, e\room\Angle + 270.0, 0.0, True)
@@ -5127,7 +5136,7 @@ Function UpdateEvents%()
 						TFormPoint(-1328.0, 150.0, 528.0, e\room\OBJ, 0)
 						e\room\NPC[0] = CreateNPC(NPCTypeGuard, TFormedX(), TFormedY(), TFormedZ())
 						
-						GiveAchievement(Achv096)
+						GiveAchievement("096")
 						
 						e\EventState = 1.0
 					EndIf
@@ -5200,7 +5209,7 @@ Function UpdateEvents%()
 									e\room\NPC[0]\State = 14.0
 									e\room\NPC[0]\PathStatus = FindPath(e\room\NPC[0], EntityX(e\room\OBJ, True), 0.4, EntityZ(e\room\OBJ, True))
 									e\room\NPC[0]\PathTimer = 300.0
-									e\room\NPC[0]\Speed = e\room\NPC[0]\Speed * 1.8 ; ~ Making the guard walking a bit faster
+									e\room\NPC[0]\Speed = e\room\NPC[0]\Speed * 1.5 ; ~ Making the guard walking a bit faster
 								EndIf
 							EndIf
 						EndIf
@@ -5284,15 +5293,15 @@ Function UpdateEvents%()
 					UpdateSoundOrigin(e\SoundCHN, Camera, n_I\Curr096\OBJ, 10.0, 1.0, True)
 				ElseIf PlayerRoom = e\room
 					Temp = UpdateLever(e\room\RoomLevers[0]\OBJ) ; ~ Power switch
-					x = UpdateLever(e\room\RoomLevers[1]\OBJ) ; ~ Fuel pump
-					z = UpdateLever(e\room\RoomLevers[2]\OBJ) ; ~ Generator
+					x1 = UpdateLever(e\room\RoomLevers[1]\OBJ) ; ~ Fuel pump
+					z1 = UpdateLever(e\room\RoomLevers[2]\OBJ) ; ~ Generator
 					
 					; ~ Fuel pump on
-					If x
+					If x1
 						e\EventState2 = Min(1.0, e\EventState2 + fps\Factor[0] / 350.0)
 						
 						; ~ Generator on
-						If z
+						If z1
 							If e\Sound2 = 0 Then LoadEventSound(e, "SFX\Room\GeneratorOn.ogg", 1)
 							e\EventState3 = Min(1.0, e\EventState3 + fps\Factor[0] / 450.0)
 						Else
@@ -5306,7 +5315,7 @@ Function UpdateEvents%()
 					If e\EventState2 > 0.0 Then e\SoundCHN = LoopSound2(RoomAmbience[7], e\SoundCHN, Camera, e\room\RoomLevers[1]\BaseOBJ, 5.0, e\EventState2 * 0.8)
 					If e\EventState3 > 0.0 Then e\SoundCHN2 = LoopSound2(e\Sound2, e\SoundCHN2, Camera, e\room\RoomLevers[1]\BaseOBJ, 6.0, e\EventState3)
 					
-					If Temp And x And z
+					If Temp And x1 And z1
 						For i = 0 To 1
 							e\room\RoomDoors[i]\Locked = 0
 						Next
@@ -5354,26 +5363,34 @@ Function UpdateEvents%()
 					TFormPoint(EntityX(me\Collider), EntityY(me\Collider), EntityZ(me\Collider), 0, e\room\OBJ)
 					
 					If e\room\RoomDoors[1]\OpenState = 0.0
-						If (Not EntityHidden(e\room\Objects[0])) Then HideEntity(e\room\Objects[0])
-						If (Not EntityHidden(e\room\RoomDoors[0]\OBJ)) Then HideEntity(e\room\RoomDoors[0]\OBJ)
-						If (Not EntityHidden(e\room\RoomDoors[0]\FrameOBJ)) Then HideEntity(e\room\RoomDoors[0]\FrameOBJ)
-						If (Not EntityHidden(e\room\RoomDoors[0]\Buttons[1])) Then HideEntity(e\room\RoomDoors[0]\Buttons[1])
+						If (Not EntityHidden(e\room\RoomDoors[0]\FrameOBJ))
+							HideEntity(e\room\Objects[0])
+							HideEntity(e\room\RoomDoors[0]\OBJ)
+							HideEntity(e\room\RoomDoors[0]\Buttons[1])
+							HideEntity(e\room\RoomDoors[0]\FrameOBJ)
+						EndIf
 					Else
-						If EntityHidden(e\room\Objects[0]) Then ShowEntity(e\room\Objects[0])
-						If EntityHidden(e\room\RoomDoors[0]\OBJ) Then ShowEntity(e\room\RoomDoors[0]\OBJ)
-						If EntityHidden(e\room\RoomDoors[0]\FrameOBJ) Then ShowEntity(e\room\RoomDoors[0]\FrameOBJ)
-						If EntityHidden(e\room\RoomDoors[0]\Buttons[1]) Then ShowEntity(e\room\RoomDoors[0]\Buttons[1])
+						If EntityHidden(e\room\RoomDoors[0]\FrameOBJ)
+							ShowEntity(e\room\Objects[0])
+							ShowEntity(e\room\RoomDoors[0]\OBJ)
+							ShowEntity(e\room\RoomDoors[0]\Buttons[1])
+							ShowEntity(e\room\RoomDoors[0]\FrameOBJ)
+						EndIf
 					EndIf
 					If e\room\RoomDoors[4]\OpenState = 0.0
-						If (Not EntityHidden(e\room\Objects[1])) Then HideEntity(e\room\Objects[1])
-						If (Not EntityHidden(e\room\RoomDoors[5]\OBJ)) Then HideEntity(e\room\RoomDoors[5]\OBJ)
-						If (Not EntityHidden(e\room\RoomDoors[5]\FrameOBJ)) Then HideEntity(e\room\RoomDoors[5]\FrameOBJ)
-						If (Not EntityHidden(e\room\RoomDoors[5]\Buttons[1])) Then HideEntity(e\room\RoomDoors[5]\Buttons[1])
+						If (Not EntityHidden(e\room\RoomDoors[5]\FrameOBJ))
+							HideEntity(e\room\Objects[1])
+							HideEntity(e\room\RoomDoors[5]\OBJ)
+							HideEntity(e\room\RoomDoors[5]\Buttons[1])
+							HideEntity(e\room\RoomDoors[5]\FrameOBJ)
+						EndIf
 					Else
-						If EntityHidden(e\room\Objects[1]) Then ShowEntity(e\room\Objects[1])
-						If EntityHidden(e\room\RoomDoors[5]\OBJ) Then ShowEntity(e\room\RoomDoors[5]\OBJ)
-						If EntityHidden(e\room\RoomDoors[5]\FrameOBJ) Then ShowEntity(e\room\RoomDoors[5]\FrameOBJ)
-						If EntityHidden(e\room\RoomDoors[5]\Buttons[1]) Then ShowEntity(e\room\RoomDoors[5]\Buttons[1])
+						If EntityHidden(e\room\RoomDoors[5]\FrameOBJ)
+							ShowEntity(e\room\Objects[1])
+							ShowEntity(e\room\RoomDoors[5]\OBJ)
+							ShowEntity(e\room\RoomDoors[5]\Buttons[1])
+							ShowEntity(e\room\RoomDoors[5]\FrameOBJ)
+						EndIf
 					EndIf
 					
 					If e\EventState < 8.0
@@ -5387,7 +5404,7 @@ Function UpdateEvents%()
 					Local src.Doors, dest.Doors
 					
 					If TFormedX() > 730.0
-						GiveAchievement(Achv970)
+						GiveAchievement("970")
 						
 						me\BlinkTimer = -10.0
 						UpdateWorld()
@@ -5420,7 +5437,7 @@ Function UpdateEvents%()
 						
 						Temp = True
 					ElseIf TFormedX() < -730.0
-						GiveAchievement(Achv970)
+						GiveAchievement("970")
 						
 						me\BlinkTimer = -10.0
 						UpdateWorld()
@@ -5459,14 +5476,14 @@ Function UpdateEvents%()
 						For it.Items = Each Items
 							If EntityDistanceSquared(it\Collider, me\Collider) < 25.0
 								TFormPoint(EntityX(it\Collider), EntityY(it\Collider), EntityZ(it\Collider), 0, e\room\OBJ)
-								x = TFormedX() : y = TFormedY() : z = TFormedZ()
-								If z >= -290.0 And z <= 560.0
-									If x >= 264.0 And x <= 760.0
-										TFormPoint(x - 1024.0, y, z, e\room\OBJ, 0)
+								x1 = TFormedX() : y1 = TFormedY() : z1 = TFormedZ()
+								If z1 >= -290.0 And z1 <= 560.0
+									If x1 >= 264.0 And x1 <= 760.0
+										TFormPoint(x1 - 1024.0, y1, z1, e\room\OBJ, 0)
 										PositionEntity(it\Collider, TFormedX(), TFormedY(), TFormedZ(), True)
 										ResetEntity(it\Collider)
-									ElseIf x <= -264.0 And x >= -760
-										TFormPoint(x + 1024.0, y, z, e\room\OBJ, 0)
+									ElseIf x1 <= -264.0 And x1 >= -760.0
+										TFormPoint(x1 + 1024.0, 1, z1, e\room\OBJ, 0)
 										PositionEntity(it\Collider, TFormedX(), TFormedY(), TFormedZ(), True)
 										ResetEntity(it\Collider)
 									EndIf
@@ -5485,7 +5502,7 @@ Function UpdateEvents%()
 								;[End Block]
 							Case 5.0
 								;[Block]
-								InjurePlayer(0.3)
+								me\Injuries = me\Injuries + 0.3
 								;[End Block]
 							Case 10.0
 								;[Block]
@@ -5566,7 +5583,7 @@ Function UpdateEvents%()
 									Tex = LoadTexture_Strict("GFX\NPCs\scp_173_H.png")
 									EntityTexture(n_I\Curr173\OBJ, Tex)
 									EntityTexture(n_I\Curr173\OBJ2, Tex)
-									DeleteSingleTextureEntryFromCache(Tex)
+									DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 								EndIf
 								;[End Block]
 						End Select
@@ -5594,11 +5611,11 @@ Function UpdateEvents%()
 						For it.Items = Each Items
 							If it\Dropped = 1 Lor it\Dropped = -1
 								TFormPoint(EntityX(it\Collider), EntityY(it\Collider), EntityZ(it\Collider), 0, e\room\OBJ)
-								x = TFormedX() : y = TFormedY() : z = TFormedZ()
+								x1 = TFormedX() : y1 = TFormedY() : z1 = TFormedZ()
 								
-								If it\Dropped = 1 And Abs(x) < 264.0
+								If it\Dropped = 1 And Abs(x1) < 264.0
 									For i = -1 To 1 Step 2
-										TFormPoint(x + (1024.0 * i), y, z, e\room\OBJ, 0)
+										TFormPoint(x1 + (1024.0 * i), y1, z1, e\room\OBJ, 0)
 										it2.Items = CreateItem(it\Name, it\ItemTemplate\ID, TFormedX(), EntityY(it\Collider), TFormedZ(), it\R, it\G, it\B, it\Alpha)
 										it2\State = it\State : it2\State2 = it\State2 : it2\State3 = it\State3
 										If it\InvSlots > 0
@@ -5616,7 +5633,7 @@ Function UpdateEvents%()
 									For it2.Items = Each Items
 										If it2 <> it And it2\Dist < 225.0 And it2\ItemTemplate = it\ItemTemplate
 											TFormPoint(EntityX(it2\Collider), EntityY(it2\Collider), EntityZ(it2\Collider), 0, e\room\OBJ)
-											If TFormedZ() = z Then RemoveItem(it2)
+											If TFormedZ() = z1 Then RemoveItem(it2)
 										EndIf
 									Next
 								EndIf
@@ -5637,8 +5654,8 @@ Function UpdateEvents%()
 						If e\EventState > 60.0
 							AnimateNPC(e\room\NPC[0], 80.0, 61.0, -0.02, False)
 							e\room\NPC[0]\DropSpeed = 0.0
-							y = CurveValue(1.5 + Sin(Float(MilliSec) / 20.0) * 0.1, EntityY(e\room\NPC[0]\Collider), 50.0)
-							PositionEntity(e\room\NPC[0]\Collider, EntityX(e\room\NPC[0]\Collider), y, EntityZ(e\room\NPC[0]\Collider))
+							y1 = CurveValue(1.5 + Sin(Float(MilliSec) / 20.0) * 0.1, EntityY(e\room\NPC[0]\Collider), 50.0)
+							PositionEntity(e\room\NPC[0]\Collider, EntityX(e\room\NPC[0]\Collider), y1, EntityZ(e\room\NPC[0]\Collider))
 							TurnEntity(e\room\NPC[0]\Collider, 0.0, fps\Factor[0] * 0.1, 0.0)
 						EndIf
 					EndIf
@@ -5675,7 +5692,7 @@ Function UpdateEvents%()
 						PositionEntity(e\room\Objects[3], TFormedX(), TFormedY(), TFormedZ())
 						Tex = LoadTexture_Strict("GFX\NPCs\duck(2).png")
 						EntityTexture(e\room\Objects[3], Tex)
-						DeleteSingleTextureEntryFromCache(Tex)
+						DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 						EntityParent(e\room\Objects[3], e\room\OBJ)
 					Else
 						If me\BlinkTimer > -12.0 And me\BlinkTimer < -8.0
@@ -5698,15 +5715,14 @@ Function UpdateEvents%()
 			Case e_room3_storage
 				;[Block]
 				If PlayerRoom = e\room
-					PlayerPosX = EntityX(me\Collider, True) : PlayerPosY = EntityY(me\Collider, True) : PlayerPosZ = EntityZ(me\Collider, True)
-					me\InsideElevator = (IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[0]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[1]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[2]) Lor IsInsideElevator(PlayerPosX, PlayerPosY, PlayerPosZ, e\room\Objects[3]))
+					x1 = EntityX(me\Collider, True) : y1 = EntityY(me\Collider, True) : z1 = EntityZ(me\Collider, True)
+					me\InsideElevator = (IsInsideElevator(x1, y1, z1, e\room\Objects[0]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[1]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[2]) Lor IsInsideElevator(x1, y1, z1, e\room\Objects[3]))
 					ToElevatorFloor = LowerFloor
 					e\EventState2 = UpdateElevators(e\EventState2, e\room\RoomDoors[0], e\room\RoomDoors[1], e\room\Objects[0], e\room\Objects[1], e)
 					e\EventState3 = UpdateElevators(e\EventState3, e\room\RoomDoors[2], e\room\RoomDoors[3], e\room\Objects[2], e\room\Objects[3], e)
 					
 					If EntityY(me\Collider) < (-4600.0) * RoomScale
 						me\Zone = 0
-						GiveAchievement(Achv939)
 						
 						If wi\GasMask = 0 And wi\HazmatSuit = 0
 							me\BlurTimer = Min(me\BlurTimer + (fps\Factor[0] * 1.05), 1500.0)
@@ -5847,24 +5863,6 @@ Function UpdateEvents%()
 					EndIf
 				EndIf
 				;[End Block]
-			Case e_room4_lcz_049
-				;[Block]
-				If e\EventState < MilliSecs()
-					If PlayerRoom <> e\room
-						If e\room\Dist < 8.0
-							If n_I\Curr049 <> Null
-								If n_I\Curr049\State = 2.0 And EntityDistanceSquared(me\Collider, n_I\Curr049\Collider) > 256.0
-									n_I\Curr049\PathStatus = PATH_STATUS_NO_SEARCH : n_I\Curr049\State = 4.0 : n_I\Curr049\State2 = 0.0 : n_I\Curr049\State3 = 0.0
-									TFormPoint(368.0, 528.0, 176.0, e\room\OBJ, 0)
-									TeleportEntity(n_I\Curr049\Collider, TFormedX(), TFormedY(), TFormedZ(), n_I\Curr049\CollRadius, True)
-									RemoveEvent(e)
-								EndIf
-							EndIf
-						EndIf
-					EndIf
-					If e <> Null Then e\EventState = MilliSecs() + 5000
-				EndIf
-				;[End Block]
 			Case e_cont1_035
 				;[Block]
 				If PlayerRoom = e\room
@@ -5889,7 +5887,7 @@ Function UpdateEvents%()
 						If e\EventState = 1.0
 							If EntityDistanceSquared(me\Collider, e\room\Objects[0]) < 1.44
 								If EntityInView(e\room\NPC[0]\OBJ, Camera)
-									GiveAchievement(Achv035)
+									GiveAchievement("035")
 									PlaySound_Strict(LoadTempSound("SFX\SCP\035\GetUp.ogg"))
 									e\EventState = 1.5
 								EndIf
@@ -5904,11 +5902,7 @@ Function UpdateEvents%()
 									If Temp
 										For i = 0 To 1
 											If e\room\RoomEmitters[i] = Null
-												If i = 0
-													TFormPoint(-269.0, 400.0, 624.0, e\room\OBJ, 0)
-												Else
-													TFormPoint(-269.0, 400.0, 135.0, e\room\OBJ, 0)
-												EndIf
+												TFormPoint(-269.0, 400.0, 135.0 + (i * 489.0), e\room\OBJ, 0)
 												e\room\RoomEmitters.Emitter[i] = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
 												e\room\RoomEmitters[i]\State = 1
 											EndIf
@@ -5981,11 +5975,7 @@ Function UpdateEvents%()
 										RotateEntity(e\room\NPC[0]\Collider, 0.0, CurveAngle(EntityYaw(e\room\NPC[0]\OBJ), EntityYaw(e\room\NPC[0]\Collider), 15.0), 0.0)
 										
 										If Rand(500) = 1
-											If EntityDistanceSquared(e\room\NPC[0]\Collider, e\room\Objects[1]) > 4.0
-												e\room\NPC[0]\State2 = 1.0
-											Else
-												e\room\NPC[0]\State2 = 0.0
-											EndIf
+											e\room\NPC[0]\State2 = (EntityDistanceSquared(e\room\NPC[0]\Collider, e\room\Objects[1]) > 4.0)
 											e\room\NPC[0]\State = 1.0
 										EndIf
 									ElseIf e\room\NPC[0]\State = 1.0
@@ -6139,11 +6129,7 @@ Function UpdateEvents%()
 						If UpdateLever(e\room\RoomLevers[1]\OBJ)
 							For i = 0 To 1
 								If e\room\RoomEmitters[i] = Null
-									If i = 0
-										TFormPoint(-269.0, 400.0, 624.0, e\room\OBJ, 0)
-									Else
-										TFormPoint(-269.0, 400.0, 135.0, e\room\OBJ, 0)
-									EndIf
+									TFormPoint(-269.0, 400.0, 135.0 + (i * 489.0), e\room\OBJ, 0)
 									e\room\RoomEmitters.Emitter[i] = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
 									e\room\RoomEmitters[i]\State = 1
 								EndIf
@@ -6186,11 +6172,7 @@ Function UpdateEvents%()
 											me\BlurTimer = Sin(MilliSec / 10.0) * Abs(me\Sanity)
 										EndIf
 										
-										If wi\HazmatSuit = 0
-											InjurePlayer(fps\Factor[0] / 5000.0)
-										Else
-											InjurePlayer(fps\Factor[0] / 10000.0)
-										EndIf
+										me\Injuries = me\Injuries + (fps\Factor[0] / (5000.0 * (1.0 + (wi\HazmatSuit > 0))))
 										
 										If me\Terminated And me\Bloodloss >= 100.0 Then msg\DeathMsg = Format(GetLocalString("death", "035"), SubjectName)
 									EndIf
@@ -6204,7 +6186,7 @@ Function UpdateEvents%()
 							
 							If Angle > 90.0 
 								If Angle < 225.0
-									RotateEntity(e\room\NPC[1]\Collider, 0.0, e\room\Angle - 89.0 - 180.0, 0.0)
+									RotateEntity(e\room\NPC[1]\Collider, 0.0, e\room\Angle - 269.0, 0.0)
 								Else
 									RotateEntity(e\room\NPC[1]\Collider, 0.0, e\room\Angle - 1.0, 0.0)
 								EndIf
@@ -6242,136 +6224,59 @@ Function UpdateEvents%()
 				;[End Block]
 			Case e_room2_test_hcz
 				;[Block]
-				If e\EventState < 3.0
-					If e\room\RoomEmitters[5] <> Null
-						For i = 0 To 5
-							FreeEmitter(e\room\RoomEmitters[i], True)
-						Next
+				If e\EventState = 0.0
+					If PlayerRoom = e\room
+						TFormPoint(EntityX(me\Collider), EntityY(me\Collider), EntityZ(me\Collider), 0.0, e\room\OBJ)
+						If TFormedZ() = 0.0
+							Temp = -1
+						Else
+							Temp = -Sgn(TFormedZ())
+						EndIf
+						TFormPoint(-720.0, 25.0, 816.0 * Temp, e\room\OBJ, 0)
+						e\room\NPC[0] = CreateNPC(NPCType1048, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[0]\State = 1.0
+						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle - 90.0, 0.0)
+						
+						e\EventState = 1.0
+					EndIf
+				ElseIf e\EventState = 1.0
+					e\EventState2 = e\EventState2 + fps\Factor[0]
+					If e\EventState2 > 70.0 * 10.5 Lor e\room\RoomDoors[0]\Open
+						RemoveNPC(e\room\NPC[0])
+						e\EventState = 2.0
 					EndIf
 				EndIf
-				Select e\EventState
-					Case 0.0
-						;[Block]
-						If PlayerRoom = e\room
-							TFormPoint(EntityX(me\Collider), EntityY(me\Collider), EntityZ(me\Collider), 0.0, e\room\OBJ)
-							If TFormedZ() = 0.0
-								Temp = -1
-							Else
-								Temp = -Sgn(TFormedZ())
-							EndIf
-							TFormPoint(-720.0, 25.0, 816.0 * Temp, e\room\OBJ, 0)
-							e\room\NPC[0] = CreateNPC(NPCType1048, TFormedX(), TFormedY(), TFormedZ())
-							e\room\NPC[0]\State = 1.0
-							RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle - 90.0, 0.0)
-							e\EventState = 1.0
-						EndIf
-						;[End Block]
-					Case 1.0
-						;[Block]
-						e\EventState2 = e\EventState2 + fps\Factor[0]
-						If e\EventState2 > 70.0 * 10.5 Lor e\room\RoomDoors[0]\Open
-							RemoveNPC(e\room\NPC[0])
-							e\EventState = 2.0
-						EndIf
-						;[End Block]
-					Case 2.0
-						;[Block]
-						If PlayerRoom = e\room
-							If EntityDistanceSquared(me\Collider, e\room\Objects[6]) < 6.25
-								PlaySound_Strict(LoadTempSound("SFX\SCP\079\TestroomWarning.ogg"), True)
-								e\EventState = 3.0
-							EndIf
-						EndIf
-						;[End Block]
-					Case 3.0
-						;[Block]
-						If e\room\RoomEmitters[5] = Null
-							For i = 0 To 5
-								e\room\RoomEmitters.Emitter[i] = SetEmitter(e\room, EntityX(e\room\Objects[i], True), EntityY(e\room\Objects[i], True), EntityZ(e\room\Objects[i], True), 4)
-								e\room\RoomEmitters[i]\State = 1
-							Next
-						EndIf
-						;[End Block]
-				End Select
 				
-;				If e\EventState = 0.0
-;					If PlayerRoom = e\room
-;						TFormPoint(EntityX(me\Collider), EntityY(me\Collider), EntityZ(me\Collider), 0.0, e\room\OBJ)
-;						If TFormedZ() = 0.0
-;							Temp = -1
-;						Else
-;							Temp = -Sgn(TFormedZ())
-;						EndIf
-;						TFormPoint(-720.0, 25.0, 816.0 * Temp, e\room\OBJ, 0)
-;						e\room\NPC[0] = CreateNPC(NPCType1048, TFormedX(), TFormedY(), TFormedZ())
-;						e\room\NPC[0]\State = 1.0
-;						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\Angle - 90.0, 0.0)
-;						
-;						e\EventState = 1.0
-;					EndIf
-;				ElseIf e\EventState = 1.0
-;					e\EventState2 = e\EventState2 + fps\Factor[0]
-;					If e\EventState2 > 70.0 * 10.5 Lor e\room\RoomDoors[0]\Open
-;						RemoveNPC(e\room\NPC[0])
-;						e\EventState = 2.0
-;					EndIf
-;				EndIf
-;				
-;				If PlayerRoom = e\room
-;					If e\EventState = 2.0
-;						If EntityDistanceSquared(me\Collider, e\room\Objects[6]) < 6.25 And e\EventState > 0.0
-;							PlaySound_Strict(LoadTempSound("SFX\SCP\079\TestroomWarning.ogg"), True)
-;							For i = 0 To 5
-;								emit.Emitter = SetEmitter(e\room, EntityX(e\room\Objects[i], True), EntityY(e\room\Objects[i], True), EntityZ(e\room\Objects[i], True), 4)
-;								emit\State = 1
-;							Next
-;							RemoveEvent(e)
-;						EndIf
-;					EndIf
-;				EndIf
+				If PlayerRoom = e\room
+					If e\EventState = 2.0
+						If EntityDistanceSquared(me\Collider, e\room\Objects[6]) < 6.25 And e\EventState > 0.0
+							PlaySound_Strict(LoadTempSound("SFX\SCP\079\TestroomWarning.ogg"), True)
+							For i = 0 To 5
+								emit.Emitter = SetEmitter(e\room, EntityX(e\room\Objects[i], True), EntityY(e\room\Objects[i], True), EntityZ(e\room\Objects[i], True), 4)
+								emit\State = 1
+							Next
+							RemoveEvent(e)
+						EndIf
+					EndIf
+				EndIf
 				;[End Block]
 			Case e_room2_6_hcz_smoke
 				;[Block]
-				Select e\EventState
-					Case 0.0
-						;[Block]
-						If e\room\Dist < 3.5
-							PlaySound2(snd_I\BurstSFX, Camera, e\room\OBJ)
-							e\EventState = 1.0
-						EndIf
-						If e\room\RoomEmitters[1] <> Null
-							For i = 0 To 1
-								FreeEmitter(e\room\RoomEmitters[i], True)
-							Next
-						EndIf
-						;[End Block]
-					Case 1.0
-						;[Block]
-						If e\room\RoomEmitters[1] = Null
-							For i = 0 To 1
-								TFormPoint(0.0, 460.0, ((i = 0) * 512.0) + ((i = 1) * (-512.0)), e\room\OBJ, 0)
-								e\room\RoomEmitters.Emitter[i] = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
-								e\room\RoomEmitters[i]\State = 1
-							Next
-						EndIf
-						;[End Block]
-				End Select
-				
-;				If PlayerRoom = e\room
-;					If e\room\Dist < 3.5
-;						PlaySound2(snd_I\BurstSFX, Camera, e\room\OBJ)
-;						
-;						TFormPoint(0.0, 460.0, 512.0, e\room\OBJ, 0)
-;						emit.Emitter = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
-;						emit\State = 1
-;						
-;						TFormPoint(0.0, 460.0, -512.0, e\room\OBJ, 0)
-;						emit.Emitter = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
-;						emit\State = 1
-;						
-;						RemoveEvent(e)
-;					EndIf
-;				EndIf
+				If PlayerRoom = e\room
+					If e\room\Dist < 3.5
+						PlaySound2(snd_I\BurstSFX, Camera, e\room\OBJ)
+						
+						TFormPoint(0.0, 460.0, 512.0, e\room\OBJ, 0)
+						emit.Emitter = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
+						emit\State = 1
+						
+						TFormPoint(0.0, 460.0, -512.0, e\room\OBJ, 0)
+						emit.Emitter = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 0)
+						emit\State = 1
+						
+						RemoveEvent(e)
+					EndIf
+				EndIf
 				;[End Block]
 			Case e_room2_6_hcz_173
 				;[Block]
@@ -6584,10 +6489,10 @@ Function UpdateEvents%()
 						
 						MakeMeUnplayable()
 						
-						x = CurveValue(EntityX(e\room\OBJ), EntityX(me\Collider), 10.0)
-						y = CurveValue(EntityY(e\room\OBJ) - e\EventState2, EntityY(me\Collider), 25.0)
-						z = CurveValue(EntityZ(e\room\OBJ), EntityZ(me\Collider), 10.0)
-						PositionEntity(me\Collider, x, y, z, True)
+						x1 = CurveValue(EntityX(e\room\OBJ), EntityX(me\Collider), 10.0)
+						y1 = CurveValue(EntityY(e\room\OBJ) - e\EventState2, EntityY(me\Collider), 25.0)
+						z1 = CurveValue(EntityZ(e\room\OBJ), EntityZ(me\Collider), 10.0)
+						PositionEntity(me\Collider, x1, y1, z1, True)
 						
 						me\DropSpeed = 0.0
 						
@@ -6742,19 +6647,9 @@ Function UpdateEvents%()
 							ElseIf e\EventState > 70.0 * 3.0 And e\EventState < 70.0 * 6.0
 								For i = 0 To 1
 									If e\room\RoomEmitters[i] = Null
-										If e\room\RoomTemplate\RoomID = r_room3_gw
-											If i = 0
-												TFormPoint(-81.0, 360.0, 320.0, e\room\OBJ, 0)
-											Else
-												TFormPoint(143, 360.0, 320.0, e\room\OBJ, 0)
-											EndIf
-										Else
-											If i = 0
-												TFormPoint(320, 360.0, -81.0, e\room\OBJ, 0)
-											Else
-												TFormPoint(320.0, 360.0, 143.0, e\room\OBJ, 0)
-											EndIf
-										EndIf
+										Temp = (e\room\RoomTemplate\RoomID = r_room3_gw)
+										TFormPoint(Temp * (220.0 * i - 110.0) + (Not Temp) * 320.0, 360.0, Temp * 320.0 + (Not Temp) * (220.0 * i - 110.0), e\room\OBJ, 0)
+										
 										e\room\RoomEmitters[i] = SetEmitter(e\room, TFormedX(), TFormedY(), TFormedZ(), 2)
 									EndIf
 								Next
@@ -6798,7 +6693,7 @@ Function UpdateEvents%()
 						If e\EventState2 = (-70.0) * 5.0
 							For sc.SecurityCams = Each SecurityCams
 								If sc\room = e\room
-									If sc\InSight And EntityDistanceSquared(me\Collider, sc\ScrOBJ) < PowTwo(opt\CameraFogFar * LightVolume * 1.2) Then e\EventState2 = Min(e\EventState2 + fps\Factor[0], 0.0)
+									If sc\InSight And EntityDistanceSquared(me\Collider, sc\ScrOBJ) < PowTwo(me\CameraFogDist * LightVolume * 1.2) Then e\EventState2 = Min(e\EventState2 + fps\Factor[0], 0.0)
 									Exit
 								EndIf
 							Next
@@ -6829,6 +6724,7 @@ Function UpdateEvents%()
 							Else
 								n_I\Curr049 = CreateNPC(NPCType049, EntityX(e\room\AdjDoor[Adj2]\FrameOBJ), EntityY(e\room\Objects[7], True), EntityZ(e\room\AdjDoor[Adj2]\FrameOBJ))
 							EndIf
+							GiveAchievement("049")
 						Else
 							If AdjDist1 > AdjDist2
 								PositionEntity(n_I\Curr049\Collider, EntityX(e\room\AdjDoor[Adj1]\FrameOBJ), EntityY(e\room\Objects[7], True), EntityZ(e\room\AdjDoor[Adj1]\FrameOBJ), True)
@@ -6844,7 +6740,7 @@ Function UpdateEvents%()
 						e\room\NPC[0]\HideFromNVG = False
 						e\room\NPC[0]\EnemyX = EntityX(me\Collider)
 						e\room\NPC[0]\EnemyZ = EntityZ(me\Collider)
-						e\room\NPC[0]\State = 5.0 : e\room\NPC[0]\PrevState = 2
+						e\room\NPC[0]\State = 4.0 : e\room\NPC[0]\PrevState = 2
 						
 						e\EventState2 = 1.0
 					ElseIf e\EventState2 = 1.0
@@ -6872,9 +6768,9 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 						
-						If e\room\NPC[0]\State <> 5.0 Then e\EventState2 = 7.0
+						If e\room\NPC[0]\State <> 4.0 Then e\EventState2 = 7.0
 					ElseIf e\EventState2 = 3.0
-						If e\room\NPC[0]\State <> 5.0 Then e\EventState2 = 7.0
+						If e\room\NPC[0]\State <> 4.0 Then e\EventState2 = 7.0
 						
 						If NPCSeesPlayer(e\room\NPC[0], 8.0 - me\CrouchState + me\SndVolume, 60.0, True) = 2 Then e\EventState2 = 4.0
 						
@@ -6937,7 +6833,7 @@ Function UpdateEvents%()
 							EndIf
 						EndIf
 					ElseIf e\EventState2 = 4.0
-						If e\room\NPC[0]\State <> 5.0
+						If e\room\NPC[0]\State <> 4.0
 							e\EventState2 = 7.0
 							e\room\NPC[0]\State3 = 6.0
 						EndIf
@@ -7007,11 +6903,7 @@ Function UpdateEvents%()
 						EntityTexture(e\room\Objects[18], e\room\Textures[0], 0)
 					Else
 						UpdateCheckpointMonitors()
-						If mon_I\MonitorTimer[0] < 50.0
-							EntityTexture(e\room\Objects[18], e\room\Textures[0], 1)
-						Else
-							EntityTexture(e\room\Objects[18], e\room\Textures[0], 2)
-						EndIf
+						EntityTexture(e\room\Objects[18], e\room\Textures[0], 1 + (mon_I\MonitorTimer[0] < 50.0))
 					EndIf
 					
 					; ~ Checking if the monitors and such should be rendered or not
@@ -7042,22 +6934,23 @@ Function UpdateEvents%()
 							EndIf
 						Next
 					EndIf
-				EndIf
-				
-				For e2.Events = Each Events
-					If e2\EventID = e_cont2_008
-						If e2\EventState = 2.0
-							EntityTexture(e\room\Objects[19], e\room\Textures[0], 3)
-						Else
-							EntityTexture(e\room\Objects[19], e\room\Textures[1], 6)
+					For e2.Events = Each Events
+						If e2\EventID = e_cont2_008
+							If e2\EventState = 2.0
+								mon_I\UpdateCheckpoint[1] = False
+								EntityTexture(e\room\Objects[19], e\room\Textures[0], 3)
+							Else
+								mon_I\UpdateCheckpoint[1] = True ; ~ Used to update the timer only
+								EntityTexture(e\room\Objects[19], e\room\Textures[1], 6 + (mon_I\MonitorTimer[1] < 50.0))
+							EndIf
+							Exit
 						EndIf
-						Exit
-					EndIf
-				Next
+					Next
+				EndIf
 				;[End Block]
 			Case e_096_spawn
 				;[Block]
-				Local xSpawn#, zSpawn#, Place%
+				Local Place%
 				
 				If e\room\Dist < HideDistance
 					; ~ Checking some statements in order to determine if SCP-096 can spawn in this room
@@ -7110,28 +7003,37 @@ Function UpdateEvents%()
 									Place = Rand(0, 2)
 								EndIf
 								
-								If Place = 0
-									xSpawn = -608.0
-									zSpawn = 0.0
-								ElseIf Place = 1
-									xSpawn = 0.0
-									zSpawn = -608.0
-								ElseIf Place = 2
-									xSpawn = 608.0
-									zSpawn = 0.0
-								Else
-									xSpawn = 0.0
-									zSpawn = 608.0
-								EndIf
+								Select Place
+									Case 0
+										;[Block]
+										x1 = -608.0
+										z1 = 0.0
+										;[End Block]
+									Case 1
+										;[Block]
+										x1 = 0.0
+										z1 = -608.0
+										;[End Block]
+									Case 2
+										;[Block]
+										x1 = 608.0
+										z1 = 0.0
+										;[End Block]
+									Case 3
+										;[Block]
+										x1 = 0.0
+										z1 = 608.0
+										;[End Block]
+								End Select
 								;[End Block]
 							Default
 								;[Block]
-								xSpawn = Rnd(-100.0, 100.0)
-								zSpawn = Rnd(-100.0, 100.0)
+								x1 = Rnd(-50.0, 50.0)
+								z1 = Rnd(-50.0, 50.0)
 								;[End Block]
 						End Select
 						Pvt = CreatePivot(e\room\OBJ)
-						PositionEntity(Pvt, xSpawn, 0.0, zSpawn)
+						PositionEntity(Pvt, x1, 0.0, z1)
 						If n_I\Curr096 <> Null
 							PositionEntity(n_I\Curr096\Collider, EntityX(Pvt, True), e\room\y + 0.5, EntityZ(Pvt, True))
 							ResetEntity(n_I\Curr096\Collider)
@@ -7159,13 +7061,7 @@ Function UpdateEvents%()
 						e\EventState = 2.0
 					EndIf
 				Else
-					If e\EventState = 2.0
-						If Rand(-1, 1 + (2 * SelectedDifficulty\AggressiveNPCs)) > 0
-							e\EventState = 0.0
-						Else
-							e\EventState = 3.0
-						EndIf
-					EndIf
+					If e\EventState = 2.0 Then e\EventState = 3.0 - (3.0 * (Rand(-1, 1 + (2 * SelectedDifficulty\AggressiveNPCs)) > 0))
 				EndIf
 				;[End Block]
 			Case e_room2_medibay
@@ -7194,7 +7090,7 @@ Function UpdateEvents%()
 						RotateEntity(e\room\Objects[1], 6.0, e\room\Angle + 180.0, 0.0)
 						Tex = LoadTexture_Strict("GFX\NPCs\duck(4).png")
 						EntityTexture(e\room\Objects[1], Tex)
-						DeleteSingleTextureEntryFromCache(Tex)
+						DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 						EntityParent(e\room\Objects[1], e\room\OBJ)
 					Else
 						If InteractObject(e\room\Objects[1], 0.7)
@@ -7438,9 +7334,9 @@ Function UpdateDimension106%()
 				If e\EventState2 <> PD_FakeTunnelRoom
 					ShouldPlay = 3
 					
-					InjurePlayer(fps\Factor[0] * (0.00005 * (1.0 + (wi\NightVision > 0 Lor wi\SCRAMBLE > 0))))
+					me\Injuries = me\Injuries + (fps\Factor[0] * 0.00005 * (1.0 + (wi\NightVision > 0 Lor wi\SCRAMBLE > 0)))
 					
-					If e\EventState = 0.0 Then e\EventState = 0.1
+					me\CameraFogDist = 6.0
 					
 					e\EventState = e\EventState + fps\Factor[0]
 					
@@ -7492,12 +7388,11 @@ Function UpdateDimension106%()
 							EndIf
 						EndIf
 						If EntityDistanceSquared(me\Collider, e\room\OBJ) > PowTwo(-1200.0 * RoomScale)
-							For i = 0 To MaxItemAmount - 1
-								If Inventory(i) <> Null
-									If Inventory(i)\ItemTemplate\ID = it_scp005
-										Random = 31
-										Exit
-									EndIf
+							Random = Rand(30)
+							For e2.Events = Each Events
+								If e2\EventID = e_cont1_005
+									If e2\EventState = 1.0 Then Random = 31
+									Exit
 								EndIf
 							Next
 							Teleport = True
@@ -7583,7 +7478,7 @@ Function UpdateDimension106%()
 							If EntityHidden(e\room\Objects[i]) Then ShowEntity(e\room\Objects[i])
 						Next
 						
-						InjurePlayer(fps\Factor[0] / 4000.0)
+						me\Injuries = me\Injuries + (fps\Factor[0] / 4000.0)
 						
 						me\Sanity = Max(me\Sanity - fps\Factor[0] / SqrValue / 8.0, -1000.0)
 						
@@ -7615,7 +7510,7 @@ Function UpdateDimension106%()
 						ShouldPlay = 14
 						
 						DecalStep = 1
-						opt\CameraFogFar = 8.0
+						me\CameraFogDist = 8.0
 						CameraFogRange(Camera, 0.1, 8.0)
 						
 						For i = 17 To 20
@@ -7682,9 +7577,9 @@ Function UpdateDimension106%()
 							e\SoundCHN = LoopSound2(e\Sound, e\SoundCHN, Camera, e\room\Objects[19], 8.0)
 							EntityTexture(e\room\Objects[19], e\room\Textures[1])
 							If I_714\Using = 1
-								InjurePlayer((8.0 - SqrValue) * (fps\Factor[0] * 0.0002))
+								me\Injuries = me\Injuries + ((8.0 - SqrValue) * (fps\Factor[0] * 0.0002))
 							Else
-								InjurePlayer((8.0 - SqrValue) * (fps\Factor[0] * 0.0004))
+								me\Injuries = me\Injuries + ((8.0 - SqrValue) * (fps\Factor[0] * 0.0004))
 							EndIf
 							
 							If Dist < 49.0
@@ -7699,7 +7594,7 @@ Function UpdateDimension106%()
 							EndIf
 						ElseIf Dist < 64.0
 							EntityTexture(e\room\Objects[19], e\room\Textures[0])
-							InjurePlayer((8.0 - Sqr(Dist)) * (fps\Factor[0] * 0.0001))
+							me\Injuries = me\Injuries + ((8.0 - SqrValue) * (fps\Factor[0] * 0.0001))
 						EndIf
 						
 						If I_714\Using = 2 Lor chs\NoTarget Lor I_268\InvisibilityOn
@@ -7732,7 +7627,7 @@ Function UpdateDimension106%()
 									If r\RoomTemplate\RoomID = r_room2_shaft
 										RoomExist = True
 										
-										GiveAchievement(AchvPD)
+										GiveAchievement("pocketdimension")
 										
 										IsBlackOut = PrevIsBlackOut : PrevIsBlackOut = True
 										
@@ -7761,6 +7656,14 @@ Function UpdateDimension106%()
 												EndIf
 											Next
 											
+											If wi\NightVision > 0
+												me\CameraFogDist = 17.0
+											ElseIf wi\SCRAMBLE > 0
+												me\CameraFogDist = 9.0
+											Else
+												me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
+											EndIf
+											
 											me\Playable = True
 											
 											If e\Sound <> 0 Then FreeSound_Strict(e\Sound) : e\Sound = 0
@@ -7784,8 +7687,9 @@ Function UpdateDimension106%()
 						;[Block]
 						ShouldPlay = 1
 						
-						GiveAchievement(AchvPD)
+						GiveAchievement("pocketdimension")
 						
+						LightRenderDistance = 64.0
 						UpdateLightVolume()
 						UpdateLights(Camera)
 						UpdateDoors()
@@ -7805,7 +7709,7 @@ Function UpdateDimension106%()
 								e\room\RoomDoors[i]\OpenState = 0.0
 							Next
 							
-							achv\Achievement[AchvPD] = False
+							S2IMapErase(UnlockedAchievements, "pocketdimension")
 							
 							LoadEventSound(e, "SFX\Room\PocketDimension\Rumble.ogg")
 							LoadEventSound(e, "SFX\Room\PocketDimension\PrisonVoices.ogg", 1)
@@ -7861,8 +7765,8 @@ Function UpdateDimension106%()
 						If EntityY(me\Collider) < (-1600.0) * RoomScale
 							; ~ Player is at the exit
 							If DistanceSquared(EntityX(e\room\Objects[16], True), EntityX(me\Collider), EntityZ(e\room\Objects[16], True), EntityZ(me\Collider)) < PowTwo(144.0 * RoomScale)
-								Teleport = True
 								Random = Rand(11, 30)
+								Teleport = True
 							Else ; ~ Somewhere else, must've fallen down
 								If (Not chs\GodMode) And (Not me\Terminated)
 									PlaySound_Strict(snd_I\HorrorSFX[8])
@@ -7875,10 +7779,12 @@ Function UpdateDimension106%()
 						;[End Block]
 					Case PD_Labyrinth
 						;[Block]
+						me\CameraFogDist = 3.5
+						
 						UpdateDoors()
 						n_I\Curr106\State = -10.0 : n_I\Curr106\Idle = 0
 						
-						InjurePlayer(fps\Factor[0] * 0.0001)
+						me\Injuries = me \Injuries + (fps\Factor[0] * 0.0001)
 						
 						If EntityDistanceSquared(me\Collider, e\room\Objects[22]) < 4.0 Lor EntityDistanceSquared(me\Collider, e\room\Objects[21]) < 4.0
 							n_I\Curr106\Speed = n_I\Curr106\Speed * 3.0
@@ -7888,14 +7794,7 @@ Function UpdateDimension106%()
 									d\OpenState = 0.0
 								EndIf
 							Next
-							If wi\NightVision > 0
-								opt\CameraFogFar = 17.0
-							ElseIf wi\SCRAMBLE > 0
-								opt\CameraFogFar = 9.0
-							Else
-								opt\CameraFogFar = 6.0
-							EndIf
-							Random = 13
+							Random = 32
 							Teleport = True
 						EndIf
 						;[End Block]
@@ -7993,7 +7892,7 @@ Function UpdateDimension106%()
 								If r\RoomTemplate\RoomID = RoomID
 									RoomExist = True
 									
-									GiveAchievement(AchvPD)
+									GiveAchievement("pocketdimension")
 									
 									IsBlackOut = PrevIsBlackOut : PrevIsBlackOut = True
 									
@@ -8017,6 +7916,14 @@ Function UpdateDimension106%()
 												Exit
 											EndIf
 										Next
+									EndIf
+									
+									If wi\NightVision > 0
+										me\CameraFogDist = 17.0
+									ElseIf wi\SCRAMBLE > 0
+										me\CameraFogDist = 9.0
+									Else
+										me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
 									EndIf
 									
 									If e\Sound <> 0 Then FreeSound_Strict(e\Sound) : e\Sound = 0
@@ -8064,6 +7971,66 @@ Function UpdateDimension106%()
 							
 							e\EventState3 = 0.0
 							e\EventState2 = PD_Labyrinth
+							;[End Block]
+						Case 32
+							;[Block]
+							RoomExist = False
+							For r.Rooms = Each Rooms
+								If r\RoomTemplate\RoomID = r_cont1_005
+									RoomExist = True
+									
+									GiveAchievement("pocketdimension")
+									
+									IsBlackOut = PrevIsBlackOut : PrevIsBlackOut = True
+									
+									me\BlinkTimer = -10.0 : me\BlurTimer = 1500.0
+									
+									If me\Playable
+										e\SoundCHN = PlaySound_Strict(LoadTempSound("SFX\Room\PocketDimension\Exit.ogg"))
+										MakeMeUnplayable()
+									EndIf
+									If (Not ChannelPlaying(e\SoundCHN))
+										TeleportEntity(me\Collider, EntityX(r\RoomCenter, True), 0.5, EntityZ(r\RoomCenter, True), 0.3, True)
+										TeleportToRoom(r)
+										
+										n_I\Curr106\State = 10000.0 : n_I\Curr106\Idle = 0
+										
+										For e2.Events = Each Events
+											If e2\EventID = e_room2_sl
+												e2\EventState3 = 0.0
+													UpdateLever(e2\room\RoomLevers[0]\OBJ)
+												RotateEntity(e2\room\RoomLevers[0]\OBJ, 80.0, EntityYaw(e2\room\RoomLevers[0]\OBJ), 0.0)
+												Exit
+											EndIf
+										Next
+										
+										For e2.Events = Each Events
+											If e2\EventID = e_cont1_005
+												RemoveEvent(e2)
+												Exit
+											EndIf
+										Next
+										
+										If wi\NightVision > 0
+											me\CameraFogDist = 17.0
+										ElseIf wi\SCRAMBLE > 0
+											me\CameraFogDist = 9.0
+										Else
+											me\CameraFogDist = 6.0 - (2.0 * IsBlackOut)
+										EndIf
+										
+										me\Playable = True
+										
+										If e\Sound <> 0 Then FreeSound_Strict(e\Sound) : e\Sound = 0
+										If e\Sound2 <> 0 Then FreeSound_Strict(e\Sound2) : e\Sound2 = 0
+									
+										e\EventState = 0.0
+										e\EventState3 = 0.0
+										e\EventState2 = PD_StartRoom
+									EndIf
+									Exit
+								EndIf
+							Next
 							;[End Block]
 					End Select
 					ResetRender()
@@ -8143,7 +8110,7 @@ Function UpdateDimension1499%()
 						RotateEntity(e\room\NPC[0]\Collider, 0.0, e\room\NPC[0]\Angle, 0.0)
 						Tex = LoadTexture_Strict("GFX\NPCs\scp_1499_1_king.png")
 						EntityTexture(e\room\NPC[0]\OBJ, Tex)
-						DeleteSingleTextureEntryFromCache(Tex)
+						DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 						; ~ Guard next to king
 						e\room\NPC.NPCs[1] = CreateNPC(NPCType1499_1, e\room\x - 1917.0 * RoomScale, e\room\y + 1904.0 * RoomScale, e\room\z + 2052.0 * RoomScale)
 						e\room\NPC[1]\PrevState = 1 : e\room\NPC[1]\Angle = 270.0
@@ -8251,11 +8218,7 @@ Function UpdateDimension1499%()
 									Animate2(du\OBJ, AnimTime(du\OBJ), 362.0, 402.0, 0.2, False)
 								Else
 									Temp = Rand(False, True)
-									If Temp
-										SetAnimTime(du\OBJ, 362.0)
-									Else
-										SetAnimTime(du\OBJ, 321.0)
-									EndIf
+									SetAnimTime(du\OBJ, 321.0 + (41.0 * Temp))
 								EndIf
 							Else
 								If AnimTime(du\OBJ) <= 452.5
@@ -8264,11 +8227,7 @@ Function UpdateDimension1499%()
 									Animate2(du\OBJ, AnimTime(du\OBJ), 454.0, 498.0, 0.2, False)
 								Else
 									Temp = Rand(False, True)
-									If Temp
-										SetAnimTime(du\OBJ, 454.0)
-									Else
-										SetAnimTime(du\OBJ, 413.0)
-									EndIf
+									SetAnimTime(du\OBJ, 413.0 + (41.0 * Temp))
 								EndIf
 							EndIf
 						Else
@@ -8401,13 +8360,7 @@ Function UpdateIntro%()
 			; ~ e\EventState3 = Timer in chamber location
 			
 			If PlayerRoom = e\room
-				For r.Rooms = Each Rooms
-					HideRoomsNoColl(r)
-				Next
-				ShowRoomsNoColl(e\room)
-				
-				CanSave = 1
-				
+				LightRenderDistance = 64.0
 				If e\EventState = 0.0
 					For i = 0 To 1
 						snd_I\IntroSFX[i] = LoadSound_Strict("SFX\Room\Intro\Ew" + i + ".ogg")
@@ -8545,6 +8498,13 @@ Function UpdateIntro%()
 					
 					e\EventState = INTRO_IN_CELL
 				Else
+					For r.Rooms = Each Rooms
+						HideRoomsNoColl(r)
+					Next
+					ShowRoomsNoColl(e\room)
+					
+					CanSave = 1
+					
 					If e\EventState < INTRO_IN_CHAMBER
 						ShouldPlay = 13
 					Else
@@ -8553,6 +8513,8 @@ Function UpdateIntro%()
 					Select e\EventState
 						Case INTRO_IN_CELL
 							;[Block]
+							LightRenderDistance = 16.0
+							
 							FPSFactorEx = fps\Factor[0] / 30.0
 							
 							If e\EventState2 < 3.0
@@ -8635,6 +8597,8 @@ Function UpdateIntro%()
 							;[Block]
 						Case INTRO_CELL_REQUESTING
 							;[Block]
+							LightRenderDistance = 16.0
+							
 							If (Not ChannelPlaying(e\room\NPC[3]\SoundCHN))
 								LoadNPCSound(e\room\NPC[3], "SFX\Room\Intro\Guard\Ulgrin\ExitCell.ogg")
 								e\room\NPC[3]\SoundCHN = PlaySound2(e\room\NPC[3]\Sound, Camera, e\room\NPC[3]\Collider, 10.0, 1.0, True)
@@ -8672,6 +8636,8 @@ Function UpdateIntro%()
 									e\EventState = INTRO_MOVING_TO_CHAMBER
 								EndIf
 							Else ; ~ Inside the cell
+								LightRenderDistance = 16.0
+								
 								FPSFactorEx = fps\Factor[0] / 4.0
 								e\EventState2 = Min(e\EventState2 + FPSFactorEx, 630.0)
 								
@@ -8885,7 +8851,7 @@ Function UpdateIntro%()
 									e\room\NPC[3]\State = 9.0
 									If DistanceSquared(EntityX(me\Collider), EntityX(e\room\RoomDoors[2]\FrameOBJ, True), EntityZ(me\Collider), EntityZ(e\room\RoomDoors[2]\FrameOBJ, True)) < 20.25
 										; ~ Remove D-9341 texture
-										DeleteSingleTextureEntryFromCache(n_I\NPCTextureID[NPC_CLASS_D_D9341_TEXTURE])
+										DeleteSingleTextureEntryFromCache(n_I\NPCTextureID[NPC_CLASS_D_D9341_TEXTURE]) : n_I\NPCTextureID[NPC_CLASS_D_D9341_TEXTURE] = 0
 										
 										RemoveNPC(e\room\NPC[5])
 										RemoveNPC(e\room\NPC[7])
@@ -8903,9 +8869,9 @@ Function UpdateIntro%()
 										
 										e\room\NPC[4]\State = 9.0
 										
-										For i = 2 To 3
-											OpenCloseDoor(e\room\RoomDoors[i])
-										Next
+										CreateHintMsg(GetLocalString("msg", "enterchmbr"))
+										
+										OpenCloseDoor(e\room\RoomDoors[3])
 										
 										FreeEntity(e\room\Objects[4]) : e\room\Objects[4] = 0
 										
@@ -9237,7 +9203,7 @@ Function UpdateIntro%()
 													TeleportEntity(me\Collider, x + (EntityX(me\Collider) - e\room\x - 288.0 * RoomScale), y + (EntityY(me\Collider) - e\room\y + 0.4), z + (EntityZ(me\Collider) - e\room\z + 32.0 * RoomScale))
 													TeleportToRoom(r)
 													
-													opt\CameraFogFar = 6.0
+													me\CameraFogDist = 6.0
 													
 													For i = 0 To 2
 														PositionEntity(e\room\NPC[i]\Collider, x + (EntityX(e\room\NPC[i]\Collider) - e\room\x - 288.0 * RoomScale), y + EntityY(e\room\NPC[i]\Collider) - e\room\y, z + (EntityZ(e\room\NPC[i]\Collider) - e\room\z + 32.0 * RoomScale))
@@ -9456,7 +9422,8 @@ Function UpdateEndings%()
 							
 							If EntityDistanceSquared(me\Collider, e\room\Objects[5]) < PowTwo(320.0 * RoomScale)
 								For i = 2 To 3
-									e\room\RoomDoors[i]\Open = False : e\room\RoomDoors[i]\Locked = 1
+									e\room\RoomDoors[i]\Open = False
+									e\room\RoomDoors[i]\Locked = 1
 								Next
 								
 								e\room\NPC[2] = CreateNPC(NPCTypeApache, EntityX(e\room\Objects[11], True), EntityY(e\room\Objects[11], True) + 0.5, EntityZ(e\room\Objects[11], True))
@@ -9600,7 +9567,7 @@ Function UpdateEndings%()
 											e\room\NPC[i]\EnemyZ = EntityZ(me\Collider)
 										Next
 										
-										If (e\room\NPC[4]\State = MTF_FOLLOW_PATH And NPCSeesPlayer(e\room\NPC[4], 4.0 - me\CrouchState + me\SndVolume) = 1) Lor (e\room\NPC[5]\State = MTF_FOLLOW_PATH And NPCSeesPlayer(e\room\NPC[5], 4.0 - me\CrouchState + me\SndVolume) = 1)
+										If (e\room\NPC[4]\State <> MTF_LOOKING_AT_SOME_TARGET And NPCSeesPlayer(e\room\NPC[4], 4.0 - me\CrouchState + me\SndVolume) = 1) Lor (e\room\NPC[5]\State <> MTF_LOOKING_AT_SOME_TARGET And NPCSeesPlayer(e\room\NPC[5], 4.0 - me\CrouchState + me\SndVolume) = 1)
 											For i = 4 To 5
 												e\room\NPC[i]\State = MTF_LOOKING_AT_SOME_TARGET
 											Next
@@ -10186,6 +10153,7 @@ Function Update035Label%(OBJ%)
 	Local itt.ItemTemplates, it.Items
 	Local Tex%, i%, LabelPath$, CurrTex$
 	Local SF%, b%, Brush%, t1%, TexName$
+	Local SurfCount% = CountSurfaces(OBJ)
 	
 	If I_035\Sad
 		CurrTex = "035_sad"
@@ -10195,7 +10163,7 @@ Function Update035Label%(OBJ%)
 	LabelPath = "GFX\Map\Textures\label" + CurrTex + ".png"
 	
 	Brush = LoadBrush_Strict(LabelPath)
-	For i = 1 To CountSurfaces(OBJ)
+	For i = 1 To SurfCount
 		SF = GetSurface(OBJ, i)
 		b = GetSurfaceBrush(SF)
 		t1 = GetBrushTexture(b, 0)
@@ -10221,7 +10189,7 @@ Function Update035Label%(OBJ%)
 				If it\ItemTemplate\Name = itt\Name
 					Tex = GetRescaledTexture(itt\TexPath, 1, 256, 256)
 					EntityTexture(it\Model, Tex)
-					DeleteSingleTextureEntryFromCache(Tex)
+					DeleteSingleTextureEntryFromCache(Tex) : Tex = 0
 					Exit
 				EndIf
 			Next
@@ -10229,9 +10197,8 @@ Function Update035Label%(OBJ%)
 		EndIf
 	Next
 	
-	If achv\AchvIMG[Achv035] <> 0 Then FreeImage(achv\AchvIMG[Achv035]) : achv\AchvIMG[Achv035] = 0
-	achv\AchvIMG[Achv035] = LoadImage_Strict("GFX\Menu\achievements\Achv" + CurrTex + ".png")
-	achv\AchvIMG[Achv035] = ScaleImage2(achv\AchvIMG[Achv035], opt\GraphicHeight / 768.0, opt\GraphicHeight / 768.0)
+	FreeImage(S2IMapGet(AchievementsImages, "035"))
+	S2IMapSet(AchievementsImages, "035", ScaleImage2(LoadImage_Strict("GFX\Menu\achievements\Achv" + CurrTex + ".png"), opt\GraphicHeight / 768.0, opt\GraphicHeight / 768.0))
 End Function
 
 

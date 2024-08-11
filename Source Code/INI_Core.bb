@@ -136,7 +136,7 @@ Function Piece$(s$, Entry%, Char$ = " ")
 	Wend
 	For n = 1 To Entry - 1
 		p = Instr(s, Char)
-		s = Right(s, Len(s) - p)
+		s = Mid(s, p + 1)
 	Next
 	p = Instr(s, Char)
 	If p < 1
@@ -224,13 +224,18 @@ Type Options
 	Field GraphicHeight%, RealGraphicHeight%
 	Field DisplayMode%
 	Field GFXDriver%
-	Field CameraFogFar#
 	Field IntroEnabled%
 	Field DebugMode%
 	Field Language$
+	Field GFXDriversAmount%
+	Field TotalVidMemory%, TotalPhysMemory%
 End Type
 
 Global opt.Options = New Options
+
+opt\GFXDriversAmount = CountGfxDrivers()
+opt\TotalVidMemory% = TotalVidMem() / 1024
+opt\TotalPhysMemory% = TotalPhys() / 1024
 
 Function LoadOptionsINI%()
 	; ~ [GRAPHICS]
@@ -424,8 +429,6 @@ Function LoadOptionsINI%()
 	
 	opt\GFXDriver = IniGetInt(OptionFile, "Global", "GFX Driver", 1)
 	
-	opt\CameraFogFar = IniGetFloat(OptionFile, "Global", "Camera Fog Far", 6.0)
-	
 	opt\IntroEnabled = IniGetInt(OptionFile, "Global", "Enable Intro", True)
 	
 	opt\DebugMode = IniGetInt(OptionFile, "Global", "Debug Mode", False)
@@ -546,11 +549,7 @@ Function SaveOptionsINI%(SaveGlobal% = False)
 	
 	; ~ [GLOBAL]
 	;[Block]
-	If SaveGlobal
-		IniWriteString(OptionFile, "Global", "Camera Fog Far", opt\CameraFogFar)
-		
-		IniWriteString(OptionFile, "Global", "Enable Intro", opt\IntroEnabled)
-	EndIf
+	If SaveGlobal Then IniWriteString(OptionFile, "Global", "Enable Intro", opt\IntroEnabled)
 	
 	IniWriteString(OptionFile, "Global", "Language", opt\Language)
 	;[End Block]
@@ -669,8 +668,6 @@ Function ResetOptionsINI%()
 	; ~ [GLOBAL]
 	
 	ShouldDeleteGadgets = 1
-	
-	opt\CameraFogFar = 6.0
 	
 	opt\IntroEnabled = True
 	

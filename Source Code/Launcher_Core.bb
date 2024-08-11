@@ -4,7 +4,6 @@ Type Mouse
 	Field DoubleClick%, DoubleClickSlot%
 	Field LastMouseHit1%
 	Field MouseUp1%
-	Field Mouselook_X_Inc#, Mouselook_Y_Inc#
 	Field Mouse_Left_Limit%, Mouse_Right_Limit%
 	Field Mouse_Top_Limit%, Mouse_Bottom_Limit%
 	Field Mouse_X_Speed_1#, Mouse_Y_Speed_1#
@@ -146,6 +145,8 @@ Function UpdateLauncher%(lnchr.Launcher)
 	LauncherMediaWidth = ImageWidth(LauncherIMG[0]) / 2
 	LauncherIMG[1] = LoadAnimImage_Strict("GFX\menu\language_button.png", 40, 40, 0, 4)
 	
+	Local ButtonImages% = LoadAnimImage_Strict("GFX\menu\buttons.png", 21, 21, 0, 7)
+	
 	For i = 1 To lnchr\TotalGFXModes
 		Local SameFound% = False
 		
@@ -169,6 +170,10 @@ Function UpdateLauncher%(lnchr.Launcher)
 	
 	Local Quit% = False
 	Local SelectorDeniedTimer% = 0
+	Local TooltipX% = 0
+	Local TooltipY% = 0
+	Local ToolTip$ = ""
+	Local TooltipWidth% = 0
 	
 	Repeat
 		Cls()
@@ -218,12 +223,14 @@ Function UpdateLauncher%(lnchr.Launcher)
 		EndIf
 		TextEx(LauncherWidth - 107.5, LauncherHeight - 273, DriverName, True)
 		If UpdateLauncherButton(LauncherWidth - 35, LauncherHeight - 283, 30, 30, ">", False) Then opt\GFXDriver = (opt\GFXDriver + 1)
-		If opt\GFXDriver > CountGfxDrivers() Then opt\GFXDriver = 1
+		If opt\GFXDriver > opt\GFXDriversAmount Then opt\GFXDriver = 1
 		
 		; ~ Display selector
 		TextEx(LauncherWidth - 185, LauncherHeight - 245, GetLocalString("launcher", "display"))
 		
 		Local Txt$
+		Local DesktopW% = DesktopWidth()
+		Local DesktopH% = DesktopHeight()
 		
 		Select opt\DisplayMode
 			Case 0
@@ -233,10 +240,10 @@ Function UpdateLauncher%(lnchr.Launcher)
 			Case 1
 				;[Block]
 				Txt = GetLocalString("launcher", "display.borderless")
-				If lnchr\GFXModeWidths[lnchr\SelectedGFXMode] < DesktopWidth()
-					TextEx(LauncherWidth - 290, LauncherHeight - 68, Format(Format(GetLocalString("launcher", "upscale"), DesktopWidth(), "{0}"), DesktopHeight(), "{1}"))
-				ElseIf lnchr\GFXModeWidths[lnchr\SelectedGFXMode] > DesktopWidth()
-					TextEx(LauncherWidth - 290, LauncherHeight - 68, Format(Format(GetLocalString("launcher", "downscale"), DesktopWidth(), "{0}"), DesktopHeight(), "{1}"))
+				If lnchr\GFXModeWidths[lnchr\SelectedGFXMode] < DesktopW
+					TextEx(LauncherWidth - 290, LauncherHeight - 68, Format(Format(GetLocalString("launcher", "upscale"), DesktopW, "{0}"), DesktopH, "{1}"))
+				ElseIf lnchr\GFXModeWidths[lnchr\SelectedGFXMode] > DesktopW
+					TextEx(LauncherWidth - 290, LauncherHeight - 68, Format(Format(GetLocalString("launcher", "downscale"), DesktopW, "{0}"), DesktopH, "{1}"))
 				EndIf
 				;[End Block]
 			Case 2
@@ -249,6 +256,35 @@ Function UpdateLauncher%(lnchr.Launcher)
 		RenderFrame(LauncherWidth - 185, LauncherHeight - 226, 155, 30)
 		TextEx(LauncherWidth - 107.5, LauncherHeight - 216, Txt, True)
 		If UpdateLauncherButton(LauncherWidth - 35, LauncherHeight - 226, 30, 30, ">") Then opt\DisplayMode = ((opt\DisplayMode + 1) Mod 3)
+		
+		; ~ Driver name (tooltip)
+		If MouseOn(LauncherWidth - 185, LauncherHeight - 283, 155, 30)
+			TooltipX = MousePosX + 5
+			TooltipY = MousePosY + 10
+			ToolTip = ConvertToUTF8(GfxDriverName(opt\GFXDriver))
+			TooltipWidth = StringWidth(ToolTip)
+			
+			If (TooltipX + TooltipWidth + FontWidth()) > LauncherWidth Then TooltipX = TooltipX - TooltipWidth - 10
+			RenderFrame(TooltipX, TooltipY, TooltipWidth + FontWidth(), FontHeight() + 16)
+			TextEx(TooltipX + 8, TooltipY + 8, ToolTip)
+		EndIf
+		
+		; ~ Fullscreen mode caution (tooltip)
+		If opt\DisplayMode = 0
+			DrawImage(ButtonImages, LauncherWidth - 30, LauncherHeight - 250, 6)
+			If MouseOn(LauncherWidth - 30, LauncherHeight - 250, 21, 21)
+				TooltipX = MousePosX + 5
+				TooltipY = MousePosY + 10
+				ToolTip = GetLocalString("launcher", "display.caution")
+				TooltipWidth = StringWidth(ToolTip)
+				
+				Rect(LauncherWidth - 30, LauncherHeight - 250, 21, 21, False)
+				If (TooltipX + TooltipWidth + FontWidth()) > LauncherWidth Then TooltipX = TooltipX - TooltipWidth - 10
+				RenderFrame(TooltipX, TooltipY, TooltipWidth + FontWidth(), FontHeight() + 16)
+				TextEx(TooltipX + 8, TooltipY + 8, ToolTip)
+			EndIf
+		EndIf
+		
 		; ~ Launcher tick
 		Text(LauncherWidth - 590, LauncherHeight - 127, GetLocalString("launcher", "launcher"))
 		opt\LauncherEnabled = UpdateLauncherTick(LauncherWidth - 620, LauncherHeight - 133, opt\LauncherEnabled)
@@ -322,8 +358,8 @@ Function UpdateLauncher%(lnchr.Launcher)
 		; ~ Launch button
 		If UpdateLauncherButton(LauncherWidth - 120, LauncherHeight - 105, 100, 30, GetLocalString("launcher", "launch"))
 			If opt\DisplayMode = 1
-				opt\GraphicWidth = DesktopWidth()
-				opt\GraphicHeight = DesktopHeight()
+				opt\GraphicWidth = DesktopW
+				opt\GraphicHeight = DesktopH
 			Else
 				opt\GraphicWidth = lnchr\GFXModeWidths[lnchr\SelectedGFXMode]
 				opt\GraphicHeight = lnchr\GFXModeHeights[lnchr\SelectedGFXMode]
@@ -338,18 +374,6 @@ Function UpdateLauncher%(lnchr.Launcher)
 			Quit = True
 			Exit
 		EndIf
-		
-		; ~ Driver name (tooltip)
-		If MouseOn(LauncherWidth - 185, LauncherHeight - 283, 155, 30)
-			Local TooltipX% = MousePosX + 5
-			Local TooltipY% = MousePosY + 10
-			Local Tooltip$ = ConvertToUTF8(GfxDriverName(opt\GFXDriver))
-			Local TooltipWidth% = StringWidth(Tooltip)
-			
-			If (TooltipX + TooltipWidth + FontWidth()) > LauncherWidth Then TooltipX = TooltipX - TooltipWidth - 10
-			RenderFrame(TooltipX, TooltipY, TooltipWidth + FontWidth(), FontHeight() + 16)
-			TextEx(TooltipX + 8, TooltipY + 8, Tooltip)
-		EndIf
 		Flip()
 	Forever
 	
@@ -363,6 +387,7 @@ Function UpdateLauncher%(lnchr.Launcher)
 	For i = 0 To 1
 		FreeImage(LauncherIMG[i]) : LauncherIMG[i] = 0
 	Next	
+	FreeImage(ButtonImages) : ButtonImages = 0
 	
 	MousePosX = 0
 	MousePosY = 0
@@ -382,15 +407,22 @@ Function UpdateLauncher%(lnchr.Launcher)
 End Function
 
 Function UpdateLanguageSelector%()
+	Local ServerURI$
+	If GetUserLanguage() = "zh-CN" Then 
+		ServerURI = "https://filescenter-1301852054.cos.ap-nanjing.myqcloud.com/cbue/"
+	Else
+		ServerURI = "https://files.ziyuesinicization.site/cbue/"
+	EndIf
+	
 	Local BasePath$ = GetEnv("AppData") + "\scpcb-ue\temp\"
 	
 	DeleteFolder(BasePath) : CreateDir(BasePath) ; ~ Create temporary folder
 	If FileType(LocalizaitonPath) <> 2 Then CreateDir(LocalizaitonPath)
-	CreateDir(BasePath + "flags/")
-	DownloadFile("https://files.ziyuesinicization.site/cbue/list.txt", BasePath + "temp.txt") ; ~ List of languages
+	CreateDir(BasePath + "/flags/")
+	DownloadFile(ServerURI + "list.txt", BasePath + "temp.txt") ; ~ List of languages
 	
 	Local lan.ListLanguage
-	Local File% = OpenFile_Strict(BasePath + "temp.txt")
+	Local File% = OpenFile(BasePath + "temp.txt") ; ~ Please do not modify this
 	Local l$
 	
 	If File <> 0
@@ -407,8 +439,9 @@ Function UpdateLanguageSelector%()
 				lan\Flag = ParseDomainTXT(l, "flag") ; ~ Flag of country
 				lan\FileSize = Int(ParseDomainTXT(l, "size")) ; ~ Size of localization
 				lan\Compatible = ParseDomainTXT(l, "compatible") ; ~ Compatible version
-				If FileType(BasePath + "flags/" + lan\Flag) <> 1 Then DownloadFile("https://files.ziyuesinicization.site/cbue/flags/" + lan\Flag, BasePath + "flags/" + lan\Flag) ; ~ Flags of languages
-				If lan\FlagImg = 0 Then lan\FlagImg = LoadImage_Strict(BasePath + "flags\" + lan\Flag)
+				If FileType(BasePath + "flags/" + lan\Flag) <> 1 Then DownloadFile(ServerURI + "flags/" + lan\Flag, BasePath + "flags/" + lan\Flag) ; ~ Flags of languages
+				If lan\FlagImg = 0 Then lan\FlagImg = LoadImage(BasePath + "flags\" + lan\Flag)
+				If lan\FlagImg = 0 Then Return(True)
 			Else
 				Exit
 			EndIf
@@ -425,7 +458,7 @@ Function UpdateLanguageSelector%()
 	
 	Local LanguageBG%
 	Local LanguageIMG% = CreateImage(452, 254)
-	Local ButtonImages% = LoadAnimImage_Strict("GFX\menu\buttons.png", 21, 21, 0, 6)
+	Local ButtonImages% = LoadAnimImage_Strict("GFX\menu\buttons.png", 21, 21, 0, 7)
 	Local CurrFontHeight% = FontHeight() / 2
 	Local SelectedLanguage.ListLanguage = Null
 	Local MouseHoverLanguage.ListLanguage = Null
@@ -444,15 +477,15 @@ Function UpdateLanguageSelector%()
 		Select CurrentStatus
 			Case LANGUAGE_STATUS_DOWNLOAD_START
 				;[Block]
-				If (Not RequestLanguage\MajorOnly) Then 
+				If (Not RequestLanguage\MajorOnly)
 					If opt\NoProgressBar Then
-						DownloadFile("https://files.ziyuesinicization.site/cbue/" + RequestLanguage\ID + ".zip", BasePath + "/local.zip")
+						DownloadFile(ServerURI + RequestLanguage\ID + ".zip", BasePath + "/local.zip")
 					Else
-						DownloadFileThread("https://files.ziyuesinicization.site/cbue/" + RequestLanguage\ID + ".zip", BasePath + "/local.zip")
+						DownloadFileThread(ServerURI + RequestLanguage\ID + ".zip", BasePath + "/local.zip")
 					EndIf
 				EndIf
 				DownloadFile("https://weblate.ziyuesinicization.site/api/translations/scpcb-ue/local-ini/" + RequestLanguage\ID + "/file/", BasePath + "/local.ini")
-				DownloadFile("https://weblate.ziyuesinicization.site/api/translations/scpcb-ue/achievements-ini/" + RequestLanguage\ID + "/file/", BasePath + "/achievements.ini")
+				DownloadFile("https://weblate.ziyuesinicization.site/api/translations/scpcb-ue/achievements-jsonc/" + RequestLanguage\ID + "/file/", BasePath + "/achievements.jsonc")
 				CurrentStatus = LANGUAGE_STATUS_DOWNLOADING
 				;[End Block]
 			Case LANGUAGE_STATUS_UNPACK_START
@@ -462,7 +495,7 @@ Function UpdateLanguageSelector%()
 				If (Not RequestLanguage\MajorOnly) Then Unzip(BasePath + "/local.zip", LocalizaitonPath + RequestLanguage\ID)
 				CreateDir(LocalizaitonPath + RequestLanguage\ID + "/Data")
 				CopyFile(BasePath + "/local.ini", LocalizaitonPath + RequestLanguage\ID + "/Data/local.ini")
-				CopyFile(BasePath + "/achievements.ini", LocalizaitonPath + RequestLanguage\ID + "/Data/achievements.ini")
+				CopyFile(BasePath + "/achievements.jsonc", LocalizaitonPath + RequestLanguage\ID + "/Data/achievements.jsonc")
 				StatusTimer = MilliSecs()
 				CurrentStatus = LANGUAGE_STATUS_DONE
 				;[End Block]
@@ -661,37 +694,34 @@ Function UpdateLanguageSelector%()
 			Color(255, 255, 255)
 			Local Name$ = Format(GetLocalString("language", "name"), MouseHoverLanguage\Name)
 			Local ID$ = Format(GetLocalString("language", "id"), MouseHoverLanguage\ID)
+			Local Size$ = "", LastMod$ = ""
+			Local Author$ = "", Prefect$ = "", Prefect2$ = "", Compatible$ = ""
+			Local FontWidthVal% = FontWidth()
+			Local FontHeightVal% = FontHeight()
+			Local Height% = FontHeightVal * 4.5
 			
 			If MouseHoverLanguage\ID <> "en"
-				Local Author$ = Format(GetLocalString("language", "author"), MouseHoverLanguage\Author)
-				Local Prefect$ = Format(GetLocalString("language", "full"), GetLocalString("language", "yes")) ; ~ Get width only
-				Local Prefect2$ = Format(GetLocalString("language", "full"), GetLocalString("language", "no"))
-				Local Compatible$ = Format(GetLocalString("language", "compatible"), "v" + MouseHoverLanguage\Compatible)
+				Author = Format(GetLocalString("language", "author"), MouseHoverLanguage\Author)
+				Prefect = Format(GetLocalString("language", "full"), GetLocalString("language", "yes")) ; ~ Get width only
+				Prefect2 = Format(GetLocalString("language", "full"), GetLocalString("language", "no"))
+				Compatible = Format(GetLocalString("language", "compatible"), "v" + MouseHoverLanguage\Compatible)
 				
-				If (Not MouseHoverLanguage\MajorOnly) 
-					Local Size$ = Format(GetLocalString("language", "size"), SimpleFileSize(MouseHoverLanguage\FileSize))
-					Local LastMod$ = Format(GetLocalString("language", "lastmod"), MouseHoverLanguage\LastModify)
-					Local Height% = FontHeight() * 13
+				If MouseHoverLanguage\MajorOnly
+					Height = FontHeightVal * 10
 				Else
-					Height = FontHeight() * 10
+					Size = Format(GetLocalString("language", "size"), SimpleFileSize(MouseHoverLanguage\FileSize))
+					LastMod = Format(GetLocalString("language", "lastmod"), MouseHoverLanguage\LastModify)
+					Height = FontHeightVal * 13
 				EndIf
-			Else
-				Author = ""
-				LastMod	= ""
-				Prefect = ""
-				Compatible = ""
-				Prefect2 = ""
-				Size = ""
-				Height = FontHeight() * 4.5
 			EndIf
 			
 			Local Width% = Max(Max(Max(Max(Max(Max(Max(StringWidth(Name), StringWidth(ID)), StringWidth(Author)), StringWidth(Prefect)), StringWidth(Size)), StringWidth(Compatible)), StringWidth(Prefect2)), StringWidth(LastMod))
 			
 			x = MousePosX + 10
 			y = MousePosY + 10
-			If (x + Width + FontWidth()) > LauncherWidth Then x = x - Width - 10 ; ~ If tooltip is too long, then move tooltip to the left
-			If (y + Height + FontHeight()) > LauncherHeight Then y = y - Height - 15
-			RenderFrame(x, y, Width + FontWidth(), Height)
+			If (x + Width + FontWidthVal) > LauncherWidth Then x = x - Width - 10 ; ~ If tooltip is too long, then move tooltip to the left
+			If (y + Height + FontHeightVal) > LauncherHeight Then y = y - Height - 15
+			RenderFrame(x, y, Width + FontWidthVal, Height)
 			x = x + 5
 			TextEx(x, y + 8, Name)
 			TextEx(x, y + 23, ID)
@@ -884,28 +914,28 @@ Function UpdateLauncherScrollBar#(Width%, Height%, BarX%, BarY%, BarWidth%, BarH
 	Color(0, 0, 0)
 	UpdateLauncherDownloadButton(BarX, BarY, BarWidth, BarHeight, "")
 	
-	If (Not Vertical) ; ~ Horizontal
-		If Height > 10
-			Color(255, 255, 255)
-			Rect(BarX + BarHeightHalf, BarY + 5, 2, BarHeight - 10)
-			Rect(BarX + BarHeightHalf - 3, BarY + 5, 2, BarHeight - 10)
-			Rect(BarX + BarHeightHalf + 3, BarY + 5, 2, BarHeight - 10)
-		EndIf
-	Else ; ~ Vertical
+	If Vertical ; ~ Vertical
 		If Width > 10
 			Color(255, 255, 255)
 			Rect(BarX + 4, BarY + BarHeightHalf, BarWidth - 10, 2)
 			Rect(BarX + 4, BarY + BarHeightHalf - 3, BarWidth - 10, 2)
 			Rect(BarX + 4, BarY + BarHeightHalf + 3, BarWidth - 10, 2)
 		EndIf
+	Else ; ~ Horizontal
+		If Height > 10
+			Color(255, 255, 255)
+			Rect(BarX + BarHeightHalf, BarY + 5, 2, BarHeight - 10)
+			Rect(BarX + BarHeightHalf - 3, BarY + 5, 2, BarHeight - 10)
+			Rect(BarX + BarHeightHalf + 3, BarY + 5, 2, BarHeight - 10)
+		EndIf
 	EndIf
 	
 	OnScrollBar = (mo\MouseDown1 And MouseOn(BarX, BarY, BarWidth, BarHeight))
 	If OnScrollBar
-		If (Not Vertical)
-			Return(Min(Max(Value + MouseSpeedX / Float(Width - BarWidth), 0.0), 1.0))
-		Else
+		If Vertical
 			Return(Min(Max(Value + MouseSpeedY / Float(Height - BarHeight), 0.0), 1.0))
+		Else
+			Return(Min(Max(Value + MouseSpeedX / Float(Width - BarWidth), 0.0), 1.0))
 		EndIf
 	EndIf
 	
@@ -928,8 +958,10 @@ Function LimitText%(Txt$, x%, y%, Width%)
 	If UnFitting <= 0
 		TextEx(x, y, Txt, 0, 0)
 	Else
-		LetterWidth = TextLength / Len(Txt)
-		TextEx(x, y, Left(Txt, Max(Len(Txt) - UnFitting / LetterWidth - 4, 1)) + "..", 0, 0)
+		Local LenTxt% = Len(Txt)
+		
+		LetterWidth = TextLength / LenTxt
+		TextEx(x, y, Left(Txt, Max(LenTxt - UnFitting / LetterWidth - 4, 1)) + "..")
 	EndIf
 End Function
 

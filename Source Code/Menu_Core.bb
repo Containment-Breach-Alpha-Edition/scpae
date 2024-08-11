@@ -49,8 +49,8 @@ Function DeInitMainMenuAssets%()
 	FreeImage(mma\BackGround) : mma\BackGround = 0
 	FreeImage(mma\SECURE_CONTAIN_PROTECT) : mma\SECURE_CONTAIN_PROTECT = 0
 	FreeImage(mma\SCP173) : mma\SCP173 = 0
-	Delete Each MainMenuAssets
-	Delete Each MainMenu
+	Delete(mma) : mma = Null
+	Delete(mm) : mm = Null
 End Function
 
 Global RandomSeed$
@@ -95,7 +95,7 @@ Function UpdateMainMenu%()
 	CatchErrors("UpdateMainMenu()")
 	
 	Local sv.Save, cm.CustomMaps, snd.Sound
-	Local x%, y%, Width%, Height%, Temp%, i%, n%, j%
+	Local x%, y%, Width%, Height%, Temp%, i%, j%
 	Local File$, Test%
 	
 	While fps\Accumulator > 0.0
@@ -755,33 +755,33 @@ Function UpdateMainMenu%()
 						
 						y = y + (80 * MenuScale)
 						
-						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_UP, 210.0)], Font_Default, 3)
-						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\CROUCH, 210.0)], Font_Default, 8)
+						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_UP, 210)], Font_Default, 3)
+						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\CROUCH, 210)], Font_Default, 8)
 						
 						y = y + (20 * MenuScale)
 						
-						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_LEFT, 210.0)], Font_Default, 4)
-						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\BLINK, 210.0)], Font_Default, 9)
+						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_LEFT, 210)], Font_Default, 4)
+						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\BLINK, 210)], Font_Default, 9)
 						
 						y = y + (20 * MenuScale)
 						
-						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_DOWN, 210.0)], Font_Default, 5)
-						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\INVENTORY, 210.0)], Font_Default, 10)
+						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_DOWN, 210)], Font_Default, 5)
+						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\INVENTORY, 210)], Font_Default, 10)
 						
 						y = y + (20 * MenuScale)
 						
-						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_RIGHT, 210.0)], Font_Default, 6)
-						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SAVE, 210.0)], Font_Default, 11)
+						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\MOVEMENT_RIGHT, 210)], Font_Default, 6)
+						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SAVE, 210)], Font_Default, 11)
 						
 						y = y + (20 * MenuScale)
 						
-						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SPRINT, 210.0)], Font_Default, 7)
-						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SCREENSHOT, 210.0)], Font_Default, 13)
+						UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SPRINT, 210)], Font_Default, 7)
+						UpdateMenuInputBox(x + (140 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\SCREENSHOT, 210)], Font_Default, 13)
 						
 						If opt\CanOpenConsole
 							y = y + (20 * MenuScale)
 							
-							UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\CONSOLE, 210.0)], Font_Default, 12)
+							UpdateMenuInputBox(x - (150 * MenuScale), y, 110 * MenuScale, 20 * MenuScale, key\Name[Min(key\CONSOLE, 210)], Font_Default, 12)
 						EndIf
 						
 						Local TempKey%
@@ -997,7 +997,7 @@ End Function
 Function RenderMainMenu%()
 	CatchErrors("RenderMainMenu()")
 	
-	Local x%, y%, Width%, Height%, Temp%, i%, n%
+	Local x%, y%, Width%, Height%, Temp%, i%
 	Local tX#, tY#, tW#, tH#
 	Local TempStr$, TempStr2$, Name$
 	
@@ -1787,6 +1787,7 @@ End Function
 
 Function ResetLoadingTextColor%()
 	TextR = 0.0 : TextG = 0.0 : TextB = 0.0
+	ChangeColor = True
 End Function
 
 Global LoadingScreens%
@@ -1800,6 +1801,7 @@ Function RenderLoading%(Percent%, Assets$ = "")
 	CatchErrors("RenderLoading(" + Percent + ", " + Assets + ")")
 	
 	Local x%, y%, FirstLoop%
+	Local ArraySize% = JsonGetArraySize(LoadingScreens)
 	
 	HidePointer()
 	
@@ -1807,7 +1809,7 @@ Function RenderLoading%(Percent%, Assets$ = "")
 		If LoadingImage = 0
 			DescriptionIndex = 0
 			
-			SelectedLoadingScreens = JsonGetArrayValue(LoadingScreens, Rand(0, JsonGetArraySize(LoadingScreens) - 1))
+			SelectedLoadingScreens = JsonGetArrayValue(LoadingScreens, Rand(0, ArraySize - 1))
 			LoadingScreenTitle = JsonGetString(JsonGetValue(SelectedLoadingScreens, "title"))
 			If JsonIsNull(JsonGetValue(SelectedLoadingScreens, "descriptions"))
 				Descriptions = JsonGetArray(JsonParseFromString("[" + Chr(34) + Chr(34) + "]")) ; ~ Create an empty description array
@@ -1831,12 +1833,14 @@ Function RenderLoading%(Percent%, Assets$ = "")
 	
 	FirstLoop = True
 	
+	Local DescrArraySize% = JsonGetArraySize(Descriptions)
+	
 	Repeat 
 		ClsColor(0, 0, 0)
 		Cls()
 		
 		If Percent > 20 Then UpdateMusic()
-		If Percent > (100.0 / JsonGetArraySize(Descriptions)) * (DescriptionIndex + 1) Then DescriptionIndex = DescriptionIndex + 1
+		If Percent > (100.0 / DescrArraySize) * (DescriptionIndex + 1) Then DescriptionIndex = DescriptionIndex + 1
 		
 		If LoadingBack <> 0 Then DrawBlock(LoadingBack, mo\Viewport_Center_X - LoadingBackWidth, mo\Viewport_Center_Y - LoadingBackHeight)
 		
@@ -2004,6 +2008,8 @@ Function RenderLoading%(Percent%, Assets$ = "")
 			FreeImage(LoadingBack) : LoadingBack = 0
 			LoadingBackWidth = 0 : LoadingBackHeight = 0
 			SelectedLoadingScreens = 0
+			Descriptions = 0 : DescriptionIndex = 0
+			ImageAlignX = "" : ImageAlignY = ""
 		EndIf
 	Until Close
 	
@@ -2294,13 +2300,13 @@ Function UpdateInput$(aString$, MaxChr%)
 	Local Length% = Len(aString)
 	
 	If (CursorPos < 0) And (CursorPos <> -1) Then CursorPos = Length
-	If CursorPos < 0 Then CursorPos = 0
+	CursorPos = Max(CursorPos, 0)
 	
 	If KeyHit(210) Then InsertMode = (Not InsertMode) ; ~ Insert key
 	If KeyHit(199) Then CursorPos = 0 ; ~ Home key
 	If KeyHit(207) Then CursorPos = Length ; ~ End key
 	If KeyHit(211) ; ~ Delete key
-		aString = Left(aString, CursorPos) + Right(aString, Max(Length - CursorPos - 1, 0.0))
+		aString = Left(aString, CursorPos) + Right(aString, Max(Length - CursorPos - 1, 0))
 		CursorPos = CursorPos + 1
 	EndIf
 	
@@ -2326,11 +2332,11 @@ Function UpdateInput$(aString$, MaxChr%)
 		PrevInputBoxCtrl = MilliSecs()
 		Return(aString)
 	EndIf
-
+	
 	If KeyDown(205) And ((MilliSecs() - PrevInputBoxCtrl) > 500) ; ~ Right arrow
 		If (MilliSecs() Mod 100) < 25 Then CursorPos = Min(CursorPos + 1, Length)
-	ElseIf KeyDown(203) And ((MilliSec - PrevInputBoxCtrl) > 500) ; ~ Left arrow
-		If (MilliSecs() Mod 100) < 25 Then CursorPos = Max(CursorPos - 1, 0.0)
+	ElseIf KeyDown(203) And ((MilliSecs() - PrevInputBoxCtrl) > 500) ; ~ Left arrow
+		If (MilliSecs() Mod 100) < 25 Then CursorPos = Max(CursorPos - 1, 0)
 	Else
 		If InsertMode
 			If ChrCanDisplay(Value)
@@ -2339,7 +2345,7 @@ Function UpdateInput$(aString$, MaxChr%)
 			ElseIf Value = 8 ; ~ Backspace
 				aString = TextInput(Left(aString, CursorPos)) + Mid(aString, CursorPos + 1)
 			ElseIf Value = 4 ; ~ Delete
-				aString = Left(aString, CursorPos) + Right(aString, Max(Length - CursorPos - 1, 0.0))
+				aString = Left(aString, CursorPos) + Right(aString, Max(Length - CursorPos - 1, 0))
 			EndIf
 		Else
 			aString = TextInput(Left(aString, CursorPos)) + Mid(aString, CursorPos + 1)
@@ -2417,7 +2423,7 @@ Function RenderMenuInputBoxes%()
 		
 		Color(255, 255, 255)
 		If SelectedInputBox = mib\ID
-			If ((MilliSec Mod 800) < 400) Lor KeyDown(205) Lor KeyDown(203) Lor InsertMode Then Rect(mib\x + (mib\Width / 2) - (StringWidth(mib\Txt) / 2) + StringWidth(Left(mib\Txt, Max(CursorPos, 0.0))), mib\y + (mib\Height / 2) - (5 * MenuScale), 2 * MenuScale, 12 * MenuScale)
+			If ((MilliSec Mod 800) < 400) Lor KeyDown(205) Lor KeyDown(203) Lor InsertMode Then Rect(mib\x + (mib\Width / 2) - (StringWidth(mib\Txt) / 2) + StringWidth(Left(mib\Txt, Max(CursorPos, 0))), mib\y + (mib\Height / 2) - (5 * MenuScale), 2 * MenuScale, 12 * MenuScale)
 		EndIf
 		
 		SetFontEx(fo\FontID[mib\FontID])
@@ -2458,7 +2464,7 @@ Function UpdateMenuSlideBar#(x%, y%, Width%, Value#, ID%)
 	If mo\MouseDown1 And OnSliderID = 0
 		If MouseOn(x, y, Width + (14 * MenuScale), (20 * MenuScale)) Then OnSliderID = ID
 	EndIf
-	If ID = OnSliderID Then Value = Min(Max((MousePosX - x) * 100 / Width, 0.0), 100.0)
+	If ID = OnSliderID Then Value = Min(Max((MousePosX - x) * 100.0 / Width, 0.0), 100.0)
 	Return(Value)
 End Function
 
@@ -3170,7 +3176,7 @@ Function RenderMapCreatorTooltip%(x%, y%, Width%, Height%, MapName$)
 	Local fY# = y + (6.0 * MenuScale)
 	Local fW# = Width - (12.0 * MenuScale)
 	Local fH# = Height - (12.0 * MenuScale)
-	Local Lines% = 0, Temp%
+	Local Lines% = 0
 	
 	SetFontEx(fo\FontID[Font_Default])
 	Color(255, 255, 255)

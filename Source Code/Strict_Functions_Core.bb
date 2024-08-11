@@ -256,7 +256,9 @@ Function LoadMesh_Strict%(File$, Parent% = 0)
 		If Tmp = 0 Then RuntimeError(Format(GetLocalString("runerr", "mesh.failed.load"), File))
 	EndIf
 	
-	For i = 1 To CountSurfaces(Tmp)
+	Local SurfCount% = CountSurfaces(Tmp)
+	
+	For i = 1 To SurfCount
 		SF = GetSurface(Tmp, i)
 		b = GetSurfaceBrush(SF)
 		If b <> 0
@@ -316,7 +318,9 @@ Function LoadAnimMesh_Strict%(File$, Parent% = 0)
 		If Tmp = 0 Then RuntimeError(Format(GetLocalString("runerr", "animmesh.failed.load"), File))
 	EndIf
 	
-	For i = 1 To CountSurfaces(Tmp)
+	Local SurfCount% = CountSurfaces(Tmp)
+	
+	For i = 1 To SurfCount
 		SF = GetSurface(Tmp, i)
 		b = GetSurfaceBrush(SF)
 		If b <> 0
@@ -439,6 +443,7 @@ Function LoadImage_Strict%(File$)
 		If FileType(File) <> 1 Then RuntimeError(Format(GetLocalString("runerr", "image.notfound"), File))
 		Tmp = LoadImage(File)
 		If Tmp = 0 Then RuntimeError(Format(GetLocalString("runerr", "image.failed.load"), File))
+		If opt\DisplayMode = 0 Then BufferDirty(ImageBuffer(Tmp))
 	EndIf
 	Return(Tmp)
 End Function
@@ -451,6 +456,7 @@ Function LoadAnimImage_Strict%(File$, Width%, Height%, FirstFrame%, Count%)
 		If FileType(File) <> 1 Then RuntimeError(Format(GetLocalString("runerr", "animimage.notfound"), File))
 		Tmp = LoadAnimImage(File, Width, Height, FirstFrame, Count)
 		If Tmp = 0 Then RuntimeError(Format(GetLocalString("runerr", "animimage.failed.load"), File))
+		If opt\DisplayMode = 0 Then BufferDirty(ImageBuffer(Tmp))
 	EndIf
 	Return(Tmp)
 End Function

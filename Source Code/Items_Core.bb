@@ -142,13 +142,13 @@ Function CreateItemTemplate.ItemTemplates(DisplayName$, Name$, ID%, OBJPath$, In
 	it\IsAnim = HasAnim
 	it\OBJPath = OBJPath
 	
-	Local Texture%
+	Local Texture% = 0
 	
 	If TexturePath <> ""
-		If (TexturePath = ImgPath) And (FileType(ItemTexturePath + TexturePath) = 0)
+		If (TexturePath = ImgPath) And (FileType(ItemsPath + TexturePath) = 0)
 			TexturePath = ItemHUDTexturePath + TexturePath
 		Else
-			TexturePath = ItemTexturePath + TexturePath
+			TexturePath = ItemsPath + TexturePath
 		EndIf
 		For it2.ItemTemplates = Each ItemTemplates
 			If it2\TexPath = TexturePath And it2\Tex <> 0
@@ -455,11 +455,11 @@ Function RemoveWearableItems%(item.Items)
 			;[End Block]
 		Case it_nvg, it_finenvg, it_veryfinenvg
 			;[Block]
-			If wi\NightVision > 0 Then opt\CameraFogFar = 6.0 : wi\NightVision = 0
+			If wi\NightVision > 0 Then me\CameraFogDist = 6.0 : wi\NightVision = 0
 			;[End Block]
 		Case it_scramble, it_finescramble
 			;[Block]
-			If wi\SCRAMBLE > 0 Then opt\CameraFogFar = 6.0 : wi\SCRAMBLE = 0
+			If wi\SCRAMBLE > 0 Then me\CameraFogDist = 6.0 : wi\SCRAMBLE = 0
 			;[End Block]
 		Case it_helmet
 			;[Block]
@@ -501,7 +501,6 @@ Function UpdateItems%()
 	
 	Local i.Items, i2.Items, np.NPCs
 	Local xTemp#, yTemp#, zTemp#
-	Local Temp%, n%
 	Local Pick%, ed#
 	Local HideDist# = PowTwo(HideDistance)
 	Local PushDist# = HideDist * 0.04
@@ -523,9 +522,7 @@ Function UpdateItems%()
 				If EntityHidden(i\Collider) Then ShowEntity(i\Collider)
 				
 				If i\Dist < 1.44
-					If ClosestItem = Null
-						If EntityInView(i\Model, Camera) And EntityVisible(i\Collider, Camera) Then ClosestItem = i
-					ElseIf ClosestItem = i Lor i\Dist < EntityDistanceSquared(Camera, ClosestItem\Collider)
+					If ClosestItem = Null Lor i\Dist < EntityDistanceSquared(Camera, ClosestItem\Collider)
 						If EntityInView(i\Model, Camera) And EntityVisible(i\Collider, Camera) Then ClosestItem = i
 					EndIf
 				EndIf
@@ -563,12 +560,17 @@ Function UpdateItems%()
 								ed = PowTwo(xTemp) + PowTwo(zTemp)
 								If ed < 0.07 And Abs(yTemp) < 0.25
 									; ~ Items are too close together, push away
-									xTemp = xTemp * (0.07 - ed)
-									zTemp = zTemp * (0.07 - ed)
+									Local Temp# = 0.07 - ed
+									
+									xTemp = xTemp * Temp
+									zTemp = zTemp * Temp
 									
 									While Abs(xTemp) + Abs(zTemp) < 0.001
-										xTemp = xTemp + Rnd(-0.002, 0.002)
-										zTemp = zTemp + Rnd(-0.002, 0.002)
+										; ~ No difference, can be the same for x and y
+										Local RandomVal# = Rnd(-0.002, 0.002)
+										
+										xTemp = xTemp + RandomVal
+										zTemp = zTemp + RandomVal
 									Wend
 									
 									TranslateEntity(i2\Collider, xTemp, 0.0, zTemp)
@@ -611,7 +613,6 @@ Function PickItem%(item.Items)
 	
 	Local e.Events
 	Local n% = 0, z%
-	Local CanPickItem% = 1
 	Local FullINV% = True
 	
 	For n = 0 To MaxItemAmount - 1
@@ -622,6 +623,8 @@ Function PickItem%(item.Items)
 	Next
 	
 	If (Not FullINV)
+		Local CanPickItem% = 1
+		
 		For n = 0 To MaxItemAmount - 1
 			If Inventory(n) = Null
 				Select item\ItemTemplate\ID
@@ -639,19 +642,19 @@ Function PickItem%(item.Items)
 						;[End Block]
 					Case it_scp148
 						;[Block]
-						GiveAchievement(Achv148)
+						GiveAchievement("148")
 						;[End Block]
 					Case it_key6
 						;[Block]
-						GiveAchievement(AchvKeyCard6)
+						GiveAchievement("keycard6")
 						;[End Block]
 					Case it_keyomni
 						;[Block]
-						GiveAchievement(AchvOmni)
+						GiveAchievement("omni")
 						;[End Block]
 					Case it_scp005
 						;[Block]
-						GiveAchievement(Achv005)
+						GiveAchievement("005")
 						;[End Block]
 					Case it_veryfinevest
 						;[Block]
@@ -669,11 +672,10 @@ Function PickItem%(item.Items)
 						;[End Block]
 					Case it_navulti
 						;[Block]
-						GiveAchievement(AchvSNAV)
+						GiveAchievement("snav")
 						;[End Block]
 					Case it_vest, it_finevest
 						;[Block]
-						CanPickItem = 1
 						For z = 0 To MaxItemAmount - 1
 							If Inventory(z) <> Null
 								If Inventory(z)\ItemTemplate\ID = it_vest Lor Inventory(z)\ItemTemplate\ID = it_finevest
@@ -696,7 +698,6 @@ Function PickItem%(item.Items)
 						;[End Block]
 					Case it_hazmatsuit, it_finehazmatsuit, it_veryfinehazmatsuit, it_hazmatsuit148
 						;[Block]
-						CanPickItem = 1
 						For z = 0 To MaxItemAmount - 1
 							If Inventory(z) <> Null
 								If Inventory(z)\ItemTemplate\ID = it_hazmatsuit Lor Inventory(z)\ItemTemplate\ID = it_finehazmatsuit Lor Inventory(z)\ItemTemplate\ID = it_veryfinehazmatsuit Lor Inventory(z)\ItemTemplate\ID = it_hazmatsuit148
@@ -929,19 +930,27 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 					;[End Block]
 				Case ONETOONE
 					;[Block]
-					If Rand(50) = 1
-						it2.Items = CreateItem("SCP-1499", it_scp1499, x, y, z)
+					If Rand(4) = 1
+						it2.Items = CreateItem("Hazmat Suit", it_hazmatsuit, x, y, z)
 					Else
 						it2.Items = CreateItem("Gas Mask", it_gasmask, x, y, z)
 					EndIf
 					;[End Block]
 				Case FINE
 					;[Block]
-					it2.Items = CreateItem("Gas Mask", it_finegasmask, x, y, z)
+					If Rand(50) = 1
+						it2.Items = CreateItem("SCP-1499", it_scp1499, x, y, z)
+					Else
+						it2.Items = CreateItem("Gas Mask", it_finegasmask, x, y, z)
+					EndIf
 					;[End Block]
 				Case VERYFINE
 					;[Block]
-					it2.Items = CreateItem("Gas Mask", it_veryfinegasmask, x, y, z)
+					If Rand(100) = 1
+						it2.Items = CreateItem("SCP-1499", it_scp1499, x, y, z)
+					Else
+						it2.Items = CreateItem("Gas Mask", it_veryfinegasmask, x, y, z)
+					EndIf
 					;[End Block]
 			End Select
 			;[End Block]
@@ -1155,7 +1164,7 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 					If item\InvSlots = 1
 						item\InvSlots = 5
 					Else
-						item\InvSlots = Min(20.0, item\InvSlots + 5.0)
+						item\InvSlots = Min(20, item\InvSlots + 5)
 					EndIf
 					Remove = False
 					;[End Block]
@@ -1164,7 +1173,7 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 					If item\InvSlots = 1
 						item\InvSlots = 10
 					Else
-						item\InvSlots = Min(20.0, item\InvSlots + 10.0)
+						item\InvSlots = Min(20, item\InvSlots + 10)
 					EndIf
 					Remove = False
 					;[End Block]
@@ -1549,13 +1558,8 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 							;[End Block]
 						Case it_key5
 							;[Block]
-							Local CurrAchvAmount% = 0
-							
-							For i = 0 To MaxAchievements - 1
-								If achv\Achievement[i] = True Then CurrAchvAmount = CurrAchvAmount + 1
-							Next
-							
-							If Rand(0, ((MaxAchievements - 1) - (CurrAchvAmount - 1)) * (2 + SelectedDifficulty\OtherFactors)) = 0
+							Local CurrAchvAmount% = Max(((S2IMapSize(AchievementsIndex) - 1) - (S2IMapSize(UnlockedAchievements) - 1) - S2IMapContains(UnlockedAchievements, "keter")) * (2 + SelectedDifficulty\OtherFactors), 0)
+							If Rand(0, CurrAchvAmount) = 0
 								it2.Items = CreateItem("Key Card Omni", it_keyomni, x, y, z)
 							ElseIf Rand(12 + (6 * SelectedDifficulty\OtherFactors)) = 1
 								it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
@@ -1575,12 +1579,8 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 					;[End Block]
 				Case VERYFINE
 					;[Block]
-					CurrAchvAmount = 0
-					For i = 0 To MaxAchievements - 1
-						If achv\Achievement[i] = True Then CurrAchvAmount = CurrAchvAmount + 1
-					Next
-					
-					If Rand(0, ((MaxAchievements - 1) - (CurrAchvAmount - 1)) * (4 + SelectedDifficulty\OtherFactors)) = 0
+					CurrAchvAmount = Max(((S2IMapSize(AchievementsIndex) - 1) - (S2IMapSize(UnlockedAchievements) - 1) - S2IMapContains(UnlockedAchievements, "keter")) * (4 + SelectedDifficulty\OtherFactors), 0)
+					If Rand(0, CurrAchvAmount) = 0
 						it2.Items = CreateItem("Key Card Omni", it_keyomni, x, y, z)
 					ElseIf Rand(24 + (6 * SelectedDifficulty\OtherFactors)) = 1
 						it2.Items = CreateItem("Level 6 Key Card", it_key6, x, y, z)
@@ -2044,10 +2044,10 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 							Exit
 						EndIf
 					Next
-					If (Not NO427Spawn)
-						it2.Items = CreateItem("SCP-427", it_scp427, x, y, z)
-					Else
+					If NO427Spawn
 						it2.Items = CreateItem("Upgraded Pill", it_scp500pilldeath, x, y, z)
+					Else
+						it2.Items = CreateItem("SCP-427", it_scp427, x, y, z)
 					EndIf
 					;[End Block]
 				Case VERYFINE
@@ -2097,9 +2097,9 @@ Function Use914%(item.Items, Setting%, x#, y#, z#)
 						EndIf
 					Next
 					If (Not NO427Spawn)
-						it2.Items = CreateItem("SCP-427", it_scp427, x, y, z)
-					Else
 						it2.Items = CreateItem("Upgraded Pill", it_scp500pilldeath, x, y, z)
+					Else
+						it2.Items = CreateItem("SCP-427", it_scp427, x, y, z)
 					EndIf
 					;[End Block]
 				Case VERYFINE

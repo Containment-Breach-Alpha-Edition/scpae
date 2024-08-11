@@ -29,6 +29,7 @@ End Type
 Type Emitter
 	Field LoopAmount#, Age#, MaxTime#
 	Field tmp.Template
+	Field ID%
 	Field Owner%, Ent%, Surf%
 	Field Del%
 	Field room.Rooms
@@ -47,7 +48,7 @@ End Type
 
 Global ParticleCam%
 Global ParticlePiv%
-Global ParticleEffect%[16]
+Global ParticleEffect%[19]
 Global UpdateDevilParticlesTimer# = 0.0
 
 Function CreateTemplate()
@@ -251,13 +252,13 @@ Function SetTemplateFixAngles%(Template%, PitchFix%, YawFix%)
 	tmp\YawFix = YawFix
 End Function
 
-; ~ TODO: Find a way to remove and create emitters during the save loading without loosing the parent object
 Function SetEmitter.Emitter(room.Rooms, x#, y#, z#, ID%)
 	Local emit.Emitter
 	Local i%
 	
 	emit.Emitter = New Emitter
 	emit\room = room
+	emit\ID = ID
 	
 	emit\Owner = CreatePivot()
 	PositionEntity(emit\Owner, x, y, z)
@@ -285,6 +286,7 @@ Function FreeEmitter%(emit.Emitter, DeleteParticles% = False)
 		FreeEntity(emit\Ent) : emit\Ent = 0
 		emit\Surf = 0
 		FreeEntity(emit\Owner) : emit\Owner = 0
+		StopChannel(emit\SoundCHN) : emit\SoundCHN = 0
 		Delete(emit)
 	Else
 		emit\Del = True
@@ -294,6 +296,7 @@ End Function
 Function UpdateParticles_Devil()
 	Local emit.Emitter, p.Particle
 	Local i%
+	Local InSmoke% = False
 	
 	For emit.Emitter = Each Emitter
 		ClearSurface(emit\Surf)
@@ -340,8 +343,6 @@ Function UpdateParticles_Devil()
 				EntityTexture(emit\Ent, emit\tmp\Tex, emit\tmp\TexFrame)
 			EndIf
 			
-			Local InSmoke% = False
-			
 			Select emit\State
 				Case 1
 					;[Block]
@@ -354,22 +355,11 @@ Function UpdateParticles_Devil()
 						EndIf
 					EndIf
 					;[End Block]
-				Case 2
+				Case 2, 3
 					;[Block]
-					emit\SoundCHN = LoopSound2(snd_I\HissSFX[1], emit\SoundCHN, Camera, emit\Owner, 5.0)
+					emit\SoundCHN = LoopSound2(snd_I\HissSFX[1], emit\SoundCHN, Camera, emit\Owner, 5.0 - (3.0 * (emit\State = 3.0)), 1.0 - (0.6 * (emit\State = 3.0)))
 					;[End Block]
 			End Select
-			
-			If InSmoke
-				If me\EyeIrritation > 70.0 * 6.0 Then me\BlurVolume = Max(me\BlurVolume, (me\EyeIrritation - (70.0 * 6.0)) / (70.0 * 24.0))
-				If me\EyeIrritation > 70.0 * 24.0
-					msg\DeathMsg = Format(GetLocalString("death", "smoke"), SubjectName)
-					Kill()
-				EndIf
-				
-				UpdateCough(150)
-				me\EyeIrritation = me\EyeIrritation + (fps\Factor[0] * 4.0)
-			EndIf
 		EndIf
 		
 		If emit\Del
@@ -382,10 +372,22 @@ Function UpdateParticles_Devil()
 				FreeEntity(emit\Ent) : emit\Ent = 0
 				emit\Surf = 0
 				FreeEntity(emit\Owner) : emit\Owner = 0
+				StopChannel(emit\SoundCHN) : emit\SoundCHN = 0
 				Delete(emit)
 			EndIf
 		EndIf
 	Next
+	If InSmoke
+		If me\EyeIrritation > 70.0 * 6.0 Then me\BlurVolume = Max(me\BlurVolume, (me\EyeIrritation - (70.0 * 6.0)) / (70.0 * 24.0))
+		If me\EyeIrritation > 70.0 * 24.0
+			msg\DeathMsg = Format(GetLocalString("death", "smoke"), SubjectName)
+			Kill()
+		EndIf
+		
+		UpdateCough(150)
+		me\EyeIrritation = me\EyeIrritation + (fps\Factor[0] * 4.0)
+	EndIf
+	
 	PositionEntity(ParticlePiv, EntityX(ParticleCam, True), EntityY(ParticleCam, True), EntityZ(ParticleCam, True))
 	
 	Local CamPitch# = EntityPitch(ParticleCam, True)
@@ -455,13 +457,15 @@ Function UpdateParticles_Devil()
 			Local v2% = AddVertex(p\emitter\Surf, v2x, v2y, v2z, 1.0, 0.0)
 			Local v3% = AddVertex(p\emitter\Surf, v3x, v3y, v3z, 0.0, 1.0)
 			Local v4% = AddVertex(p\emitter\Surf, v4x, v4y, v4z, 1.0, 1.0)
-			Local R% = p\emitter\tmp\R1 + (p\emitter\tmp\R2 - p\emitter\tmp\R1) * Float(p\Age) / Float(p\MaxTime)
-			Local G% = p\emitter\tmp\G1 + (p\emitter\tmp\G2 - p\emitter\tmp\G1) * Float(p\Age) / Float(p\MaxTime)
-			Local B% = p\emitter\tmp\B1 + (p\emitter\tmp\B2 - p\emitter\tmp\B1) * Float(p\Age) / Float(p\MaxTime)
+			Local AgeFloat# = Float(p\Age)
+			Local MaxTimeFloat# = Float(p\MaxTime)
+			Local R% = p\emitter\tmp\R1 + (p\emitter\tmp\R2 - p\emitter\tmp\R1) * AgeFloat / MaxTimeFloat
+			Local G% = p\emitter\tmp\G1 + (p\emitter\tmp\G2 - p\emitter\tmp\G1) * AgeFloat / MaxTimeFloat
+			Local B% = p\emitter\tmp\B1 + (p\emitter\tmp\B2 - p\emitter\tmp\B1) * AgeFloat / MaxTimeFloat
 			Local CurrAlpha#
 			
 			If p\emitter\tmp\AlphaVel
-				CurrAlpha = (1 - Float(p\Age) / Float(p\MaxTime)) * p\emitter\tmp\Alpha
+				CurrAlpha = (1 - AgeFloat / MaxTimeFloat) * p\emitter\tmp\Alpha
 			Else
 				CurrAlpha = p\emitter\tmp\Alpha
 			EndIf
