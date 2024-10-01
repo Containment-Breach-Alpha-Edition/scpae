@@ -491,7 +491,7 @@ Function UpdateGame%()
 			If wi\NightVision = 0 Then DarkAlpha = Max((1.0 - SecondaryLightOn) * 0.9, DarkAlpha)
 			
 			If me\Terminated
-				me\Lean = CurveValue(1.0, me\Lean, 6.0)
+				me\Lean = CurveValue(0.0, me\Lean, 6.0)
 				ResetSelectedStuff()
 				me\BlurTimer = me\KillAnimTimer * 5.0
 				If me\SelectedEnding <> -1
@@ -2739,14 +2739,14 @@ Function UpdateMoving%()
 			Temp2 = Temp2 / Max((me\Injuries + 3.0) / 3.0, 1.0)
 			If me\Injuries > 0.5 Then Temp2 = Max(Temp2 * Min((Sin(me\Shake / 2.0) + 1.2), 1.0), 0.005)
 			Temp = False
-			me\Lean = CurveValue(1.0, me\Lean, 12.0)
+			me\Lean = CurveValue(0.0, me\Lean, 12.0)
 			If me\Playable And me\FallTimer >= 0.0 And (Not me\Terminated)
 				If (Not me\Zombie)
 					If (Not KeyDown(key\SPRINT)) And (Not InvOpen) And OtherOpen = Null
 						If KeyDown(key\LEAN_LEFT)
-							If (Not KeyDown(key\LEAN_RIGHT)) Then me\Lean = CurveValue(-20.0, me\Lean, 6.0 + (6.0 * (me\Injuries > 3.0)))
+							If (Not KeyDown(key\LEAN_RIGHT)) Then me\Lean = CurveValue(20.0, me\Lean, 6.0 + (6.0 * (me\Injuries > 3.0)))
 						ElseIf KeyDown(key\LEAN_RIGHT)
-							me\Lean = CurveValue(20.0, me\Lean, 6.0 + (6.0 * (me\Injuries > 3.0)))
+							me\Lean = CurveValue(-20.0, me\Lean, 6.0 + (6.0 * (me\Injuries > 3.0)))
 						EndIf
 					EndIf
 					
@@ -2949,7 +2949,7 @@ Function UpdateMouseLook%()
 		Local Up# = (Sin(me\Shake) / (20.0 + me\CrouchState * 20.0)) * 0.6
 		Local Roll# = Max(Min(Sin(me\Shake / 2.0) * 2.5 * Min(me\Injuries + 0.25, 3.0), 8.0), -8.0) + me\Lean
 		
-		RotateEntity(Camera, EntityPitch(me\Collider), EntityYaw(me\Collider), Roll# / 2.0)
+		RotateEntity(Camera, EntityPitch(me\Collider), EntityYaw(me\Collider), Roll / 2.0)
 		
 		Local Yaw# = EntityYaw(Camera)
 		
@@ -8200,7 +8200,6 @@ Const Ending_B2% = 3
 ;[End Block]
 
 Function UpdateEnding%()
-	
 	fps\Factor[0] = 0.0
 	If me\EndingTimer > -2000.0
 		me\EndingTimer = Max(me\EndingTimer - fps\Factor[1], -1111.0)
