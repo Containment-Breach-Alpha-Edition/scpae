@@ -4106,6 +4106,28 @@ Function FillRoom%(r.Rooms)
 			EntityType(r\Objects[17], HIT_MAP)
 			EntityAlpha(r\Objects[17], 0.0)
 			;[End Block]
+		Case r_intro
+			;[Block]
+			CreateDoor(r, r\x, r\y, r\z - 512.0 * RoomScale, 0.0)
+			d.Doors = CreateDoor(r, r\x - 992.0 * RoomScale, r\y, r\z - 512.0 * RoomScale, 0.0)
+			d\Locked = True
+			d.Doors = CreateDoor(r, r\x - 1984.0 * RoomScale, r\y, r\z - 512.0 * RoomScale, 0.0)
+			d\Locked = True
+			d.Doors = CreateDoor(r, r\x - 2912.0 * RoomScale, r\y, r\z - 768.0 * RoomScale, 0.0)
+			d\Locked = True
+			d.Doors = CreateDoor(r, r\x, r\y, r\z - 1024.0 * RoomScale, 0.0, False, OFFICE_DOOR)
+			d\Locked = True
+			
+			sc.SecurityCams = CreateSecurityCam(r, r\x - 256.0 * RoomScale, r\y + 384.0 * RoomScale, r\z + 640.0 * RoomScale, 20.0)
+			sc\Angle = 180.0 : sc\Turn = 45.0
+
+			it.Items = CreateItem("Empty Cup", it_emptycup, r\x + 210.0 * RoomScale, r\y + 120.0 * RoomScale, r\z + 200.0 * RoomScale)
+			EntityParent(it\Collider, r\OBJ)
+			it.Items = CreateItem("Level 2 Key Card", it_key2, r\x + 210.0 * RoomScale, r\y + 215.0 * RoomScale, r\z - 130.0 * RoomScale)
+			EntityParent(it\Collider, r\OBJ)
+
+			CreateCustomCenter(r, r\x, r\z - 768.0 * RoomScale)
+			;[End Block]
 	End Select
 	
 	Local ts.TempScreens, twp.TempWayPoints, tl.TempLights, tp.TempProps, tse.TempSoundEmitters
