@@ -86,6 +86,7 @@ Const e_gateway% = 67
 Const e_tesla% = 68
 Const e_trick% = 69, e_trick_item% = 70
 Const e_dimension_106% = 71, e_dimension_1499% = 72
+Const e_intro = 73
 ;[End Block]
 
 ; ~ For Map Creator
@@ -383,6 +384,10 @@ Function FindEventID%(EventName$)
 			;[Block]
 			Return(e_dimension_1499)
 			;[End Block]
+		Case "intro"
+			;[Block]
+			Return(e_intro)
+			;[End Block]
 		Default
 			;[Block]
 			Return(-1)
@@ -665,6 +670,59 @@ Function UpdateEvents%()
 	
 	For e.Events = Each Events
 		Select e\EventID
+			Case e_intro
+				;[Block]
+				If PlayerRoom = e\room
+					If e\EventState = 0.0
+						TFormPoint(-256.0, 69.0, -358.0, e\room\OBJ, 0)
+						e\room\NPC[0] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[0]\State = -1.0
+						e\room\NPC[0]\Sound = LoadSound_Strict("SFX\General\Typing.ogg")
+						SetNPCFrame(e\room\NPC[0], 182.0)
+						ChangeNPCTextureID(e\room\NPC[0], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-256.0, 69.0, -134.0, e\room\OBJ, 0)
+						e\room\NPC[1] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[1]\State = -1.0
+						SetNPCFrame(e\room\NPC[1], 182.0)
+						ChangeNPCTextureID(e\room\NPC[1], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-256.0, 69.0, 193.0, e\room\OBJ, 0)
+						e\room\NPC[2] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[2]\State = -1.0
+						SetNPCFrame(e\room\NPC[2], 182.0)
+						ChangeNPCTextureID(e\room\NPC[2], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-256.0, 69.0, 416.0, e\room\OBJ, 0)
+						e\room\NPC[3] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[3]\State = -1.0
+						SetNPCFrame(e\room\NPC[3], 182.0)
+						ChangeNPCTextureID(e\room\NPC[3], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-656.0, 69.0, -348.0, e\room\OBJ, 0)
+						e\room\NPC[4] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[4]\State = -1.0
+						SetNPCFrame(e\room\NPC[4], 182.0)
+						ChangeNPCTextureID(e\room\NPC[4], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-656.0, 69.0, -124.0, e\room\OBJ, 0)
+						e\room\NPC[5] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[5]\State = -1.0
+						SetNPCFrame(e\room\NPC[5], 182.0)
+						ChangeNPCTextureID(e\room\NPC[5], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						TFormPoint(-656.0, 69.0, 202.0, e\room\OBJ, 0)
+						e\room\NPC[5] = CreateNPC(NPCTypeD, TFormedX(), TFormedY(), TFormedZ())
+						e\room\NPC[5]\State = -1.0
+						SetNPCFrame(e\room\NPC[5], 182.0)
+						ChangeNPCTextureID(e\room\NPC[5], NPC_CLASS_D_SCIENTIST_TEXTURE)
+
+						e\EventState = 1.0
+					EndIf
+
+					e\room\NPC[0]\SoundCHN = LoopSoundEx(e\room\NPC[0]\Sound, e\room\NPC[0]\SoundCHN, Camera, e\room\NPC[0]\Collider)
+				EndIf
+				;[End Block]
 			Case e_cont1_173
 				;[Block]
 				If e\EventState = 0.0

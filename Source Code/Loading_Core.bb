@@ -1964,6 +1964,8 @@ Function LoadEvents%()
 	CreateEvent(e_cont1_005, r_cont1_005, 0)
 	
 	CreateEvent(e_room2_ic, r_room2_ic, 0)
+
+	CreateEvent(e_intro, r_intro, 0)
 End Function
 
 Function LoadWayPoints%(LoadingStart% = 55)
