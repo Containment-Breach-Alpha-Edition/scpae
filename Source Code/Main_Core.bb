@@ -2540,10 +2540,10 @@ Function RefillCup%()
 					Next
 					If EmptyCup <> Null
 						RemoveItem(EmptyCup)
-						EmptyCup.Items = CreateItem("Cup", it_cup, 0.0, 0.0, 0.0, 200, 200, 200)
-						EntityType(EmptyCup\Collider, HIT_MAP)
+						EmptyCup.Items = CreateItem("Cup", it_cup, 0.0, 0.0, 0.0, 200, 200, 200, 0.2)
 						EmptyCup\Name = "WATER"
 						EmptyCup\DisplayName = Format(GetLocalString("items", "cupof"), GetLocalString("misc", "water"))
+						EntityType(EmptyCup\Collider, HIT_ITEM)
 						PickItem(EmptyCup)
 						PlaySound_Strict(LoadTempSound("SFX\SCP\294\Dispense1.ogg"))
 						CreateMsg(GetLocalString("msg", "refill"))
@@ -3309,7 +3309,6 @@ Function UpdateNVG%()
 			EndIf
 			
 			If wi\NVGPower < 160
-				UpdateBatteryTimer()
 				If BatMsgTimer >= 70.0
 					If (Not ChannelPlaying(LowBatteryCHN[1]))
 						me\SndVolume = Max(3.0, me\SndVolume)
@@ -3554,6 +3553,8 @@ Function UpdateGUI%()
 		igm\QuitMenu = 0
 	EndIf
 	
+	UpdateBatteryTimer()
+	
 	Local PrevOtherOpen.Items, PrevItem.Items
 	Local IsMouseOn%
 	Local ClosedInv%
@@ -3578,7 +3579,6 @@ Function UpdateGUI%()
 		x = mo\Viewport_Center_X - ((INVENTORY_GFX_SIZE * 10 / 2) + (INVENTORY_GFX_SPACING * ((10 / 2) - 1))) / 2
 		y = mo\Viewport_Center_Y - (INVENTORY_GFX_SIZE * ((OtherSize / 10 * 2) - 1)) - INVENTORY_GFX_SPACING
 		
-		ItemAmount = 0
 		IsMouseOn = -1
 		For n = 0 To OtherSize - 1
 			If MouseOn(x, y, INVENTORY_GFX_SIZE, INVENTORY_GFX_SIZE) Then IsMouseOn = n
@@ -3607,7 +3607,6 @@ Function UpdateGUI%()
 						EndIf
 					EndIf
 				EndIf
-				ItemAmount = ItemAmount + 1
 			Else
 				If IsMouseOn = n And mo\MouseHit1
 					For z = 0 To OtherSize - 1
@@ -3744,7 +3743,6 @@ Function UpdateGUI%()
 			x = x - ((INVENTORY_GFX_SIZE * MaxItemAmountHalf) + INVENTORY_GFX_SPACING) / 2
 		EndIf
 		
-		ItemAmount = 0
 		IsMouseOn = -1
 		For n = 0 To MaxItemAmount - 1
 			If MouseOn(x, y, INVENTORY_GFX_SIZE, INVENTORY_GFX_SIZE) Then IsMouseOn = n
@@ -3764,7 +3762,6 @@ Function UpdateGUI%()
 						EndIf
 					EndIf
 				EndIf
-				ItemAmount = ItemAmount + 1
 			Else
 				If IsMouseOn = n And mo\MouseHit1
 					For z = 0 To MaxItemAmount - 1
@@ -3920,6 +3917,7 @@ Function UpdateGUI%()
 													For ri = 0 To MaxItemAmount - 1
 														If Inventory(ri) = SelectedItem
 															Inventory(ri) = Null
+															ItemAmount = ItemAmount - 1
 															PlaySound_Strict(snd_I\PickSFX[SelectedItem\ItemTemplate\SoundID])
 															Exit
 														EndIf
@@ -3977,6 +3975,7 @@ Function UpdateGUI%()
 													For ri = 0 To MaxItemAmount - 1
 														If Inventory(ri) = SelectedItem
 															Inventory(ri) = Null
+															ItemAmount = ItemAmount - 1
 															PlaySound_Strict(snd_I\PickSFX[SelectedItem\ItemTemplate\SoundID])
 															Exit
 														EndIf
@@ -4671,9 +4670,9 @@ Function UpdateGUI%()
 					me\CurrSpeed = CurveValue(0.0, me\CurrSpeed, 5.0)
 					
 					If SelectedItem\ItemTemplate\ID <> it_hazmatsuit148
-						SelectedItem\State = Min(SelectedItem\State + (fps\Factor[0] / 4.0), 100.0)
+						SelectedItem\State = Min(SelectedItem\State + (fps\Factor[0] / 3.0), 100.0)
 					Else
-						SelectedItem\State = Min(SelectedItem\State + (fps\Factor[0] / 5.0), 100.0)
+						SelectedItem\State = Min(SelectedItem\State + (fps\Factor[0] / 4.0), 100.0)
 					EndIf
 					
 					If SelectedItem\State = 100.0
@@ -5498,7 +5497,6 @@ Function UpdateGUI%()
 						
 						If RadioType < 2
 							If SelectedItem\State <= 20.0
-								UpdateBatteryTimer()
 								If BatMsgTimer >= 70.0
 									If (Not ChannelPlaying(LowBatteryCHN[0]))
 										me\SndVolume = Max(3.0, me\SndVolume)
@@ -5522,7 +5520,6 @@ Function UpdateGUI%()
 						SelectedItem\State = Max(0.0, SelectedItem\State - fps\Factor[0] * 0.0025 + (0.0025 * (SelectedItem\ItemTemplate\ID = it_nav)))
 						
 						If SelectedItem\State > 0.0 And SelectedItem\State <= 20.0
-							UpdateBatteryTimer()
 							If BatMsgTimer >= 70.0
 								If (Not ChannelPlaying(LowBatteryCHN[0]))
 									me\SndVolume = Max(3.0, me\SndVolume)
@@ -5752,20 +5749,10 @@ Function UpdateGUI%()
 					;[Block]
 					If I_500\Taken < Rand(20)
 						If ItemAmount < MaxItemAmount
-							For i = 0 To MaxItemAmount - 1
-								If Inventory(i) = Null
-									Inventory(i) = CreateItem("SCP-500-01", it_scp500pill, 0.0, 0.0, 0.0)
-									; ~ Do not use PickItem(Inventory(i)) here
-									Inventory(i)\Picked = True
-									Inventory(i)\Dropped = -1
-									Inventory(i)\ItemTemplate\Found = True
-									HideEntity(Inventory(i)\Collider)
-									EntityType(Inventory(i)\Collider, HIT_ITEM)
-									EntityParent(Inventory(i)\Collider, 0)
-									ItemAmount = ItemAmount + 1
-									Exit
-								EndIf
-							Next
+							it.Items = CreateItem("SCP-500-01", it_scp500pill, 0.0, 0.0, 0.0)
+							EntityType(it\Collider, HIT_ITEM)
+							PickItem(it, False)
+							
 							CreateMsg(GetLocalString("msg", "500"))
 							PlaySound_Strict(LoadTempSound("SFX\SCP\500\OpenBottle.ogg"))
 							I_500\Taken = I_500\Taken + 1
@@ -6083,7 +6070,9 @@ Function RenderDebugHUD%()
 			TextEx(x, y + (340 * MenuScale), Format(GetLocalString("console", "debug_2.playable"), me\Playable))
 			
 			TextEx(x, y + (380 * MenuScale), Format(GetLocalString("console", "debug_2.refitems"), me\RefinedItems))
-			TextEx(x, y + (400 * MenuScale), Format(GetLocalString("console", "debug_2.escape"), EscapeTimer))
+			TextEx(x, y + (400 * MenuScale), Format(GetLocalString("console", "debug_2.itemamount"), ItemAmount))
+			
+			TextEx(x, y + (440 * MenuScale), Format(GetLocalString("console", "debug_2.escape"), EscapeTimer))
 			;[End Block]
 		Case 3
 			;[Block]
@@ -6256,11 +6245,13 @@ Function RenderNVG%()
 		For l = 0 To Min(Floor((wi\NVGPower + 50) * 0.01), 11.0)
 			Rect(45 * MenuScale, mo\Viewport_Center_Y - ((l * 20) * MenuScale), 54 * MenuScale, 10 * MenuScale)
 		Next
-		If BatMsgTimer >= 70.0
-			Color(255, 0, 0)
-			SetFontEx(fo\FontID[Font_Digital])
-			
-			TextEx(mo\Viewport_Center_X, 20 * MenuScale, GetLocalString("msg", "battery.low"), True)
+		If wi\NVGPower < 160
+			If BatMsgTimer >= 70.0
+				Color(255, 0, 0)
+				SetFontEx(fo\FontID[Font_Digital])
+				
+				TextEx(mo\Viewport_Center_X, 20 * MenuScale, GetLocalString("msg", "battery.low"), True)
+			EndIf
 		EndIf
 	EndIf
 	Color(255, 255, 255)

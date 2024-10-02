@@ -4844,11 +4844,11 @@ Function UpdateNPCs%()
 							EndIf
 							
 							If Dist > PowTwo(HideDistance)
-								If n\State3 < 70.0 * (15.0 + (10.0 * SelectedDifficulty\AggressiveNPCs))
+								If n\State3 < 70.0
 									n\State3 = n\State3 + fps\Factor[0]
-								Else
-									n\State3 = 70.0 * 360.0
-									n\State = 5.0
+								ElseIf Rand(150 - (60 * SelectedDifficulty\AggressiveNPCs)) = 1
+									 TeleportCloser(n)
+									 n\State3 = 0.0
 								EndIf
 							EndIf
 							
@@ -4925,48 +4925,6 @@ Function UpdateNPCs%()
 								If n\Target\IsDead
 									n\Target = Null
 									n\State = 3.0
-								EndIf
-							EndIf
-							;[End Block]
-						Case 5.0 ; ~ Idling
-							;[Block]
-							If (Not EntityHidden(n\OBJ))
-								HideEntity(n\OBJ)
-								HideEntity(n\Collider)
-								n\DropSpeed = 0.0
-								PositionEntity(n\Collider, 0.0, -500.0, 0.0, True)
-								ResetEntity(n\Collider)
-							EndIf
-							If n\Idle > 0
-								n\Idle = Max(n\Idle - (1 + SelectedDifficulty\AggressiveNPCs) * fps\Factor[0], 0.0)
-							Else
-								If PlayerInReachableRoom(True) ; ~ Player is in a room where SCP-008-1 can teleport to
-									If Rand(50 - (20 * SelectedDifficulty\AggressiveNPCs)) = 1
-										If EntityHidden(n\OBJ)
-											ShowEntity(n\OBJ)
-											ShowEntity(n\Collider)
-											For w.WayPoints = Each WayPoints
-												If w\door = Null And w\room\Dist < HideDistance And Rand(3) = 1
-													If EntityDistanceSquared(w\room\OBJ, n\Collider) < EntityDistanceSquared(me\Collider, n\Collider)
-														If DistanceSquared(EntityX(w\OBJ, True), EntityX(n\Collider), EntityZ(w\OBJ, True), EntityZ(n\Collider)) < 144.0
-															If DistanceSquared(EntityX(w\OBJ, True), EntityX(n\Collider), EntityZ(w\OBJ, True), EntityZ(n\Collider)) > 16.0
-																If w\room\Dist > 4.0
-																	PositionEntity(n\Collider, EntityX(w\OBJ, True), EntityY(w\OBJ, True) + 200.0 * RoomScale, EntityZ(w\OBJ, True), True)
-																	ResetEntity(n\Collider)
-																	n\PathStatus = PATH_STATUS_NO_SEARCH
-																	n\PathTimer = 0.0
-																	n\PathLocation = 0
-																	Exit
-																EndIf
-															EndIf
-														EndIf
-													EndIf
-												EndIf
-											Next
-											n\State3 = 0.0
-											n\State = 3.0
-										EndIf
-									EndIf
 								EndIf
 							EndIf
 							;[End Block]
@@ -7101,17 +7059,21 @@ Function Shoot%(x#, y#, z#, Parent%, HitProb# = 1.0, Particles% = True, InstaKil
 			PlaySoundEx(snd_I\BulletMissSFX, Camera, Pvt, 0.4, Rnd(0.8, 1.0))
 			
 			If Particles
-				p.Particles = CreateParticle(PARTICLE_BLACK_SMOKE, PickedX(), PickedY(), PickedZ(), 0.03, 0.0, 80.0)
+				Local PX# = PickedX()
+				Local PY# = PickedY()
+				Local PZ# = PickedZ()
+				
+				p.Particles = CreateParticle(PARTICLE_BLACK_SMOKE, PX, PY, PZ, 0.03, 0.0, 80.0)
 				p\Speed = 0.001 : p\SizeChange = 0.003 : p\Alpha = 0.8 : p\AlphaChange = -0.01
 				RotateEntity(p\Pvt, EntityPitch(Pvt) - 180.0, EntityYaw(Pvt), 0)
 				
 				For i = 0 To Rand(2, 3)
-					p.Particles = CreateParticle(PARTICLE_BLACK_SMOKE, PickedX(), PickedY(), PickedZ(), 0.006, 0.003, 80.0)
+					p.Particles = CreateParticle(PARTICLE_BLACK_SMOKE, PX, PY, PZ, 0.006, 0.003, 80.0)
 					p\Speed = 0.02 : p\Alpha = 0.8 : p\AlphaChange = -0.01
 					RotateEntity(p\Pvt, EntityPitch(Pvt) + Rnd(170.0, 190.0), EntityYaw(Pvt) + Rnd(-10.0, 10.0), 0.0)
 				Next
 				
-				de.Decals = CreateDecal(Rand(DECAL_BULLET_HOLE_1, DECAL_BULLET_HOLE_2), PickedX(), PickedY() + Rnd(-0.05, 0.05), PickedZ(), Rnd(-4.0, 4.0), Rnd(-4.0, 4.0), Rnd(-4.0, 4.0), Rnd(0.028, 0.034), 1.0, 1, 2)
+				de.Decals = CreateDecal(Rand(DECAL_BULLET_HOLE_1, DECAL_BULLET_HOLE_2), PX, PY + Rnd(-0.05, 0.05), PZ, Rnd(-4.0, 4.0), Rnd(-4.0, 4.0), Rnd(-4.0, 4.0), Rnd(0.028, 0.034), 1.0, 1, 2)
 				de\LifeTime = 70.0 * 20.0
 				AlignToVector(de\OBJ, -PickedNX(), -PickedNY(), -PickedNZ(), 3)
 				MoveEntity(de\OBJ, 0.0, 0.0, -0.001)
@@ -7291,7 +7253,7 @@ Function ConsoleSpawnNPC%(Name$, NPCState$ = "")
 			n.NPCs = CreateNPC(NPCTypeApache, EntityX(me\Collider), EntityY(me\Collider) + 0.2, EntityZ(me\Collider))
 			ConsoleMsg = Format(GetLocalString("console", "spawn"), GetLocalString("npc", "apache"))
 			;[End Block]
-		Case "tentacle", "scp035tentacle", "scp-035tentacle", "scp-035-tentacle", "scp035-tentacle"
+		Case "tentacle", "035tentacle", "scp035tentacle", "scp-035tentacle", "scp-035-tentacle", "scp035-tentacle"
 			;[Block]
 			n.NPCs = CreateNPC(NPCType035_Tentacle, EntityX(me\Collider), EntityY(me\Collider) - 0.12, EntityZ(me\Collider))
 			ConsoleMsg = Format(GetLocalString("console", "spawn"), GetLocalString("npc", "tentacle"))

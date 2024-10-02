@@ -795,7 +795,11 @@ Function UpdateEvents%()
 					If e\room\NPC[0] <> Null Then AnimateNPC(e\room\NPC[0], 249.0, 286.0, 0.4, False)
 					
 					If EntityDistanceSquared(me\Collider, e\room\RoomDoors[2]\FrameOBJ) < 1.21 Then e\EventState = Max(e\EventState, 500.0)
-					If e\EventState >= 500.0 Lor EntityDistanceSquared(me\Collider, e\room\RoomDoors[2]\FrameOBJ) < 4.0 Then e\EventState = e\EventState + fps\Factor[0]
+					If e\EventState >= 500.0
+						e\EventState = e\EventState + fps\Factor[0]
+					ElseIf EntityDistanceSquared(me\Collider, e\room\RoomDoors[2]\FrameOBJ) < 5.0
+						e\EventState = e\EventState + (fps\Factor[0] * 2.0)
+					EndIf
 					If e\EventState >= 500.0
 						If e\EventState2 = 0.0
 							If e\EventState > 900.0 And e\room\RoomDoors[3]\Open
@@ -3500,7 +3504,6 @@ Function UpdateEvents%()
 								it\SecondInv[i] = it2
 								HideEntity(it2\Collider)
 								EntityType(it2\Collider, HIT_ITEM)
-								EntityParent(it2\Collider, 0)
 							Next
 							RemoveEvent(e)
 						EndIf
@@ -5640,22 +5643,21 @@ Function UpdateEvents%()
 								;[End Block]
 							Case 14.0
 								;[Block]
+								Temp = False
 								For i = 0 To MaxItemAmount - 1
 									If Inventory(i) <> Null
 										If Inventory(i)\ItemTemplate\ID = it_paper
 											RemoveItem(Inventory(i))
-											For itt.ItemTemplates = Each ItemTemplates
-												If itt\ID = it_paper And Rand(6) = 1
-													Inventory(i) = CreateItem(itt\Name, itt\ID, 1.0, 1.0, 1.0)
-													HideEntity(Inventory(i)\Collider)
-													Inventory(i)\Picked = True
-													Exit
-												EndIf
-											Next
+											Temp = True
 											Exit
 										EndIf
 									EndIf
 								Next
+								If Temp
+									it.Items = CreateItem("Document SCP-" + GetRandDocument(), it_paper, 0.0, 0.0, 0.0)
+									EntityType(it\Collider, HIT_ITEM)
+									PickItem(it, False)
+								EndIf
 								;[End Block]
 							Case 18.0
 								;[Block]
@@ -5678,12 +5680,9 @@ Function UpdateEvents%()
 									RemoveWearableItems(Inventory(i))
 									RemoveItem(Inventory(i))
 								EndIf
-								Inventory(i) = CreateItem("Strange Note", it_paper, 1.0, 1.0, 1.0)
-								HideEntity(Inventory(i)\Collider)
-								Inventory(i)\Picked = True
-								Inventory(i)\ItemTemplate\Found = True
-								EntityType(Inventory(i)\Collider, HIT_ITEM)
-								ItemAmount = ItemAmount + 1
+								it.Items = CreateItem("Strange Note", it_paper, 0.0, 0.0, 0.0)
+								EntityType(it\Collider, HIT_ITEM)
+								PickItem(it, False)
 								;[End Block]
 							Case 35.0
 								;[Block]

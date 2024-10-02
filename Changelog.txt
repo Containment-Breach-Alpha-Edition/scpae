@@ -1,3 +1,19 @@
+{v1.3.3}
+
+[Items]
+- Changed model scale of some items.
+
+[Bug Fixes]
+- Fixed displaying of low battery message for NVG.
+- Fixed a bug related to collision of cups obtained from water cooler.
+- Fixed a bug related to collision of items obtained in SCP-970 loop.
+- Fixed an inventory bug with incorrect calculation of the items amount.
+
+[Known issues]
+- Rooms can overlap and block the way.
+- Tabbing out of the game and tabbing back in freezes the game view/turning off monitor freezes the game.
+- Battery issues caused by having multiple night vision devices.
+
 {v1.3.2}
 
 [General]
