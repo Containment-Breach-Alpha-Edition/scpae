@@ -4174,9 +4174,6 @@ Function FillRoom%(r.Rooms)
 			;[End Block]
 		Case r_intro
 			;[Block]
-			AmbientLight(200, 200, 200)
-			AmbientLightRooms(200, 200, 200)
-
 			CreateDoor(r, r\x, r\y, r\z - 512.0 * RoomScale, 0.0)
 			d.Doors = CreateDoor(r, r\x - 992.0 * RoomScale, r\y, r\z - 512.0 * RoomScale, 0.0)
 			d\Locked = True

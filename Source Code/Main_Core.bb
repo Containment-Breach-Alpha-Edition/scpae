@@ -393,6 +393,8 @@ Function UpdateGame%()
 				UpdateSoundEmitters()
 				If PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro
 					UpdateIntro()
+				ElseIf PlayerRoom\RoomTemplate\RoomID = r_intro
+					UpdateNewIntro()
 				ElseIf IsPlayerOutsideFacility()
 					LightRenderDistance = 100.0
 					If QuickLoadPercent = -1 Lor QuickLoadPercent = 100 Then UpdateEndings()
@@ -3120,7 +3122,7 @@ End Function
 
 Function UpdateZoneColor%()
 	Local e.Events
-	Local IsOutSide% = (IsPlayerOutsideFacility() Lor PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro)
+	Local IsOutSide% = (IsPlayerOutsideFacility() Lor PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro Lor PlayerRoom\RoomTemplate\RoomID = r_intro)
 	
 	CurrFogColor = ""
 	CurrAmbientColor = ""
