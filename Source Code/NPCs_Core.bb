@@ -882,10 +882,10 @@ Function UpdateNPCs%()
 					
 					; ~ Checking if SCP-106 is allowed to spawn
 					If PlayerRoom\RoomTemplate\RoomID = r_dimension_1499 Lor (PlayerRoom\RoomTemplate\RoomID = r_cont2_049 And EntityY(me\Collider) <= -2848.0 * RoomScale) Then Spawn106 = False
-					If forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+					If forest_event <> Null And forest_event\room = PlayerRoom
 						If forest_event\EventState = 1.0 Then Spawn106 = False
 					EndIf
-					If skull_event <> Null ; ~ TODO: Check if this really needed!
+					If skull_event <> Null
 						If skull_event\EventState > 0.0 Then Spawn106 = False
 					EndIf
 					; ~ Gate A event has been triggered. Don't make SCP-106 disappear!
@@ -2101,6 +2101,17 @@ Function UpdateNPCs%()
 							Else
 								AnimateNPC(n, Max(Min(AnimTime(n\OBJ), 713.0), 705.0), 794.0, n\CurrSpeed * 38.0)
 								If (PrevFrame < 733.0 And n\Frame >= 733.0) Lor (PrevFrame < 773.0 And n\Frame >= 773.0) Then PlaySoundEx(snd_I\Step2SFX[Rand(0, 2)], Camera, n\Collider, 8.0, Rnd(0.3, 0.5))
+							EndIf
+							
+							If Dist > PowTwo(HideDistance * 2.0)
+								If n\State3 < 70.0
+									n\State3 = n\State3 + fps\Factor[0]
+								Else
+									If Rand(100 - (40 * SelectedDifficulty\AggressiveNPCs)) = 1 Then TeleportCloser(n)
+									 n\State3 = 0.0
+								EndIf
+							Else
+								n\State3 = 0.0
 							EndIf
 							
 							If n\Target = Null
@@ -3349,7 +3360,7 @@ Function UpdateNPCs%()
 				;[End Block]
 			Case NPCType860_2
 				;[Block]
-				If forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+				If forest_event <> Null And forest_event\room = PlayerRoom
 					If forest_event\EventState = 1.0
 						Local fr.Forest = PlayerRoom\fr
 						
@@ -4843,13 +4854,15 @@ Function UpdateNPCs%()
 								If (PrevFrame < 65.0 And n\Frame >= 65.0) Lor (PrevFrame < 80.0 And n\Frame >= 80.0) Then PlaySoundEx(StepSFX(GetStepSound(n\Collider), 0, Rand(0, 7)), Camera, n\Collider, 8.0, Rnd(0.3, 0.5))
 							EndIf
 							
-							If Dist > PowTwo(HideDistance)
+							If Dist > PowTwo(HideDistance * 1.5)
 								If n\State3 < 70.0
 									n\State3 = n\State3 + fps\Factor[0]
-								ElseIf Rand(150 - (60 * SelectedDifficulty\AggressiveNPCs)) = 1
-									 TeleportCloser(n)
-									 n\State3 = 0.0
+								Else
+									If Rand(50 - (20 * SelectedDifficulty\AggressiveNPCs)) = 1 Then TeleportCloser(n)
+									n\State3 = 0.0
 								EndIf
+							Else
+								n\State3 = 0.0
 							EndIf
 							
 							If n\Target = Null
@@ -5057,7 +5070,7 @@ Function UpdateNPCs%()
 							
 							If n\InFacility = NullFloor
 								If PlayerRoom\RoomTemplate\RoomID <> r_cont1_173_intro
-									If forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+									If forest_event <> Null And forest_event\room = PlayerRoom
 										If forest_event\EventState = 1.0 Then UpdateGravity = True
 									EndIf
 								Else
@@ -5540,8 +5553,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType008_1
 								If NPCSeesNPC(n2, n) = 1
@@ -5555,8 +5568,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType035_Tentacle
 								If NPCSeesNPC(n2, n) = 1
@@ -5570,8 +5583,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType1048_A
 								If NPCSeesNPC(n2, n) = 1
@@ -5585,13 +5598,13 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							EndIf
 						EndIf
 					Next
-					n\MTFUpdateTimer = fps\Factor[0] * 8.0
+					n\MTFUpdateTimer = fps\Factor[0] * 45.0
 				Else
 					n\MTFUpdateTimer = n\MTFUpdateTimer - fps\Factor[0]
 				EndIf
@@ -5906,8 +5919,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType008_1
 								If NPCSeesNPC(n2, n) = 1
@@ -5921,8 +5934,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType035_Tentacle
 								If NPCSeesNPC(n2, n) = 1
@@ -5936,8 +5949,8 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							ElseIf n2\NPCType = NPCType1048_A
 								If NPCSeesNPC(n2, n) = 1
@@ -5951,13 +5964,13 @@ Function UpdateMTFUnit%(n.NPCs)
 									n\State2 = 70.0 * 15.0 ; ~ Give up after 15 seconds
 									n\State3 = 0.0
 									n\State = MTF_ZOMBIES_SPOTTED
-									Exit
 									Return
+									Exit
 								EndIf
 							EndIf
 						EndIf
 					Next
-					n\MTFUpdateTimer = fps\Factor[0] * 8.0
+					n\MTFUpdateTimer = fps\Factor[0] * 45.0
 				Else
 					n\MTFUpdateTimer = n\MTFUpdateTimer - fps\Factor[0]
 				EndIf
@@ -7373,11 +7386,11 @@ Function PlayerInReachableRoom%(CanSpawnIn049Chamber% = False, Intro% = False)
 	; ~ Player is in these rooms, returning false
 	If PlayerRoom\RoomTemplate\RoomID = r_dimension_106 Lor PlayerRoom\RoomTemplate\RoomID = r_dimension_1499 Lor (PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro And (Not Intro)) Lor IsPlayerOutsideFacility() Then Return(False)
 	; ~ Player is in SCP-860-1, returning false
-	If forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+	If forest_event <> Null And forest_event\room = PlayerRoom
 		If forest_event\EventState = 1.0 Then Return(False)
 	EndIf
 	; ~ Player is inside the fake world, returning false
-	If skull_event <> Null ; ~ TODO: Check if this really needed!
+	If skull_event <> Null
 		If skull_event\EventState > 0.0 Then Return(False)
 	EndIf
 	

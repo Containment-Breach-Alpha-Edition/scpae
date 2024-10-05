@@ -319,7 +319,7 @@ Function UpdateGame%()
 					
 					If PlayerRoom\RoomTemplate\RoomID = r_cont1_173_intro
 						me\Zone = 4
-					ElseIf forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+					ElseIf forest_event <> Null And forest_event\room = PlayerRoom
 						If forest_event\EventState = 1.0
 							me\Zone = 5
 							PositionEntity(SoundEmitter, EntityX(SoundEmitter), 30.0, EntityZ(SoundEmitter))
@@ -2358,13 +2358,9 @@ Function RenderMessages%()
 		SetFontEx(fo\FontID[Font_Default])
 		Color(Temp2, Temp2, Temp2)
 		
-		Local PosY%
+		Local PosY% = mo\Viewport_Center_Y + (200 * MenuScale)
 		
-		If Temp
-			PosY = opt\GraphicHeight * 0.94
-		Else
-			PosY = mo\Viewport_Center_Y + (200 * MenuScale)
-		EndIf
+		If Temp Then PosY = opt\GraphicHeight * 0.94
 		TextEx(mo\Viewport_Center_X + ((me\Sanity < -200.0) * Rand(-10, 10) * MenuScale), PosY + ((me\Sanity < -200.0) * Rand(-10, 10) * MenuScale), msg\Txt, True)
 	EndIf
 	Color(255, 255, 255)
@@ -2937,7 +2933,7 @@ Function UpdateMouseLook%()
 	me\CameraShake = Max(me\CameraShake - FPSFactorEx, 0.0)
 	me\BigCameraShake = Max(me\BigCameraShake - FPSFactorEx, 0.0)
 	
-	CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / (Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * (GraphicWidthFloat / GraphicHeightFloat))) / 2.0)))
+	CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * (GraphicWidthFloat / GraphicHeightFloat))) / 2.0))
 	me\CurrCameraZoom = Max(me\CurrCameraZoom - fps\Factor[0], 0.0)
 	
 	If (Not me\Terminated) And me\FallTimer >= 0.0
@@ -3146,7 +3142,7 @@ Function UpdateZoneColor%()
 		LightVolume = 1.0
 		CameraFogRange(Camera, 40.0, me\CameraFogDist)
 		CameraRange(Camera, 0.01, 96.0) ; ~ me\CameraFogDist * 1.2
-	ElseIf PD_event <> Null And PD_event\room = PlayerRoom ; ~ TODO: Check if PD_event <> Null really needed!
+	ElseIf PD_event <> Null And PD_event\room = PlayerRoom
 		LightVolume = 1.0
 		If PD_event\EventState2 = PD_TrenchesRoom Lor PD_event\EventState2 = PD_TowerRoom
 			SetZoneColor(FogColorPDTrench)
@@ -3155,7 +3151,7 @@ Function UpdateZoneColor%()
 		Else
 			SetZoneColor(FogColorPD)
 		EndIf
-	ElseIf forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+	ElseIf forest_event <> Null And forest_event\room = PlayerRoom
 		If forest_event\EventState = 1.0
 			LightVolume = 1.0
 			SetZoneColor(FogColorForest)
@@ -3213,7 +3209,7 @@ Function UpdateZoneColor%()
 		Select wi\NightVision
 			Case 0
 				;[Block]
-				If forest_event <> Null And forest_event\room = PlayerRoom ; ~ TODO: Check if forest_event <> Null really needed!
+				If forest_event <> Null And forest_event\room = PlayerRoom
 					If forest_event\EventState = 1.0 Then CurrR = 200.0 : CurrG = 200.0 : CurrB = 200.0
 				EndIf
 				;[End Block]
@@ -3279,46 +3275,46 @@ Function UpdateNVG%()
 		For i = 0 To MaxItemAmount - 1
 			If Inventory(i) <> Null
 				If (wi\NightVision = 1 And Inventory(i)\ItemTemplate\ID = it_nvg) Lor (wi\NightVision = 2 And Inventory(i)\ItemTemplate\ID = it_veryfinenvg) Lor (wi\SCRAMBLE = 1 And Inventory(i)\ItemTemplate\ID = it_scramble) Lor (wi\SCRAMBLE = 2 And Inventory(i)\ItemTemplate\ID = it_finescramble)
-					If wi\NightVision > 0 Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.02 * wi\NightVision)))
-						If wi\SCRAMBLE > 0 Then Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.08 / wi\SCRAMBLE)))
-						wi\NVGPower = Int(Inventory(i)\State)
-						If wi\NVGPower = 0 ; ~ This NVG or SCRAMBLE can't be used
-							If wi\SCRAMBLE > 0
-								CreateMsg(GetLocalString("msg", "battery.died"))
-							Else
-								CreateMsg(GetLocalString("msg", "battery.died.nvg"))
-							EndIf
-							wi\IsNVGBlinking = True
-						EndIf
-						Exit
-					EndIf
+					If wi\NightVision > 0 Then Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.02 * wi\NightVision)))
+					If wi\SCRAMBLE > 0 Then Inventory(i)\State = Max(0.0, Inventory(i)\State - (fps\Factor[0] * (0.08 / wi\SCRAMBLE)))
+					wi\NVGPower = Int(Inventory(i)\State)
+					Exit
 				EndIf
-			Next
+			EndIf
+		Next
+		If wi\NVGPower = 0 ; ~ This NVG or SCRAMBLE can't be used
+			If wi\SCRAMBLE > 0
+				CreateMsg(GetLocalString("msg", "battery.died"))
+			Else
+				CreateMsg(GetLocalString("msg", "battery.died.nvg"))
+			EndIf
+			wi\IsNVGBlinking = True
+		EndIf
+	EndIf
+	
+	If wi\NVGPower > 0
+		If wi\NightVision = 2
+			If wi\NVGTimer <= 0.0
+				For np.NPCs = Each NPCs
+					np\NVGX = EntityX(np\Collider, True)
+					np\NVGY = EntityY(np\Collider, True)
+					np\NVGZ = EntityZ(np\Collider, True)
+				Next
+				wi\IsNVGBlinking = True
+				If wi\NVGTimer <= -10.0 Then wi\NVGTimer = 600.0
+			EndIf
+			wi\NVGTimer = wi\NVGTimer - fps\Factor[0]
 		EndIf
 		
-		If wi\NVGPower > 0
-			If wi\NightVision = 2
-				If wi\NVGTimer <= 0.0
-					For np.NPCs = Each NPCs
-						np\NVGX = EntityX(np\Collider, True)
-						np\NVGY = EntityY(np\Collider, True)
-						np\NVGZ = EntityZ(np\Collider, True)
-					Next
-					wi\IsNVGBlinking = True
-					If wi\NVGTimer <= -10.0 Then wi\NVGTimer = 600.0
-				EndIf
-				wi\NVGTimer = wi\NVGTimer - fps\Factor[0]
-			EndIf
-			
-			If wi\NVGPower < 160
-				If BatMsgTimer >= 70.0
-					If (Not ChannelPlaying(LowBatteryCHN[1]))
-						me\SndVolume = Max(3.0, me\SndVolume)
-						LowBatteryCHN[1] = PlaySound_Strict(snd_I\LowBatterySFX[1])
-					EndIf
+		If wi\NVGPower < 160
+			If BatMsgTimer >= 70.0
+				If (Not ChannelPlaying(LowBatteryCHN[1]))
+					me\SndVolume = Max(3.0, me\SndVolume)
+					LowBatteryCHN[1] = PlaySound_Strict(snd_I\LowBatterySFX[1])
 				EndIf
 			EndIf
 		EndIf
+	EndIf
 End Function
 
 Function UpdateGUI%()
@@ -3330,7 +3326,7 @@ Function UpdateGUI%()
 	Local n%, xTemp%, yTemp%, StrTemp$
 	
 	; ~ TODO: Get rid of this as soon as possible. Currently optimized by making a variable instead of calling array
-	If PD_event <> Null And PD_event\room = PlayerRoom ; ~ TODO: Check if PD_event <> Null really needed!
+	If PD_event <> Null And PD_event\room = PlayerRoom
 		If (wi\NightVision > 0 Lor wi\SCRAMBLE > 0) And PD_event\EventState2 <> PD_FakeTunnelRoom
 			If PD_event\Img2 <> 0
 				StopChannel(PD_event\SoundCHN)
@@ -3441,7 +3437,7 @@ Function UpdateGUI%()
 			Local ButtonPosY# = EntityY(d_I\ClosestButton, True)
 			Local ButtonPosZ# = EntityZ(d_I\ClosestButton, True)
 			
-			CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * opt\GraphicWidth / opt\GraphicHeight)) / 2.0))
+			CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * GraphicWidthFloat / GraphicHeightFloat)) / 2.0))
 			Pvt = CreatePivot()
 			PositionEntity(Pvt, ButtonPosX, ButtonPosY, ButtonPosZ)
 			RotateEntity(Pvt, 0.0, EntityYaw(d_I\ClosestButton, True) - 180.0, 0.0)
@@ -3450,9 +3446,10 @@ Function UpdateGUI%()
 			PointEntity(Camera, d_I\ClosestButton)
 			FreeEntity(Pvt) : Pvt = 0
 			
-			CameraProject(Camera, ButtonPosX, ButtonPosY + (MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015), ButtonPosZ)
+			Scale = MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015
+			CameraProject(Camera, ButtonPosX, ButtonPosY + Scale, ButtonPosZ)
 			ProjY = ProjectedY()
-			CameraProject(Camera, ButtonPosX, ButtonPosY - (MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015), ButtonPosZ)
+			CameraProject(Camera, ButtonPosX, ButtonPosY - Scale, ButtonPosZ)
 			Scale = (ProjectedY() - ProjY) / (462.0 * MenuScale)
 			
 			Local ScaleHalf# = Scale / 2.0
@@ -5785,7 +5782,7 @@ Function UpdateGUI%()
 					;[End Block]
 			End Select
 			
-			If ((mo\MouseHit2 Lor KeyHit(key\INVENTORY)) And (Not MenuOpen)) Lor me\Terminated Lor me\FallTimer < 0.0 Lor (Not me\Playable) Lor me\Zombie
+			If (mo\MouseHit2 Lor KeyHit(key\INVENTORY)) Lor me\Terminated Lor me\FallTimer < 0.0 Lor (Not me\Playable) Lor me\Zombie
 				Select SelectedItem\ItemTemplate\ID
 					Case it_firstaid, it_finefirstaid, it_firstaid2, it_cap, it_scp268, it_fine268, it_scp1499, it_fine1499, it_gasmask, it_finegasmask, it_veryfinegasmask, it_gasmask148, it_helmet
 						;[Block]
@@ -5826,21 +5823,6 @@ Function UpdateGUI%()
 			If ChannelPlaying(LowBatteryCHN[0]) Then StopChannel(LowBatteryCHN[0]) : LowBatteryCHN[0] = 0
 		EndIf
 	EndIf
-	
-	For it.Items = Each Items
-		If it <> SelectedItem
-			Select it\ItemTemplate\ID
-				Case it_firstaid, it_finefirstaid, it_firstaid2, it_vest, it_finevest, it_hazmatsuit, it_finehazmatsuit, it_veryfinehazmatsuit, it_hazmatsuit148, it_cap, it_scp268, it_fine268, it_scp1499, it_fine1499, it_gasmask, it_finegasmask, it_veryfinegasmask, it_gasmask148, it_helmet
-					;[Block]
-					it\State = 0.0
-					;[End Block]
-				Case it_nvg, it_veryfinenvg, it_finenvg, it_scramble, it_finescramble, it_scp1025, it_cup
-					;[Block]
-					it\State3 = 0.0
-					;[End Block]
-			End Select
-		EndIf
-	Next
 	
 	If PrevInvOpen And (Not InvOpen) Then MoveMouse(mo\Viewport_Center_X, mo\Viewport_Center_Y)
 	
@@ -6275,7 +6257,7 @@ Function RenderGUI%()
 	EndIf
 	
 	; ~ TODO: Get rid of this as soon as possible. Currently optimized by making a variable instead of calling array
-	If PD_event <> Null And PD_event\room = PlayerRoom ; ~ TODO: Check if PD_event <> Null really needed!
+	If PD_event <> Null And PD_event\room = PlayerRoom
 		If (wi\NightVision > 0 Lor wi\SCRAMBLE > 0) And PD_event\EventState2 <> PD_FakeTunnelRoom
 			If PD_event\Img = 0
 				PD_event\Img = ScaleImageEx(LoadImage_Strict("GFX\Overlays\scp_106_face_overlay.png"), MenuScale, MenuScale)
@@ -6293,7 +6275,7 @@ Function RenderGUI%()
 				EndIf
 			EndIf
 		EndIf
-	ElseIf scribe_event <> Null And scribe_event\room = PlayerRoom ; ~ TODO: Check if scribe_event really needed!
+	ElseIf scribe_event <> Null And scribe_event\room = PlayerRoom
 		If DistanceSquared(EntityX(me\Collider), EntityX(scribe_event\room\Objects[0], True), EntityZ(me\Collider), EntityZ(scribe_event\room\Objects[0], True)) < 0.36
 			If scribe_event\EventState2 < 70.0 And scribe_event\EventState3 = 1.0
 				me\BlinkTimer = -10.0
@@ -6338,7 +6320,7 @@ Function RenderGUI%()
 			Local ButtonPosY# = EntityY(d_I\ClosestButton, True)
 			Local ButtonPosZ# = EntityZ(d_I\ClosestButton, True)
 			
-			CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * opt\GraphicWidth / opt\GraphicHeight)) / 2.0))
+			CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * GraphicWidthFloat / GraphicHeightFloat)) / 2.0))
 			Pvt = CreatePivot()
 			PositionEntity(Pvt, ButtonPosX, ButtonPosY, ButtonPosZ)
 			RotateEntity(Pvt, 0.0, EntityYaw(d_I\ClosestButton, True) - 180.0, 0.0)
@@ -6347,9 +6329,10 @@ Function RenderGUI%()
 			PointEntity(Camera, d_I\ClosestButton)
 			FreeEntity(Pvt) : Pvt = 0
 			
-			CameraProject(Camera, ButtonPosX, ButtonPosY + (MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015), ButtonPosZ)
+			Scale = MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015
+			CameraProject(Camera, ButtonPosX, ButtonPosY + Scale, ButtonPosZ)
 			ProjY = ProjectedY()
-			CameraProject(Camera, ButtonPosX, ButtonPosY - (MeshHeight(d_I\ButtonModelID[BUTTON_DEFAULT_MODEL]) * 0.015), ButtonPosZ)
+			CameraProject(Camera, ButtonPosX, ButtonPosY - Scale, ButtonPosZ)
 			Scale = (ProjectedY() - ProjY) / (462.0 * MenuScale)
 			
 			Local ScaleHalf# = Scale / 2.0
@@ -7205,7 +7188,7 @@ Function UpdateMenu%()
 						
 						opt\CurrFOV = UpdateMenuSlideBar(x, y, 100 * MenuScale, opt\CurrFOV * 2.0, 4) / 2.0
 						opt\FOV = opt\CurrFOV + 40
-						CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * opt\GraphicWidth / opt\GraphicHeight)) / 2.0))
+						CameraZoom(Camera, Min(1.0 + (me\CurrCameraZoom / 400.0), 1.1) / Tan((2.0 * ATan(Tan((opt\FOV) / 2.0) * GraphicWidthFloat / GraphicHeightFloat)) / 2.0))
 						
 						y = y + (45 * MenuScale)
 						

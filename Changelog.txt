@@ -1,13 +1,28 @@
 {v1.3.3}
 
+[General]
+- Optimized the game...
+
+[Rooms]
+- Added warning console message in SCP-1499's dimension.
+
 [Items]
 - Changed model scale of some items.
+- Fogging overlay of Gas Mask and Hazmat Suit looks more realistic.
+- Equipping and unequipping the Hazmat Suit is faster.
+
+[NPCs]
+- SCP-049-2 can teleport around the facility.
+
+[Launcher]
+- Optimized language download speed.
 
 [Bug Fixes]
 - Fixed displaying of low battery message for NVG.
 - Fixed a bug related to collision of cups obtained from water cooler.
 - Fixed a bug related to collision of items obtained in SCP-970 loop.
 - Fixed an inventory bug with incorrect calculation of the items amount.
+- Fixed SCP-008-1's teleportation.
 
 [Known issues]
 - Rooms can overlap and block the way.

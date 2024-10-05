@@ -2714,9 +2714,7 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 	d\Open = Open
 	
 	; ~ Set "d\Locked = 1" for elevator doors to fix buttons color. Anyway the door will be unlocked by "UpdateElevators" function. -- Jabka
-	If DoorType = ELEVATOR_DOOR Then d\Locked = 1
 	d\DoorType = DoorType
-	If DoorType = SCP_914_DOOR Then DoorType = ONE_SIDED_DOOR
 	
 	d\MTFClose = True
 	d\AutoClose = (Open And ((DoorType = DEFAULT_DOOR) Lor (DoorType = HEAVY_DOOR)) And (Keycard = 0) And (Code = 0) And Rand(10) = 1)
@@ -2733,7 +2731,7 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 			FrameModelID = DOOR_DEFAULT_FRAME_MODEL
 			FrameScaleX = RoomScale : FrameScaleY = RoomScale : FrameScaleZ = RoomScale
 			;[End Block]
-		Case ONE_SIDED_DOOR
+		Case ONE_SIDED_DOOR, SCP_914_DOOR
 			;[Block]
 			DoorModelID_1 = DOOR_ONE_SIDED_MODEL
 			DoorModelID_2 = DoorModelID_1
@@ -2750,6 +2748,8 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 			
 			FrameModelID = DOOR_DEFAULT_FRAME_MODEL
 			FrameScaleX = RoomScale : FrameScaleY = RoomScale : FrameScaleZ = RoomScale
+			
+			d\Locked = 1
 			;[End Block]
 		Case HEAVY_DOOR
 			;[Block]
@@ -2787,10 +2787,12 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 			;[End Block]
 	End Select
 	
+	Local Temp% = (DoorType = BIG_DOOR)
+	
 	d\FrameOBJ = CopyEntity(d_I\DoorFrameModelID[FrameModelID])
 	ScaleEntity(d\FrameOBJ, FrameScaleX, FrameScaleY, FrameScaleZ)
 	PositionEntity(d\FrameOBJ, x, y, z)
-	If DoorType = BIG_DOOR Then EntityType(d\FrameOBJ, HIT_MAP)
+	If Temp Then EntityType(d\FrameOBJ, HIT_MAP)
 	EntityPickMode(d\FrameOBJ, 2)
 	
 	d\OBJ = CopyEntity(d_I\DoorModelID[DoorModelID_1])
@@ -2807,13 +2809,11 @@ Function CreateDoor.Doors(room.Rooms, x#, y#, z#, Angle#, Open% = False, DoorTyp
 		d\OBJ2 = CopyEntity(d_I\DoorModelID[DoorModelID_2])
 		ScaleEntity(d\OBJ2, DoorScaleX, DoorScaleY, DoorScaleZ)
 		PositionEntity(d\OBJ2, x, y, z)
-		RotateEntity(d\OBJ2, 0.0, Angle + ((DoorType <> BIG_DOOR) * 180.0), 0.0)
+		RotateEntity(d\OBJ2, 0.0, Angle + ((Not Temp) * 180.0), 0.0)
 		EntityType(d\OBJ2, HIT_MAP)
 		EntityPickMode(d\OBJ2, 2)
 		EntityParent(d\OBJ2, Parent)
 	EndIf
-	
-	Local Temp% = (DoorType = BIG_DOOR)
 	
 	For i = 0 To 1
 		If OfficeWooden
@@ -2946,12 +2946,6 @@ Function UpdateDoors%()
 						If d\PlayCautionSFX And (d\TimerState + fps\Factor[0] > 110.0 And d\TimerState <= 110.0) Then d\SoundCHN = PlaySoundEx(snd_I\CautionSFX, Camera, d\OBJ)
 						If d\TimerState = 0.0 Then OpenCloseDoor(d)
 					EndIf
-					If d\AutoClose And RemoteDoorOn
-						If EntityDistanceSquared(Camera, d\OBJ) < 4.41
-							If I_714\Using = 0 And wi\GasMask <> 4 And wi\HazmatSuit <> 4 Then PlaySound_Strict(snd_I\HorrorSFX[7])
-							OpenCloseDoor(d) : d\AutoClose = False
-						EndIf
-					EndIf
 				EndIf
 			Else
 				Local FrameX# = EntityX(d\FrameOBJ, True)
@@ -3033,7 +3027,7 @@ Function UpdateDoors%()
 					End Select
 				EndIf
 			EndIf
-			If (Not (d\DoorType = WOODEN_DOOR And PlayerRoom\RoomTemplate\RoomID = r_cont2_860_1)) Then UpdateSoundOrigin(d\SoundCHN, Camera, d\FrameOBJ)
+			UpdateSoundOrigin(d\SoundCHN, Camera, d\FrameOBJ)
 			
 			If d\DoorType = BIG_DOOR
 				If d\Locked = 2
@@ -3076,29 +3070,32 @@ Function UpdateDoors%()
 				Else
 					d\ButtonsUpdateTimer = d\ButtonsUpdateTimer - fps\Factor[0]
 				EndIf
-				
-				; ~ TODO: REWRITE THIS SHIT
-				If ChannelPlaying(d\ButtonCHN)
-					If d_I\AnimButton <> 0
-						If me\InsideElevator
-							If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
-								AnimateEx(d_I\AnimButton, AnimTime(d_I\AnimButton), 1.0, 20.0, 2.0, False)
-								If AnimTime(d_I\AnimButton) > 19.9 Then d_I\AnimButton = 0
-							Else
-								AnimateEx(d_I\AnimButton, AnimTime(d_I\AnimButton), 21.0, 40.0, 2.0, False)
-								If AnimTime(d_I\AnimButton) > 39.9 Then d_I\AnimButton = 0
-							EndIf
-						Else
-							AnimateEx(d_I\AnimButton, AnimTime(d_I\AnimButton), 1.0, 20.0, 2.0, False)
-							If AnimTime(d_I\AnimButton) > 19.9 Then d_I\AnimButton = 0
-						EndIf
-					EndIf
-				EndIf
-			ElseIf d\DoorType = OFFICE_DOOR
-				If ChannelPlaying(d\ButtonCHN) Then AnimateEx(d\OBJ, AnimTime(d\OBJ), 1.0, 41.0, 1.2, False)
 			EndIf
 		EndIf
 	Next
+	If d_I\ClosestDoor <> Null
+		If d_I\ClosestDoor\AutoClose And RemoteDoorOn
+			If d_I\ClosestDoor\Open
+				If d_I\ClosestDoor\OpenState = 180.0
+					If I_714\Using = 0 And wi\GasMask <> 4 And wi\HazmatSuit <> 4 Then PlaySound_Strict(snd_I\HorrorSFX[7])
+					OpenCloseDoor(d_I\ClosestDoor) : d_I\ClosestDoor\AutoClose = False
+				EndIf
+			EndIf
+		EndIf
+		If ChannelPlaying(d_I\ClosestDoor\ButtonCHN)
+			If d_I\ClosestDoor\DoorType = OFFICE_DOOR
+				AnimateEx(d_I\ClosestDoor\OBJ, AnimTime(d_I\ClosestDoor\OBJ), 1.0, 41.0, 1.2, False)
+			Else
+				If d_I\AnimButton <> 0
+					If (Not me\InsideElevator) Lor (me\InsideElevator And InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor))
+						AnimateEx(d_I\AnimButton, AnimTime(d_I\AnimButton), 1.0, 20.0, 2.0, False)
+					Else
+						AnimateEx(d_I\AnimButton, AnimTime(d_I\AnimButton), 21.0, 40.0, 2.0, False)
+					EndIf
+				EndIf
+			EndIf
+		EndIf
+	EndIf
 End Function
 
 Global ToElevatorFloor%
@@ -3720,14 +3717,10 @@ Function UseDoor%(PlaySFX% = True)
 					If (Not d_I\ClosestDoor\IsElevatorDoor > 0)
 						CreateMsg(GetLocalString("msg", "elev.broken"))
 						d_I\ClosestDoor\ButtonCHN = PlaySoundEx(ButtonSFX[1], Camera, d_I\ClosestButton)
-						If me\InsideElevator
-							If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
-								SetAnimTime(d_I\ClosestButton, 1.0)
-							Else
-								SetAnimTime(d_I\ClosestButton, 21.0)
-							EndIf
+						If (Not me\InsideElevator) Lor (me\InsideElevator And InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor))
+							SetAnimTime(d_I\AnimButton, 1.0)
 						Else
-							SetAnimTime(d_I\ClosestButton, 1.0)
+							SetAnimTime(d_I\AnimButton, 21.0)
 						EndIf
 						Return
 					Else
@@ -3758,7 +3751,7 @@ Function UseDoor%(PlaySFX% = True)
 							CreateMsg(GetLocalString("msg", "elev.already"))
 						EndIf
 						d_I\ClosestDoor\ButtonCHN = PlaySoundEx(ButtonSFX[0], Camera, d_I\ClosestButton)
-						SetAnimTime(d_I\ClosestButton, 1.0)
+						SetAnimTime(d_I\AnimButton, 1.0)
 						Return
 					EndIf
 				Else
@@ -3768,19 +3761,15 @@ Function UseDoor%(PlaySFX% = True)
 						CreateMsg(GetLocalString("msg", "button.locked"))
 					EndIf
 					d_I\ClosestDoor\ButtonCHN = PlaySoundEx(ButtonSFX[1], Camera, d_I\ClosestButton)
-					SetAnimTime(d_I\ClosestButton, 1.0)
+					SetAnimTime(d_I\AnimButton, 1.0)
 					Return
 				EndIf
 			Else
 				d_I\ClosestDoor\ButtonCHN = PlaySoundEx(ButtonSFX[0], Camera, d_I\ClosestButton)
-				If me\InsideElevator
-					If InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor)
-						SetAnimTime(d_I\ClosestButton, 1.0)
-					Else
-						SetAnimTime(d_I\ClosestButton, 21.0)
-					EndIf
+				If (Not me\InsideElevator) Lor (me\InsideElevator And InFacility = LowerFloor Lor (InFacility <> UpperFloor And ToElevatorFloor = UpperFloor))
+					SetAnimTime(d_I\AnimButton, 1.0)
 				Else
-					SetAnimTime(d_I\ClosestButton, 1.0)
+					SetAnimTime(d_I\AnimButton, 21.0)
 				EndIf
 			EndIf
 		EndIf
